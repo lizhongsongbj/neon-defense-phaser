@@ -1,0 +1,21 @@
+﻿import { chromium } from 'playwright-core'
+const browser = await chromium.launch({ executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: true })
+const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
+const errors = []
+page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
+page.on('pageerror', e => errors.push(String(e)))
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle', timeout: 30000 })
+await page.click('#start-game')
+await page.waitForSelector('#deploy-mission:not([disabled])', { timeout: 20000 })
+await page.click('#deploy-mission')
+await page.waitForTimeout(1000)
+await page.click('#intel-button')
+await page.waitForSelector('.intel-enemy-card')
+const cards = await page.locator('.intel-enemy-card').count()
+const images = await page.locator('.intel-enemy-card img').evaluateAll(imgs => imgs.map(img => ({ complete: img.complete, width: img.naturalWidth, src: img.getAttribute('src') })))
+const text = await page.locator('#intel-content').innerText()
+await page.screenshot({ path: 'tools/smoke-shots/10-enemy-intel.png' })
+console.log(JSON.stringify({ cards, images, hasHp: text.includes('生命'), hasBoss: text.includes('执法者·零号'), errors }, null, 2))
+await browser.close()
+if (cards !== 7 || images.some(x => !x.complete || x.width === 0) || errors.length) process.exit(1)
+

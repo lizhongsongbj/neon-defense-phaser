@@ -1,0 +1,503 @@
+{
+  "stylePrompt": "以参考图为唯一视觉语言，制作赛博朋克塔防游戏的防御塔升级素材。保持原塔的等距俯视约45度视角、深灰枪铁材质、黄铜结构件、青色能源灯、清晰机械结构和高细节游戏插画质感。升级后必须仍能一眼识别其基础塔类型，等级越高结构越复杂、功能模块越明显。单个完整塔体居中，透明或纯白背景，轮廓完整，无场景，无文字，无字母，无数字，无Logo，无水印，无UI边框。",
+  "sizes": [
+    "1024x1024",
+    "1536x1536",
+    "1536x1024",
+    "1024x1536"
+  ],
+  "items": [
+    {
+      "id": "mag-rail-tier-2",
+      "tier": 2,
+      "categoryId": "mag-rail-sniper",
+      "towerName": "磁轨狙击",
+      "name": "磁轨校准台",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-01-magnetic-rail-base-cutout.png",
+      "targetFile": "mag-rail-tier-2.png",
+      "prompt": "第二级磁轨狙击：保留初级塔的单炮管、圆形旋转底座和青色磁轨能量环；炮管适度加长，增加一组聚焦环、小型电容箱、改良瞄准器和更稳固的液压支架。结构复杂度只比初级高约35%，作为通往两个第四级分支的共同起点。"
+    },
+    {
+      "id": "mag-rail-tier-3",
+      "tier": 3,
+      "categoryId": "mag-rail-sniper",
+      "towerName": "磁轨狙击",
+      "name": "双极加速炮",
+      "referenceAsset": "/assets/generated/progression/tier-2/mag-rail-tier-2.png",
+      "targetFile": "mag-rail-tier-3.png",
+      "prompt": "第三级磁轨狙击：承接第二级，保留单一主炮轮廓，炮身出现可分离的双磁轨护套、两级聚焦环、中型电容组、复合瞄准模块和强化后坐力架。既有精准狙击的修长感，也有扩展为重型双轨炮的接口，能自然分化为天穹裁决者与量子贯城炮。"
+    },
+    {
+      "id": "arc-neon-tier-2",
+      "tier": 2,
+      "categoryId": "arc-neon",
+      "towerName": "电弧塔",
+      "name": "高压电弧站",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-02-arc-neon-base-cutout-1.png",
+      "targetFile": "arc-neon-tier-2.png",
+      "prompt": "第二级电弧塔：保留圆形底座、中心放电核心与铜制线圈，适度提升线圈数量和高度，增加一圈绝缘环、小型冷却管和青白电弧桥。只比初级复杂约35%，不要提前形成第四级终极轮廓。"
+    },
+    {
+      "id": "arc-neon-tier-3",
+      "tier": 3,
+      "categoryId": "arc-neon",
+      "towerName": "电弧塔",
+      "name": "霓虹电网核",
+      "referenceAsset": "/assets/generated/progression/tier-2/arc-neon-tier-2.png",
+      "targetFile": "arc-neon-tier-3.png",
+      "prompt": "第三级电弧塔：承接第二级，四座中高线圈围绕增强等离子核心，加入环形场域发射器、透明冷却管、电弧桥和扩展散热鳍片。既体现连锁放电潜力，也保留控制和超导冷却接口，可自然分化为霓虹雷暴核与超导潮汐塔。"
+    },
+    {
+      "id": "mercenary-tier-2",
+      "tier": 2,
+      "categoryId": "street-mercenary",
+      "towerName": "街头兵营",
+      "name": "铬街前哨",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-03-mercenary-outpost-base-cutout.png",
+      "targetFile": "mercenary-tier-2.png",
+      "prompt": "第二级街头兵营：保留低矮掩体、入口和街头改装感，增加模块化铬钢护墙、武器架、监控器、补给箱与小型有人射击位。必须像佣兵驻扎据点而非无人自动炮塔，只比初级复杂约35%。"
+    },
+    {
+      "id": "mercenary-tier-3",
+      "tier": 3,
+      "categoryId": "street-mercenary",
+      "towerName": "街头兵营",
+      "name": "战术承包营",
+      "referenceAsset": "/assets/generated/progression/tier-2/mercenary-tier-2.png",
+      "targetFile": "mercenary-tier-3.png",
+      "prompt": "第三级街头兵营“战术承包营”：承接第二级铬街前哨，但整体必须简明、清晰、容易辨认。只保留一个低矮矩形中央指挥室、左右两个对称的有人射击掩体、一圈连续干净的铬钢护墙和一个明确的正面入口。使用较大的完整装甲块面和清晰轮廓，减少约40%的零碎部件。删除多余外伸平台、重复小箱体、密集管线、过多天线、杂乱装饰和自动炮塔。它应明显比第二级更坚固，但低于第四级复杂度，并可自然升级为铬钢不破营或血刃夜行队。"
+    },
+    {
+      "id": "hacker-tier-2",
+      "tier": 2,
+      "categoryId": "hacker-relay",
+      "towerName": "黑客中继",
+      "name": "入侵中继站",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-04-hacker-relay-base-cutout.png",
+      "targetFile": "hacker-tier-2.png",
+      "prompt": "第二级黑客中继：保留通信桅杆、服务器底座和青绿色数据灯，增加两块小型可动天线面板、扫描环、扩展散热模块和额外服务器箱。只比初级复杂约35%，不提前出现终极阵列。"
+    },
+    {
+      "id": "hacker-tier-3",
+      "tier": 3,
+      "categoryId": "hacker-relay",
+      "towerName": "黑客中继",
+      "name": "深网控制台",
+      "referenceAsset": "/assets/generated/progression/tier-2/hacker-tier-2.png",
+      "targetFile": "hacker-tier-3.png",
+      "prompt": "第三级黑客中继：承接第二级，采用更高的分段桅杆、四块数据面板、双层全息扫描环、中型服务器阵列和定向入侵发射模块。既有大范围控制的数据链路，也有高强度单点入侵接口，可分化为零日统御台与黑冰崩解器。"
+    },
+    {
+      "id": "drone-tier-2",
+      "tier": 2,
+      "categoryId": "drone-hive",
+      "towerName": "无人机巢",
+      "name": "蜂群发射巢",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-05-drone-hive-base-new-drones.png",
+      "targetFile": "drone-tier-2.png",
+      "prompt": "第二级无人机巢：保留蜂巢式平台、中央能源核心和无人机舱盖，增加两个清晰开放发射口、小型雷达、回收机械臂与更多青色导航灯。只比初级复杂约35%，不要形成大型航母或爆破工厂。"
+    },
+    {
+      "id": "drone-tier-3",
+      "tier": 3,
+      "categoryId": "drone-hive",
+      "towerName": "无人机巢",
+      "name": "自律蜂群母站",
+      "referenceAsset": "/assets/generated/progression/tier-2/drone-tier-2.png",
+      "targetFile": "drone-tier-3.png",
+      "prompt": "第三级无人机巢：承接第二级，采用升高的蜂群控制核心、四个模块化无人机舱、增强雷达桅杆、快速回收臂和可替换载荷装配区。既能扩展高速截击无人机，也能扩展重型爆破无人机，可分化为蜂后制空母巢与蜂群湮灭工厂。"
+    },
+    {
+      "id": "mag-rail-sky-verdict",
+      "categoryId": "mag-rail-sniper",
+      "towerName": "磁轨狙击",
+      "name": "天穹裁决者",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-01-magnetic-rail-base-cutout.png",
+      "targetFile": "mag-rail-sky-verdict.png",
+      "prompt": "设计磁轨狙击的单体处决分支：更长而纤细的高精度磁轨炮管，多组青白色聚焦环，高级复合瞄准镜，强化液压稳定架与独立Boss弱点扫描模块。轮廓修长、克制、昂贵、精准，强调超远程狙击，而不是范围火炮。",
+      "tier": 4,
+      "branch": "A"
+    },
+    {
+      "id": "mag-rail-city-piercer",
+      "categoryId": "mag-rail-sniper",
+      "towerName": "磁轨狙击",
+      "name": "量子贯城炮",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-01-magnetic-rail-base-cutout.png",
+      "targetFile": "mag-rail-city-piercer.png",
+      "prompt": "设计磁轨狙击的直线贯穿分支：宽大的双轨加速炮，暴露的磁力导轨，大型电容器、宽阔炮口和重型后坐力支架，青色能源中加入少量紫色高能光。轮廓厚重，表现一发贯穿整条街区的工业级武器。",
+      "tier": 4,
+      "branch": "B"
+    },
+    {
+      "id": "arc-neon-storm-core",
+      "categoryId": "arc-neon",
+      "towerName": "电弧塔",
+      "name": "霓虹雷暴核",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-02-arc-neon-base-cutout-1.png",
+      "targetFile": "arc-neon-storm-core.png",
+      "prompt": "设计电弧塔的大范围连锁分支：六座高耸铜制线圈围绕封闭式青白色等离子核心，多重电弧桥、散热鳍片和高压绝缘结构。整体像企业级城市电网武器，强调五目标连锁和高频放电，不使用奇幻符号。",
+      "tier": 4,
+      "branch": "A"
+    },
+    {
+      "id": "arc-neon-superconductor",
+      "categoryId": "arc-neon",
+      "towerName": "电弧塔",
+      "name": "超导潮汐塔",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-02-arc-neon-base-cutout-1.png",
+      "targetFile": "arc-neon-superconductor.png",
+      "prompt": "设计电弧塔的控制增伤分支：四座更宽的低矮线圈，粗大的透明冷却管中流动青绿色发光冷却液，环形场域发射器、导电介质喷口和稳定控制核心。强调超导、减速和能量易伤，结构精密稳定。",
+      "tier": 4,
+      "branch": "B"
+    },
+    {
+      "id": "mercenary-chrome-fortress",
+      "categoryId": "street-mercenary",
+      "towerName": "街头兵营",
+      "name": "铬钢不破营",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-03-mercenary-outpost-base-cutout.png",
+      "targetFile": "mercenary-chrome-fortress.png",
+      "prompt": "第四级重装防守分支：主体必须是可驻扎佣兵的加固营地，不是无人自动炮塔。使用厚重铬钢护墙、中央指挥室、双侧有人射击掩体、重型盾牌架、医疗与弹药补给模块。",
+      "tier": 4,
+      "branch": "A"
+    },
+    {
+      "id": "mercenary-night-blades",
+      "categoryId": "street-mercenary",
+      "towerName": "街头兵营",
+      "name": "血刃夜行队",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-03-mercenary-outpost-base-cutout.png",
+      "targetFile": "mercenary-night-blades.png",
+      "prompt": "第四级高速突击分支：主体必须是佣兵部署据点，不是无人自动炮塔。使用紧凑黑色行动站、红色警戒灯、快速出入口、近战武器架、隐身投影模块与轻型掩体。",
+      "tier": 4,
+      "branch": "B"
+    },
+    {
+      "id": "hacker-zero-day-control",
+      "categoryId": "hacker-relay",
+      "towerName": "黑客中继",
+      "name": "零日统御台",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-04-hacker-relay-base-cutout.png",
+      "targetFile": "hacker-zero-day-control.png",
+      "prompt": "设计黑客中继的大范围控制分支：更高的多频段中继桅杆，多块可动天线面板，青绿全息扫描环，扩展服务器机柜和多目标数据链路模块。轮廓清晰向上延伸，强调同时统御大量联网目标。",
+      "tier": 4,
+      "branch": "A"
+    },
+    {
+      "id": "hacker-black-ice-breaker",
+      "categoryId": "hacker-relay",
+      "towerName": "黑客中继",
+      "name": "黑冰崩解器",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-04-hacker-relay-base-cutout.png",
+      "targetFile": "hacker-black-ice-breaker.png",
+      "prompt": "第四级攻击型黑客分支：低矮厚重的黑色服务器堡垒，中央锐利定向数据脉冲发射器，紫红危险光、封闭黑冰核心、粗大液冷管和装甲数据仓，减少高桅杆与屏幕。",
+      "tier": 4,
+      "branch": "B"
+    },
+    {
+      "id": "drone-queen-air-carrier",
+      "categoryId": "drone-hive",
+      "towerName": "无人机巢",
+      "name": "蜂后制空母巢",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-05-drone-hive-base-new-drones.png",
+      "targetFile": "drone-queen-air-carrier.png",
+      "prompt": "设计无人机巢的制空分支：更高的蜂群指挥核心，三个开放式发射舱内清楚展示三架流线型截击无人机，扩展雷达桅杆、白青色导航灯、精密飞控和快速回收机械臂。强调制空与高速追击。",
+      "tier": 4,
+      "branch": "A"
+    },
+    {
+      "id": "drone-swarm-annihilator",
+      "categoryId": "drone-hive",
+      "towerName": "无人机巢",
+      "name": "蜂群湮灭工厂",
+      "referenceAsset": "/assets/towers/generated-raw-selected/tower-05-drone-hive-base-new-drones.png",
+      "targetFile": "drone-swarm-annihilator.png",
+      "prompt": "第四级爆破分支：低矮宽大的工业装配工厂，橙红危险灯、重型装甲舱、爆破无人机、炸弹载荷和机械装配臂，减少高雷达与航母轮廓。",
+      "tier": 4,
+      "branch": "B"
+    },
+    {
+      "id": "street-mercenary-unit",
+      "tier": 0,
+      "kind": "unit",
+      "categoryId": "street-mercenary",
+      "towerName": "街头兵营",
+      "name": "铬街战术佣兵",
+      "referenceAsset": "/assets/generated/cutout/mercenary-tier-3-2026-08-23T12-04-52-610Z.png",
+      "targetFile": "street-mercenary-unit.png",
+      "prompt": "从参考建筑中单独设计一名街头佣兵单位。全身站姿，约45度等距俯视角，身体朝右上方警戒，双手持紧凑型未来突击步枪；穿模块化黑灰战术装甲、黄铜护肩和护膝、封闭式头盔与青色单眼战术目镜。轮廓简洁、坚毅、易于小尺寸辨认，与街头兵营的深灰枪铁、黄铜和青色能源灯完全协调。只生成一个完整人物，真实透明或纯白背景，不要建筑、地面、场景、文字、Logo、UI边框或水印，脚部和武器不得裁切。"
+    },
+    {
+      "id": "drone-hive-unit",
+      "tier": 0,
+      "kind": "unit",
+      "categoryId": "drone-hive",
+      "towerName": "无人机巢",
+      "name": "蜂群截击无人机",
+      "referenceAsset": "/assets/towers/drone-hive-unit.png",
+      "targetFile": "drone-hive-unit.png",
+      "prompt": "从参考建筑中单独设计一架蜂群截击无人机单位。约45度等距俯视角，紧凑扁平的六边形机身，四个内嵌式涵道风扇或矢量推进器，中央青色能源核心，深灰枪铁装甲、黄铜结构边和青白导航灯；机鼻配小型传感器与双联轻型能量武器。轮廓简洁、快速、易于小尺寸辨认，与无人机巢视觉语言完全协调。只生成一架完整无人机，真实透明或纯白背景，不要母巢、地面、场景、文字、Logo、UI边框或水印，所有旋翼和武器不得裁切。"
+    },
+    {
+      "id": "simplified-gravity-nail-level-1",
+      "tier": 1,
+      "categoryId": "gravity-nail",
+      "towerName": "重力钉 · 简化版",
+      "name": "重力钉",
+      "referenceAsset": "/assets/towers/new-concepts/gravity-nail-level-1.png",
+      "targetFile": "simplified-gravity-nail-level-1.png",
+      "prompt": "保留原图的等距视角、底座、投射器布局和升级关系，将结构简化约35%。去除大面积漩涡、闪电、魔法光环和水晶感；质量场只用黑色机械孔径、烟色玻璃、少量青紫状态灯表达。减少发光线路与碎小零件，突出枪铁装甲、黄铜关节、液压支架、散热器、线缆和企业军工设备感。 当前为第1级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-gravity-nail-level-2",
+      "tier": 2,
+      "categoryId": "gravity-nail",
+      "towerName": "重力钉 · 简化版",
+      "name": "重力钉",
+      "referenceAsset": "/assets/towers/new-concepts/gravity-nail-level-2.png",
+      "targetFile": "simplified-gravity-nail-level-2.png",
+      "prompt": "保留原图的等距视角、底座、投射器布局和升级关系，将结构简化约35%。去除大面积漩涡、闪电、魔法光环和水晶感；质量场只用黑色机械孔径、烟色玻璃、少量青紫状态灯表达。减少发光线路与碎小零件，突出枪铁装甲、黄铜关节、液压支架、散热器、线缆和企业军工设备感。 当前为第2级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-gravity-nail-level-3",
+      "tier": 3,
+      "categoryId": "gravity-nail",
+      "towerName": "重力钉 · 简化版",
+      "name": "重力钉",
+      "referenceAsset": "/assets/towers/new-concepts/gravity-nail-level-3.png",
+      "targetFile": "simplified-gravity-nail-level-3.png",
+      "prompt": "保留原图的等距视角、底座、投射器布局和升级关系，将结构简化约35%。去除大面积漩涡、闪电、魔法光环和水晶感；质量场只用黑色机械孔径、烟色玻璃、少量青紫状态灯表达。减少发光线路与碎小零件，突出枪铁装甲、黄铜关节、液压支架、散热器、线缆和企业军工设备感。 当前为第3级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-gravity-nail-level-4-deep-well-lockdown",
+      "tier": 4,
+      "branch": "A",
+      "categoryId": "gravity-nail",
+      "towerName": "重力钉 · 简化版",
+      "name": "深井封锁",
+      "referenceAsset": "/assets/towers/new-concepts/gravity-nail-level-4-deep-well-lockdown.png",
+      "targetFile": "simplified-gravity-nail-level-4-deep-well-lockdown.png",
+      "prompt": "保留原图的等距视角、底座、投射器布局和升级关系，将结构简化约35%。去除大面积漩涡、闪电、魔法光环和水晶感；质量场只用黑色机械孔径、烟色玻璃、少量青紫状态灯表达。减少发光线路与碎小零件，突出枪铁装甲、黄铜关节、液压支架、散热器、线缆和企业军工设备感。 当前为第4级分支A，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-gravity-nail-level-4-sky-deflection",
+      "tier": 4,
+      "branch": "B",
+      "categoryId": "gravity-nail",
+      "towerName": "重力钉 · 简化版",
+      "name": "天幕偏转",
+      "referenceAsset": "/assets/towers/new-concepts/gravity-nail-level-4-sky-deflection.png",
+      "targetFile": "simplified-gravity-nail-level-4-sky-deflection.png",
+      "prompt": "保留原图的等距视角、底座、投射器布局和升级关系，将结构简化约35%。去除大面积漩涡、闪电、魔法光环和水晶感；质量场只用黑色机械孔径、烟色玻璃、少量青紫状态灯表达。减少发光线路与碎小零件，突出枪铁装甲、黄铜关节、液压支架、散热器、线缆和企业军工设备感。 当前为第4级分支B，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-grey-tide-level-1",
+      "tier": 1,
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 简化版",
+      "name": "灰潮解构站",
+      "referenceAsset": "/assets/towers/new-concepts/grey-tide-level-1.png",
+      "targetFile": "simplified-grey-tide-level-1.png",
+      "prompt": "保留原图的等距视角、回收平台、纳米处理罐、机械臂和升级关系，将结构简化约35%。去除触手怪、绿色魔法液体、诅咒雾气和过强荧光；纳米技术只用密封罐内的细小灰绿色颗粒、分析灯和少量冷却液表达。突出工业回收、材料扫描、装甲拆解与企业黑科技，减少碎小零件。 当前为第1级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-grey-tide-level-2",
+      "tier": 2,
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 简化版",
+      "name": "灰潮解构站",
+      "referenceAsset": "/assets/towers/new-concepts/grey-tide-level-2.png",
+      "targetFile": "simplified-grey-tide-level-2.png",
+      "prompt": "保留原图的等距视角、回收平台、纳米处理罐、机械臂和升级关系，将结构简化约35%。去除触手怪、绿色魔法液体、诅咒雾气和过强荧光；纳米技术只用密封罐内的细小灰绿色颗粒、分析灯和少量冷却液表达。突出工业回收、材料扫描、装甲拆解与企业黑科技，减少碎小零件。 当前为第2级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-grey-tide-level-3",
+      "tier": 3,
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 简化版",
+      "name": "灰潮解构站",
+      "referenceAsset": "/assets/towers/new-concepts/grey-tide-level-3.png",
+      "targetFile": "simplified-grey-tide-level-3.png",
+      "prompt": "保留原图的等距视角、回收平台、纳米处理罐、机械臂和升级关系，将结构简化约35%。去除触手怪、绿色魔法液体、诅咒雾气和过强荧光；纳米技术只用密封罐内的细小灰绿色颗粒、分析灯和少量冷却液表达。突出工业回收、材料扫描、装甲拆解与企业黑科技，减少碎小零件。 当前为第3级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-grey-tide-level-4-armor-eater-swarm",
+      "tier": 4,
+      "branch": "A",
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 简化版",
+      "name": "噬甲集群",
+      "referenceAsset": "/assets/towers/new-concepts/grey-tide-level-4-armor-eater-swarm.png",
+      "targetFile": "simplified-grey-tide-level-4-armor-eater-swarm.png",
+      "prompt": "保留原图的等距视角、回收平台、纳米处理罐、机械臂和升级关系，将结构简化约35%。去除触手怪、绿色魔法液体、诅咒雾气和过强荧光；纳米技术只用密封罐内的细小灰绿色颗粒、分析灯和少量冷却液表达。突出工业回收、材料扫描、装甲拆解与企业黑科技，减少碎小零件。 当前为第4级分支A，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-grey-tide-level-4-scavenger-protocol",
+      "tier": 4,
+      "branch": "B",
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 简化版",
+      "name": "清道夫协议",
+      "referenceAsset": "/assets/towers/new-concepts/grey-tide-level-4-scavenger-protocol.png",
+      "targetFile": "simplified-grey-tide-level-4-scavenger-protocol.png",
+      "prompt": "保留原图的等距视角、回收平台、纳米处理罐、机械臂和升级关系，将结构简化约35%。去除触手怪、绿色魔法液体、诅咒雾气和过强荧光；纳米技术只用密封罐内的细小灰绿色颗粒、分析灯和少量冷却液表达。突出工业回收、材料扫描、装甲拆解与企业黑科技，减少碎小零件。 当前为第4级分支B，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-trajectory-rewriter-level-1",
+      "tier": 1,
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 简化版",
+      "name": "轨迹回写器",
+      "referenceAsset": "/assets/towers/new-concepts/trajectory-rewriter-level-1.png",
+      "targetFile": "simplified-trajectory-rewriter-level-1.png",
+      "prompt": "保留原图的等距视角、非同心校准环、状态缓存核心、扫描器和升级关系，将结构简化约35%。去除魔法传送门、巨大能量流、时间法术光环和过多全息轨迹；只保留少量细线坐标投影、青色状态灯与紫红错误指示。突出服务器、相位稳定器、传感器、机械环轨和非法企业量子设备。 当前为第1级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-trajectory-rewriter-level-2",
+      "tier": 2,
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 简化版",
+      "name": "轨迹回写器",
+      "referenceAsset": "/assets/towers/new-concepts/trajectory-rewriter-level-2.png",
+      "targetFile": "simplified-trajectory-rewriter-level-2.png",
+      "prompt": "保留原图的等距视角、非同心校准环、状态缓存核心、扫描器和升级关系，将结构简化约35%。去除魔法传送门、巨大能量流、时间法术光环和过多全息轨迹；只保留少量细线坐标投影、青色状态灯与紫红错误指示。突出服务器、相位稳定器、传感器、机械环轨和非法企业量子设备。 当前为第2级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-trajectory-rewriter-level-3",
+      "tier": 3,
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 简化版",
+      "name": "轨迹回写器",
+      "referenceAsset": "/assets/towers/new-concepts/trajectory-rewriter-level-3.png",
+      "targetFile": "simplified-trajectory-rewriter-level-3.png",
+      "prompt": "保留原图的等距视角、非同心校准环、状态缓存核心、扫描器和升级关系，将结构简化约35%。去除魔法传送门、巨大能量流、时间法术光环和过多全息轨迹；只保留少量细线坐标投影、青色状态灯与紫红错误指示。突出服务器、相位稳定器、传感器、机械环轨和非法企业量子设备。 当前为第3级，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-trajectory-rewriter-level-4-rollback-node",
+      "tier": 4,
+      "branch": "A",
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 简化版",
+      "name": "回滚节点",
+      "referenceAsset": "/assets/towers/new-concepts/trajectory-rewriter-level-4-rollback-node.png",
+      "targetFile": "simplified-trajectory-rewriter-level-4-rollback-node.png",
+      "prompt": "保留原图的等距视角、非同心校准环、状态缓存核心、扫描器和升级关系，将结构简化约35%。去除魔法传送门、巨大能量流、时间法术光环和过多全息轨迹；只保留少量细线坐标投影、青色状态灯与紫红错误指示。突出服务器、相位稳定器、传感器、机械环轨和非法企业量子设备。 当前为第4级分支A，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "simplified-trajectory-rewriter-level-4-breakpoint-execution",
+      "tier": 4,
+      "branch": "B",
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 简化版",
+      "name": "断点处决",
+      "referenceAsset": "/assets/towers/new-concepts/trajectory-rewriter-level-4-breakpoint-execution.png",
+      "targetFile": "simplified-trajectory-rewriter-level-4-breakpoint-execution.png",
+      "prompt": "保留原图的等距视角、非同心校准环、状态缓存核心、扫描器和升级关系，将结构简化约35%。去除魔法传送门、巨大能量流、时间法术光环和过多全息轨迹；只保留少量细线坐标投影、青色状态灯与紫红错误指示。突出服务器、相位稳定器、传感器、机械环轨和非法企业量子设备。 当前为第4级分支B，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-grey-tide-level-1",
+      "tier": 1,
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 罐体重制版",
+      "name": "灰潮解构站",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/grey-tide-level-1.png",
+      "targetFile": "revised-grey-tide-level-1.png",
+      "prompt": "第一级。以中央灰绿色密封纳米罐体作为绝对视觉主体，占塔体高度与视觉面积的一半以上。罐体安装在简洁圆形工业底座上，周围只有两组低矮泵机、粗管道、材料扫描窗和少量状态灯。完全取消钳子、爪子、触手、机械动物和武器炮管。结构简单、低级、清晰。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-grey-tide-level-2",
+      "tier": 2,
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 罐体重制版",
+      "name": "灰潮解构站",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/grey-tide-level-2.png",
+      "targetFile": "revised-grey-tide-level-2.png",
+      "prompt": "第二级。延续第一级中央灰绿色密封罐体，罐体更高并增加一圈装甲固定箍、底部循环泵环、三根粗回流管和两个低矮注入喷口。中央罐体仍是绝对主体。完全没有钳子、爪子、触手或机械动物结构。比一级复杂约30%。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-grey-tide-level-3",
+      "tier": 3,
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 罐体重制版",
+      "name": "灰潮解构站",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/grey-tide-level-3.png",
+      "targetFile": "revised-grey-tide-level-3.png",
+      "prompt": "第三级。延续前两级中央灰绿色罐体，形成成熟的纳米材料处理塔：大型分段透明罐、顶部材料分析盖、环形过滤器、四个无爪的固定喷射节点、散热器和回收管网。罐体必须最醒目，外围设备低于罐体。无钳子、无机械爪、无触手、无蜘蛛轮廓。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-grey-tide-level-4-armor-eater-swarm",
+      "tier": 4,
+      "branch": "A",
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 罐体重制版",
+      "name": "噬甲集群",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/grey-tide-level-4-armor-eater-swarm.png",
+      "targetFile": "revised-grey-tide-level-4-armor-eater-swarm.png",
+      "prompt": "第四级A 噬甲集群。以超大型中央灰绿色纳米罐体为主体，罐内显示细密灰绿色纳米颗粒与分层循环，不是魔法液体。外围使用环形复制舱、多个短小无爪喷嘴、导流管与装甲分析传感器表达叠加和传播。彻底取消所有钳子、爪子、机械腿、触手和蜘蛛外形。整体为圆形工业侵蚀平台，罐体占核心视觉。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-grey-tide-level-4-scavenger-protocol",
+      "tier": 4,
+      "branch": "B",
+      "categoryId": "grey-tide",
+      "towerName": "灰潮解构站 · 罐体重制版",
+      "name": "清道夫协议",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/grey-tide-level-4-scavenger-protocol.png",
+      "targetFile": "revised-grey-tide-level-4-scavenger-protocol.png",
+      "prompt": "第四级B 清道夫协议。以高大中央灰绿色回收罐体为主体，增加顶部精密材料扫描环、侧面分类仓、合金压缩模块、资源计量器和向外供能的粗管道。可以有固定式无爪机械导轨，但禁止钳子、机械爪、触手和动物轮廓。突出高价值材料回收与企业工业设备，中央罐体最醒目。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-trajectory-rewriter-level-1",
+      "tier": 1,
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 门环重制版",
+      "name": "轨迹回写器",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/trajectory-rewriter-level-1.png",
+      "targetFile": "revised-trajectory-rewriter-level-1.png",
+      "prompt": "第一级。以一个清晰完整的圆形科技传送门作为绝对主体：厚重枪铁门环竖立在低矮装甲底座上，内侧仅有细窄青色坐标灯带，门内为空或深色半透明校准膜。底座配两个小型服务器盒和传感器。轮廓简洁，不要多重环、巨大能量、魔法符文或时钟。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-trajectory-rewriter-level-2",
+      "tier": 2,
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 门环重制版",
+      "name": "轨迹回写器",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/trajectory-rewriter-level-2.png",
+      "targetFile": "revised-trajectory-rewriter-level-2.png",
+      "prompt": "第二级。延续第一级完整圆形科技门环，增加第二层贴合式校准轨、两侧相位稳定器、底部双缓存罐和少量紫红错误指示灯。圆形门仍是绝对主体且清楚完整。不要魔法传送效果、旋涡、时钟、悬浮球或复杂轨迹流。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-trajectory-rewriter-level-3",
+      "tier": 3,
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 门环重制版",
+      "name": "轨迹回写器",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/trajectory-rewriter-level-3.png",
+      "targetFile": "revised-trajectory-rewriter-level-3.png",
+      "prompt": "第三级。延续前两级圆形科技传送门，形成成熟的战术状态回写门：加厚分段装甲门环、内外双轨校准结构、顶部坐标扫描器、底部服务器核心和四个低矮相位锚。门洞保持清晰可见，少量细线网格表示坐标缓存。不要多层杂乱球环、魔法漩涡或时间法术。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-trajectory-rewriter-level-4-rollback-node",
+      "tier": 4,
+      "branch": "A",
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 门环重制版",
+      "name": "回滚节点",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/trajectory-rewriter-level-4-rollback-node.png",
+      "targetFile": "revised-trajectory-rewriter-level-4-rollback-node.png",
+      "prompt": "第四级A 回滚节点。以大型完整圆形科技传送门为主体，门环更宽，带分段坐标轨道和多个沿环移动的数据节点；两侧增加路线记录服务器与地面相位锚。门洞显示克制的青色道路网格和两三道位置残影线，禁止巨大能量河流、魔法旋涡、符文和时钟。轮廓偏宽，强调多目标路线回退。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    },
+    {
+      "id": "revised-trajectory-rewriter-level-4-breakpoint-execution",
+      "tier": 4,
+      "branch": "B",
+      "categoryId": "trajectory-rewriter",
+      "towerName": "轨迹回写器 · 门环重制版",
+      "name": "断点处决",
+      "referenceAsset": "/assets/towers/new-concepts/simplified/trajectory-rewriter-level-4-breakpoint-execution.png",
+      "targetFile": "revised-trajectory-rewriter-level-4-breakpoint-execution.png",
+      "prompt": "第四级B 断点处决。以强化圆形科技传送门为主体，门环前方安装一个紧凑的定向状态重写模块，但不能变成普通大炮。门环两侧是伤害缓存服务器和紫红断点指示器，内圈形成收束式机械光阑。门洞清晰，能量表现克制，仅用青白校准线。不要悬浮魔法球、漩涡、时钟、符文或巨型炮管。 保持霓虹防线既有赛博朋克塔楼风格：等距俯视、深灰枪铁、黄铜结构件、少量青色灯和琥珀维护灯；减少魔法元素和表面碎件，纯白背景，无文字，无水印。"
+    }
+  ]
+}

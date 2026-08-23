@@ -1,0 +1,30 @@
+﻿[
+    {
+        "id":  "mercenary-chrome-fortress",
+        "success":  false,
+        "fileName":  "",
+        "imageUrl":  "",
+        "error":  "The remote server returned an error: (400) Bad Request. {\"message\":\"分组 default 下模型 gpt-image-2 的可用渠道不存在（retry） (request id: 202608231117462212369868268d9d69CA3uq7F)\"}"
+    },
+    {
+        "id":  "mercenary-night-blades",
+        "success":  true,
+        "fileName":  "mercenary-night-blades-2026-08-23T11-19-16-631Z.png",
+        "imageUrl":  "/assets/generated/cutout/mercenary-night-blades-2026-08-23T11-19-16-631Z.png",
+        "error":  ""
+    },
+    {
+        "id":  "hacker-black-ice-breaker",
+        "success":  false,
+        "fileName":  "",
+        "imageUrl":  "",
+        "error":  "The remote server returned an error: (400) Bad Request. {\"message\":\"分组 default 下模型 gpt-image-2 的可用渠道不存在（retry） (request id: 202608231119346842751318268d9d6GIvZZJKg)\"}"
+    },
+    {
+        "id":  "drone-swarm-annihilator",
+        "success":  false,
+        "fileName":  "",
+        "imageUrl":  "",
+        "error":  "The remote server returned an error: (400) Bad Request. {\"message\":\"分组 default 下模型 gpt-image-2 的可用渠道不存在（retry） (request id: 202608231119460142585678268d9d6ZjuMa5aT)\"}"
+    }
+]

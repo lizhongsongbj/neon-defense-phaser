@@ -51,6 +51,7 @@ export class PreloadScene extends Phaser.Scene {
     })
     this.load.image('unit-mercenary-shield', 'assets/units/mercenary-shield.png')
     this.load.image('unit-mercenary-rifle', 'assets/units/mercenary-rifle.png')
+    this.load.image('unit-drone-hive', 'assets/towers/drone-hive-unit.png')
 
     for (const voice of allVoiceFiles()) {
       this.load.audio(voice.key, voice.path)

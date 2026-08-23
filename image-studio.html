@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <title>霓虹防线 · 素材生图工作台</title>
+</head>
+<body>
+  <main class="studio-shell">
+    <header class="studio-header">
+      <div>
+        <span class="eyebrow">NEON DEFENSE // ASSET FORGE</span>
+        <h1>防御塔升级生图工作台</h1>
+        <p>参考现有塔楼生成第二级、第三级与第四级分支素材。密钥只由本地 Vite 服务端读取，不会发送到浏览器。</p>
+      </div>
+      <div class="header-actions">
+        <span class="key-status" id="key-status">正在检查接口…</span>
+        <a class="ghost-button" href="/">返回游戏</a>
+      </div>
+    </header>
+
+    <nav class="studio-section-tabs" aria-label="素材工作台分类">
+      <button class="studio-section-tab is-active" type="button" data-studio-section="towers" aria-pressed="true">防御塔生图</button>
+      <button class="studio-section-tab" type="button" data-studio-section="monsters" aria-pressed="false">怪物图库</button>
+    </nav>
+
+    <section class="studio-layout" data-studio-panel="towers">
+      <aside class="asset-rail" aria-label="防御塔升级素材列表">
+        <div class="section-heading">
+          <span>GENERATION QUEUE</span>
+          <strong>升级素材</strong>
+        </div>
+        <div class="asset-list" id="asset-list"></div>
+      </aside>
+
+      <section class="editor-panel">
+        <div class="editor-topline">
+          <div>
+            <span id="selected-tower">等待选择</span>
+            <h2 id="selected-name">升级形态</h2>
+          </div>
+          <span class="model-chip">gpt-image-2</span>
+        </div>
+
+        <div class="reference-grid">
+          <figure class="image-card">
+            <figcaption>BASE REFERENCE // 原塔参考</figcaption>
+            <div class="image-frame checkerboard">
+              <img id="reference-image" alt="原塔参考图" />
+            </div>
+          </figure>
+          <figure class="image-card result-card">
+            <figcaption>GENERATED CANDIDATE // 生成候选</figcaption>
+            <div class="image-frame checkerboard result-frame" id="result-frame">
+              <img id="result-image" alt="生成候选图" hidden />
+              <div class="result-placeholder" id="result-placeholder">
+                <span>//</span>
+                <strong>等待生成</strong>
+                <small>生成结果将保存在 public/assets/generated</small>
+              </div>
+              <div class="generation-scan" id="generation-scan" hidden></div>
+            </div>
+          </figure>
+        </div>
+
+        <form class="generation-form" id="generation-form">
+          <label class="prompt-field">
+            <span>升级设计提示词</span>
+            <textarea id="prompt-input" rows="8" maxlength="12000" required></textarea>
+          </label>
+
+          <div class="control-grid">
+            <label>
+              <span>生成尺寸</span>
+              <select id="size-select"></select>
+            </label>
+            <label>
+              <span>输出处理</span>
+              <select id="output-mode">
+                <option value="cutout">自动去除边缘白底</option>
+                <option value="opaque">保留原始背景</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="primary-button" id="generate-button" type="submit">GENERATE // 生成候选图</button>
+            <button class="publish-button" id="publish-button" type="button" disabled>PUBLISH // 发布为正式素材</button>
+          </div>
+        </form>
+
+        <output class="studio-status" id="studio-status">READY // 选择一个第四级分支开始生成</output>
+
+        <section class="result-details" id="result-details" hidden>
+          <div><span>候选文件</span><strong id="result-file"></strong></div>
+          <div><span>处理状态</span><strong id="result-mode"></strong></div>
+          <div><span>正式资源</span><strong id="published-file">尚未发布</strong></div>
+          <div class="result-links">
+            <a id="raw-link" target="_blank" rel="noreferrer">查看原图</a>
+            <a id="processed-link" target="_blank" rel="noreferrer">查看处理图</a>
+          </div>
+        </section>
+      </section>
+    </section>
+    <section class="monster-workspace" data-studio-panel="monsters" aria-label="怪物图像板块" hidden>
+      <header class="monster-workspace__header">
+        <div>
+          <span>HOSTILE IMAGE LIBRARY // SEPARATE ARCHIVE</span>
+          <h2>怪物图像板块</h2>
+          <p>独立展示游戏中已接入的普通怪物与首领图像，不与防御塔升级素材混排。</p>
+        </div>
+        <small id="monster-count">正在载入…</small>
+      </header>
+      <div class="monster-library__grid monster-workspace__grid" id="monster-library-grid"></div>
+    </section>
+  </main>
+  <script type="module" src="/src/image-studio.ts"></script>
+</body>
+</html>
+
+

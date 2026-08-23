@@ -62,3 +62,17 @@ EventBus.on(GameEvents.ReturnToCommandCenter, () => {
   gameRoot.hidden = true
   commandCenterUI.show()
 })
+
+if (import.meta.env.DEV) {
+  const commandTabs = document.querySelector('.command-tabs')
+  if (commandTabs) {
+    const studioLink = document.createElement('a')
+    studioLink.className = 'command-tab command-tab-link'
+    studioLink.href = '/image-studio.html'
+    studioLink.target = '_blank'
+    studioLink.rel = 'noreferrer'
+    studioLink.textContent = '素材生图'
+    studioLink.setAttribute('aria-label', '打开第四级塔楼生图工作台')
+    commandTabs.append(studioLink)
+  }
+}

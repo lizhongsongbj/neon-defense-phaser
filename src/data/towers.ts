@@ -46,7 +46,7 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     cost: 135,
     accent: '#e8ffff',
     role: '空中拦截 / 远程追击',
-    image: 'assets/towers/generated-raw-selected/tower-05-drone-hive-base-cutout.png',
+    image: 'assets/towers/generated-raw-selected/tower-05-drone-hive-base-new-drones.png',
     attackAnimation: 'assets/animations/towers/tower-05-drone-hive-attack.webp',
   },
   {

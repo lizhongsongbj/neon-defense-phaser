@@ -1,0 +1,18 @@
+﻿import { chromium } from 'playwright-core'
+const browser = await chromium.launch({ executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', headless: true })
+const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } })
+const errors=[]
+page.on('console', m=>{if(m.type()==='error')errors.push(`[console] ${m.text()}`)})
+page.on('pageerror', e=>errors.push(`[page] ${String(e)}`))
+page.on('response', r=>{if(r.status()>=400)errors.push(`[${r.status()}] ${r.url()}`)})
+await page.goto('http://127.0.0.1:5174/image-studio.html',{waitUntil:'networkidle',timeout:30000})
+await page.click('[data-studio-section="new-towers"]')
+await page.waitForSelector('.concept-card')
+await page.waitForTimeout(400)
+const cards=await page.locator('.concept-card').count()
+const groups=await page.locator('.concept-group').count()
+const images=await page.locator('.concept-card img').evaluateAll(imgs=>imgs.map(i=>({src:i.getAttribute('src'),complete:i.complete,width:i.naturalWidth,height:i.naturalHeight})))
+await page.screenshot({path:'tools/smoke-shots/11-new-tower-concepts.png',fullPage:true})
+console.log(JSON.stringify({cards,groups,images,errors},null,2))
+await browser.close()
+if(cards!==15||groups!==3||!images.every(i=>i.complete&&i.width>0)||errors.some(e=>!e.includes('/favicon.ico')))process.exit(1)

@@ -1,6 +1,8 @@
-import type Phaser from 'phaser'
+﻿import type Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { TOWER_TYPES, type TowerId } from '../data/towers'
+import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
+import { BOSS_TYPES, type BossDefinition } from '../data/bosses'
 import { EventBus, GameEvents, type BattleHudPayload, type SlotSelectedPayload, type WaveClearedPayload } from '../state/EventBus'
 import { REGISTRY_KEY, type CampaignState } from '../state/CampaignState'
 import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceSystem } from '../audio'
@@ -242,7 +244,51 @@ export class BattleHud {
   }
 
   private buildIntelContent() {
-    const rows = TOWER_TYPES.map(
+    type HostileDefinition = EnemyDefinition | BossDefinition
+
+    const hostileRows = [...Object.values(ENEMY_TYPES), ...Object.values(BOSS_TYPES)].map((def: HostileDefinition) => {
+      const isBoss = 'boss' in def && def.boss
+      const badges = [
+        isBoss ? 'BOSS' : '常规',
+        'air' in def && def.air ? '空中' : null,
+        def.mechanical ? '机械' : '生物',
+        'phase' in def && def.phase ? '相位' : null,
+        'network' in def && def.network ? '网络' : null,
+      ]
+        .filter(Boolean)
+        .map((badge) => `<span>${badge}</span>`)
+        .join('')
+      const shield = 'shield' in def && def.shield ? `<li><span>护盾</span><b>${def.shield}</b></li>` : ''
+      const components = 'components' in def && def.components
+        ? `<p class="intel-enemy__components">部件：${def.components.join(' / ')} · 单件 ${def.componentHp} HP</p>`
+        : ''
+
+      return `
+        <article class="intel-enemy-card${isBoss ? ' is-boss' : ''}">
+          <div class="intel-enemy__portrait">
+            <img src="${def.image}" alt="${def.name}" />
+            <div class="intel-enemy__badges">${badges}</div>
+          </div>
+          <div class="intel-enemy__body">
+            <div class="intel-enemy__heading">
+              <div><small>${isBoss ? '首领单位' : '敌对单位'}</small><b>${def.name}</b></div>
+              <em>赏金 ${def.reward} G</em>
+            </div>
+            <ul class="intel-enemy__stats">
+              <li><span>生命</span><b>${def.hp}</b></li>
+              ${shield}
+              <li><span>攻击</span><b>${def.attack}</b></li>
+              <li><span>速度</span><b>${def.speed}</b></li>
+              <li><span>护甲</span><b>${Math.round(def.armor * 100)}%</b></li>
+            </ul>
+            ${components}
+            <p class="intel-enemy__trait">${def.trait}</p>
+          </div>
+        </article>
+      `
+    }).join('')
+
+    const towerRows = TOWER_TYPES.map(
       (def) => `
         <div class="intel-tower-row">
           <img src="${def.image}" alt="${def.name}" />
@@ -253,9 +299,18 @@ export class BattleHud {
         </div>
       `,
     ).join('')
-    this.intelContent.innerHTML = `<div class="intel-tower-list">${rows}</div>`
-  }
 
+    this.intelContent.innerHTML = `
+      <section class="intel-section">
+        <div class="intel-section__heading"><span>HOSTILE DATABASE</span><strong>怪物图鉴</strong><em>${Object.keys(ENEMY_TYPES).length + Object.keys(BOSS_TYPES).length} 个单位</em></div>
+        <div class="intel-enemy-list">${hostileRows}</div>
+      </section>
+      <section class="intel-section">
+        <div class="intel-section__heading"><span>DEFENSE DATABASE</span><strong>塔楼档案</strong><em>${TOWER_TYPES.length} 座塔楼</em></div>
+        <div class="intel-tower-list">${towerRows}</div>
+      </section>
+    `
+  }
   private confirmBuild(typeId: TowerId) {
     if (!this.pendingSlot) return
     const cost = TOWER_TYPES.find((t) => t.id === typeId)!.cost
@@ -358,3 +413,5 @@ export class BattleHud {
     this.endOverlay.hidden = false
   }
 }
+
+

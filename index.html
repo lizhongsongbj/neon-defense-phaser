@@ -39,6 +39,7 @@
         <nav class="command-tabs" role="tablist" aria-label="主界面分类">
           <button class="command-tab" type="button" role="tab" data-command-tab="missions" aria-selected="true">关卡选择</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="growth" aria-selected="false">塔楼成长</button>
+          <button class="command-tab" type="button" role="tab" data-command-tab="monsters" aria-selected="false">怪物图鉴</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="balance" aria-selected="false">数值测试</button>
         </nav>
 
@@ -81,6 +82,13 @@
         <div class="growth-grid" id="growth-grid"></div>
       </section>
 
+      <section class="command-panel monster-panel" data-command-panel="monsters" aria-label="怪物图鉴" hidden>
+        <div class="monster-heading">
+          <div><span>HOSTILE DATABASE // VERIFIED TARGETS</span><h2>已有怪物数值与图像</h2></div>
+          <p>展示当前已接入战斗系统的普通敌人与首领单位。数值直接读取游戏数据，修改配置后会自动同步。</p>
+        </div>
+        <div class="monster-grid" id="monster-grid"></div>
+      </section>
       <section class="command-panel balance-panel" data-command-panel="balance" aria-label="数值测试" hidden>
         <div class="balance-heading">
           <div><span>AUTONOMOUS BALANCE LAB</span><h2>玩家代理测试矩阵</h2></div>
@@ -201,7 +209,7 @@
 
         <section class="intel-panel" id="intel-panel" aria-label="战术档案" hidden>
           <div class="intel-panel__header">
-            <div><span>TACTICAL ARCHIVE</span><strong>塔楼档案</strong></div>
+            <div><span>TACTICAL ARCHIVE</span><strong>单位档案</strong></div>
             <button class="picker-close" id="intel-close" type="button" aria-label="关闭战术档案" title="关闭战术档案">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true">
                 <path d="M6 6l12 12M18 6L6 18"/>
@@ -260,3 +268,4 @@
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
+

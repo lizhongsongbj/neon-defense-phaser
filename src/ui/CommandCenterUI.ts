@@ -1,6 +1,8 @@
 import type Phaser from 'phaser'
 import { MAP_LEVELS, CAMPAIGN_THREAT_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_ENEMY_COUNTS, CAMPAIGN_STARTING_COINS } from '../data/maps'
 import { TOWER_TYPES, TOWER_IDS, type TowerId } from '../data/towers'
+import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
+import { BOSS_TYPES, type BossDefinition } from '../data/bosses'
 import type { Difficulty } from '../data/balance'
 import { growthUpgradeCost } from '../systems/Economy'
 import { CampaignState } from '../state/CampaignState'
@@ -28,6 +30,7 @@ export class CommandCenterUI {
   private readonly researchPointsEl: HTMLElement
   private readonly growthTotalEl: HTMLElement
   private readonly growthGrid: HTMLElement
+  private readonly monsterGrid: HTMLElement
   private readonly closeButton: HTMLButtonElement
   private readonly tabs: HTMLButtonElement[]
   private readonly panels: Record<string, HTMLElement>
@@ -54,11 +57,13 @@ export class CommandCenterUI {
     this.researchPointsEl = document.getElementById('research-points') as HTMLElement
     this.growthTotalEl = document.getElementById('growth-total') as HTMLElement
     this.growthGrid = document.getElementById('growth-grid') as HTMLElement
+    this.monsterGrid = document.getElementById('monster-grid') as HTMLElement
     this.closeButton = document.getElementById('command-close') as HTMLButtonElement
     this.tabs = Array.from(this.el.querySelectorAll('.command-tab'))
     this.panels = {
       missions: this.el.querySelector('[data-command-panel="missions"]') as HTMLElement,
       growth: this.el.querySelector('[data-command-panel="growth"]') as HTMLElement,
+      monsters: this.el.querySelector('[data-command-panel="monsters"]') as HTMLElement,
       balance: this.el.querySelector('[data-command-panel="balance"]') as HTMLElement,
     }
 
@@ -69,6 +74,7 @@ export class CommandCenterUI {
     this.buildMissionList()
     this.buildDifficultyButtons()
     this.buildGrowthGrid()
+    this.buildMonsterGrid()
     this.bindTabs()
     this.bindDeploy()
     this.bindClose()
@@ -172,6 +178,56 @@ export class CommandCenterUI {
       const upgradeBtn = card.querySelector('.growth-upgrade') as HTMLButtonElement
       upgradeBtn.addEventListener('click', () => this.tryUpgradeGrowth(def.id))
       this.growthGrid.appendChild(card)
+    })
+  }
+
+  private buildMonsterGrid() {
+    type HostileDefinition = EnemyDefinition | BossDefinition
+
+    const hostiles: HostileDefinition[] = [...Object.values(ENEMY_TYPES), ...Object.values(BOSS_TYPES)]
+    hostiles.forEach((def, index) => {
+      const isBoss = 'boss' in def && def.boss
+      const tags = [
+        isBoss ? 'BOSS' : '常规单位',
+        'air' in def && def.air ? '空中' : null,
+        def.mechanical ? '机械' : '生物',
+        'phase' in def && def.phase ? '相位' : null,
+        'network' in def && def.network ? '网络' : null,
+      ].filter(Boolean) as string[]
+
+      const shieldStat = 'shield' in def && def.shield
+        ? `<div><span>护盾</span><b>${def.shield}</b></div>`
+        : ''
+      const componentInfo = 'components' in def && def.components
+        ? `<div class="monster-card__components"><span>可破坏部件</span><b>${def.components.join(' / ')}</b><em>单件 ${def.componentHp} HP</em></div>`
+        : ''
+
+      const card = document.createElement('article')
+      card.className = `monster-card${isBoss ? ' is-boss' : ''}`
+      card.style.setProperty('--monster-index', String(index))
+      card.innerHTML = `
+        <div class="monster-card__visual">
+          <div class="monster-card__index">TARGET // ${String(index + 1).padStart(2, '0')}</div>
+          <img src="${def.image}" alt="${def.name}" loading="lazy" />
+          <div class="monster-card__tags">${tags.map((tag) => `<span>${tag}</span>`).join('')}</div>
+        </div>
+        <div class="monster-card__body">
+          <header>
+            <div><small>${isBoss ? '首领单位' : '敌对单位'}</small><h3>${def.name}</h3></div>
+            <strong>赏金 ${def.reward} G</strong>
+          </header>
+          <div class="monster-card__stats">
+            <div><span>生命</span><b>${def.hp}</b></div>
+            ${shieldStat}
+            <div><span>攻击</span><b>${def.attack}</b></div>
+            <div><span>速度</span><b>${def.speed}</b></div>
+            <div><span>护甲</span><b>${Math.round(def.armor * 100)}%</b></div>
+          </div>
+          ${componentInfo}
+          <p>${def.trait}</p>
+        </div>
+      `
+      this.monsterGrid.appendChild(card)
     })
   }
 

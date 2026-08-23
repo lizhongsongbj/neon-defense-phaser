@@ -6,3 +6,9 @@ tools/rewrite-screens/
 tools/original-style-dump/
 balance-reports/
 *.log
+.env.local
+.env.*.local
+public/assets/generated/raw/*
+public/assets/generated/cutout/*
+!public/assets/generated/raw/.gitkeep
+!public/assets/generated/cutout/.gitkeep

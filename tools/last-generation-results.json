@@ -1,0 +1,92 @@
+﻿[
+    {
+        "id":  "mag-rail-city-piercer",
+        "name":  "量子贯城炮",
+        "success":  true,
+        "fileName":  "mag-rail-city-piercer-2026-08-23T11-06-40-954Z.png",
+        "imageUrl":  "/assets/generated/cutout/mag-rail-city-piercer-2026-08-23T11-06-40-954Z.png",
+        "rawUrl":  "/assets/generated/raw/mag-rail-city-piercer-2026-08-23T11-06-40-954Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    },
+    {
+        "id":  "arc-neon-storm-core",
+        "name":  "霓虹雷暴核",
+        "success":  true,
+        "fileName":  "arc-neon-storm-core-2026-08-23T11-07-49-358Z.png",
+        "imageUrl":  "/assets/generated/cutout/arc-neon-storm-core-2026-08-23T11-07-49-358Z.png",
+        "rawUrl":  "/assets/generated/raw/arc-neon-storm-core-2026-08-23T11-07-49-358Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    },
+    {
+        "id":  "arc-neon-superconductor",
+        "name":  "超导潮汐塔",
+        "success":  true,
+        "fileName":  "arc-neon-superconductor-2026-08-23T11-08-53-724Z.png",
+        "imageUrl":  "/assets/generated/cutout/arc-neon-superconductor-2026-08-23T11-08-53-724Z.png",
+        "rawUrl":  "/assets/generated/raw/arc-neon-superconductor-2026-08-23T11-08-53-724Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    },
+    {
+        "id":  "mercenary-chrome-fortress",
+        "name":  "铬钢不破营",
+        "success":  true,
+        "fileName":  "mercenary-chrome-fortress-2026-08-23T11-09-57-962Z.png",
+        "imageUrl":  "/assets/generated/cutout/mercenary-chrome-fortress-2026-08-23T11-09-57-962Z.png",
+        "rawUrl":  "/assets/generated/raw/mercenary-chrome-fortress-2026-08-23T11-09-57-962Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    },
+    {
+        "id":  "mercenary-night-blades",
+        "name":  "血刃夜行队",
+        "success":  true,
+        "fileName":  "mercenary-night-blades-2026-08-23T11-11-08-022Z.png",
+        "imageUrl":  "/assets/generated/cutout/mercenary-night-blades-2026-08-23T11-11-08-022Z.png",
+        "rawUrl":  "/assets/generated/raw/mercenary-night-blades-2026-08-23T11-11-08-022Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    },
+    {
+        "id":  "hacker-zero-day-control",
+        "name":  "零日统御台",
+        "success":  true,
+        "fileName":  "hacker-zero-day-control-2026-08-23T11-11-56-802Z.png",
+        "imageUrl":  "/assets/generated/cutout/hacker-zero-day-control-2026-08-23T11-11-56-802Z.png",
+        "rawUrl":  "/assets/generated/raw/hacker-zero-day-control-2026-08-23T11-11-56-802Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    },
+    {
+        "id":  "hacker-black-ice-breaker",
+        "name":  "黑冰崩解器",
+        "success":  true,
+        "fileName":  "hacker-black-ice-breaker-2026-08-23T11-13-18-369Z.png",
+        "imageUrl":  "/assets/generated/cutout/hacker-black-ice-breaker-2026-08-23T11-13-18-369Z.png",
+        "rawUrl":  "/assets/generated/raw/hacker-black-ice-breaker-2026-08-23T11-13-18-369Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    },
+    {
+        "id":  "drone-queen-air-carrier",
+        "name":  "蜂后制空母巢",
+        "success":  true,
+        "fileName":  "drone-queen-air-carrier-2026-08-23T11-14-25-622Z.png",
+        "imageUrl":  "/assets/generated/cutout/drone-queen-air-carrier-2026-08-23T11-14-25-622Z.png",
+        "rawUrl":  "/assets/generated/raw/drone-queen-air-carrier-2026-08-23T11-14-25-622Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    },
+    {
+        "id":  "drone-swarm-annihilator",
+        "name":  "蜂群湮灭工厂",
+        "success":  true,
+        "fileName":  "drone-swarm-annihilator-2026-08-23T11-15-14-016Z.png",
+        "imageUrl":  "/assets/generated/cutout/drone-swarm-annihilator-2026-08-23T11-15-14-016Z.png",
+        "rawUrl":  "/assets/generated/raw/drone-swarm-annihilator-2026-08-23T11-15-14-016Z.png",
+        "cutoutApplied":  true,
+        "error":  ""
+    }
+]

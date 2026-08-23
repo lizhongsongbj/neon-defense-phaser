@@ -21,6 +21,26 @@ export class EffectsLayer {
 
   playShot(from: { x: number; y: number }, to: { x: number; y: number }, effect: string) {
     const color = EFFECT_COLORS[effect] ?? 0xffffff
+    if (effect === 'drone' && this.scene.textures.exists('unit-drone-hive')) {
+      const angle = Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y)
+      const drone = this.scene.add
+        .image(from.x, from.y, 'unit-drone-hive')
+        .setDisplaySize(42, 42)
+        .setRotation(angle + Math.PI / 2)
+        .setDepth(90)
+      this.scene.tweens.add({
+        targets: drone,
+        x: to.x,
+        y: to.y,
+        duration: 260,
+        ease: 'Sine.easeIn',
+        onComplete: () => {
+          drone.destroy()
+          this.playImpact(to, effect)
+        },
+      })
+      return
+    }
     const line = this.scene.add.line(0, 0, from.x, from.y, to.x, to.y, color, 0.9).setLineWidth(2)
     line.setOrigin(0, 0)
     this.scene.tweens.add({

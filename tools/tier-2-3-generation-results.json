@@ -1,0 +1,92 @@
+[
+    {
+        "tier":  2,
+        "id":  "mag-rail-tier-2",
+        "name":  "磁轨校准台",
+        "success":  true,
+        "fileName":  "mag-rail-tier-2-2026-08-23T11-39-23-570Z.png",
+        "imageUrl":  "/assets/generated/cutout/mag-rail-tier-2-2026-08-23T11-39-23-570Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  3,
+        "id":  "mag-rail-tier-3",
+        "name":  "双极加速炮",
+        "success":  true,
+        "fileName":  "mag-rail-tier-3-2026-08-23T11-48-26-946Z.png",
+        "imageUrl":  "/assets/generated/cutout/mag-rail-tier-3-2026-08-23T11-48-26-946Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  2,
+        "id":  "arc-neon-tier-2",
+        "name":  "高压电弧站",
+        "success":  true,
+        "fileName":  "arc-neon-tier-2-2026-08-23T11-40-26-825Z.png",
+        "imageUrl":  "/assets/generated/cutout/arc-neon-tier-2-2026-08-23T11-40-26-825Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  3,
+        "id":  "arc-neon-tier-3",
+        "name":  "霓虹电网核",
+        "success":  true,
+        "fileName":  "arc-neon-tier-3-2026-08-23T11-49-31-954Z.png",
+        "imageUrl":  "/assets/generated/cutout/arc-neon-tier-3-2026-08-23T11-49-31-954Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  2,
+        "id":  "mercenary-tier-2",
+        "name":  "铬街前哨",
+        "success":  true,
+        "fileName":  "mercenary-tier-2-2026-08-23T11-41-13-904Z.png",
+        "imageUrl":  "/assets/generated/cutout/mercenary-tier-2-2026-08-23T11-41-13-904Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  3,
+        "id":  "mercenary-tier-3",
+        "name":  "战术承包营",
+        "success":  true,
+        "fileName":  "mercenary-tier-3-2026-08-23T11-50-44-749Z.png",
+        "imageUrl":  "/assets/generated/cutout/mercenary-tier-3-2026-08-23T11-50-44-749Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  2,
+        "id":  "hacker-tier-2",
+        "name":  "入侵中继站",
+        "success":  true,
+        "fileName":  "hacker-tier-2-2026-08-23T11-46-08-861Z.png",
+        "imageUrl":  "/assets/generated/cutout/hacker-tier-2-2026-08-23T11-46-08-861Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  3,
+        "id":  "hacker-tier-3",
+        "name":  "深网控制台",
+        "success":  true,
+        "fileName":  "hacker-tier-3-2026-08-23T11-53-44-631Z.png",
+        "imageUrl":  "/assets/generated/cutout/hacker-tier-3-2026-08-23T11-53-44-631Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  2,
+        "id":  "drone-tier-2",
+        "name":  "蜂群发射巢",
+        "success":  true,
+        "fileName":  "drone-tier-2-2026-08-23T11-47-17-436Z.png",
+        "imageUrl":  "/assets/generated/cutout/drone-tier-2-2026-08-23T11-47-17-436Z.png",
+        "cutoutApplied":  true
+    },
+    {
+        "tier":  3,
+        "id":  "drone-tier-3",
+        "name":  "自律蜂群母站",
+        "success":  true,
+        "fileName":  "drone-tier-3-2026-08-23T11-55-02-046Z.png",
+        "imageUrl":  "/assets/generated/cutout/drone-tier-3-2026-08-23T11-55-02-046Z.png",
+        "cutoutApplied":  true
+    }
+]

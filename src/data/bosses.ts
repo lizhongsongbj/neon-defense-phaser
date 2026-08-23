@@ -46,7 +46,7 @@ export const BOSS_TYPES: Record<BossId, BossDefinition> = {
     armor: 0.12,
     reward: 1200,
     attack: 100,
-    image: 'assets/enemies/mother-city-eve-9.png',
+    image: 'assets/enemies/mother-city-eve-9-clean-no-white.png',
     size: 0.115,
     mechanical: true,
     boss: true,

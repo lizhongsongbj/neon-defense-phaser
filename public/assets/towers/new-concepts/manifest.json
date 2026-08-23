@@ -1,0 +1,66 @@
+﻿{
+    "style":  "霓虹防线赛博朋克工业塔楼，等距俯视，枪铁/黄铜/青色能源灯，透明背景",
+    "generatedAt":  "2026-08-23",
+    "towers":  [
+                   {
+                       "id":  "gravity-nail",
+                       "name":  "重力钉",
+                       "corporateName":  "定向质量场控制器",
+                       "levels":  {
+                                      "1":  "gravity-nail-level-1.png",
+                                      "2":  "gravity-nail-level-2.png",
+                                      "3":  "gravity-nail-level-3.png",
+                                      "4A":  "gravity-nail-level-4-deep-well-lockdown.png",
+                                      "4B":  "gravity-nail-level-4-sky-deflection.png"
+                                  },
+                       "branches":  {
+                                        "4A":  "深井封锁",
+                                        "4B":  "天幕偏转"
+                                    }
+                   },
+                   {
+                       "id":  "grey-tide",
+                       "name":  "灰潮解构站",
+                       "corporateName":  "自繁殖纳米材料回收平台",
+                       "levels":  {
+                                      "1":  "grey-tide-level-1.png",
+                                      "2":  "grey-tide-level-2.png",
+                                      "3":  "grey-tide-level-3.png",
+                                      "4A":  "grey-tide-level-4-armor-eater-swarm.png",
+                                      "4B":  "grey-tide-level-4-scavenger-protocol.png"
+                                  },
+                       "branches":  {
+                                        "4A":  "噬甲集群",
+                                        "4B":  "清道夫协议"
+                                    }
+                   },
+                   {
+                       "id":  "trajectory-rewriter",
+                       "name":  "轨迹回写器",
+                       "streetName":  "回滚机",
+                       "corporateName":  "战术状态回写节点",
+                       "levels":  {
+                                      "1":  "trajectory-rewriter-level-1.png",
+                                      "2":  "trajectory-rewriter-level-2.png",
+                                      "3":  "trajectory-rewriter-level-3.png",
+                                      "4A":  "trajectory-rewriter-level-4-rollback-node.png",
+                                      "4B":  "trajectory-rewriter-level-4-breakpoint-execution.png"
+                                  },
+                       "branches":  {
+                                        "4A":  "回滚节点",
+                                        "4B":  "断点处决"
+                                    }
+                   }
+               ],
+    "activeVariant":  "simplified",
+    "simplifiedDirectory":  "simplified/",
+    "designNotes":  [
+                        "减少约35%的表面碎件与装饰线",
+                        "压低能量发光面积",
+                        "去除魔法光环、闪电、漩涡与水晶感",
+                        "以机械孔径、烟色玻璃、传感器、服务器和工业管线表达功能",
+                        "保留原始版本作为设计备份"
+                    ],
+    "revisedDirectory":  "revised/",
+    "latestRevision":  "灰潮解构站改为中央灰绿色罐体主视觉；轨迹回写器改为完整圆形科技传送门主视觉；重力钉继续使用 simplified 版本。"
+}
