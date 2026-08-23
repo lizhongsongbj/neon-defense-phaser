@@ -1,0 +1,8 @@
+node_modules/
+dist/
+tools/smoke-shots/
+tools/frames/
+tools/rewrite-screens/
+tools/original-style-dump/
+balance-reports/
+*.log

@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <title>霓虹防线 · Phaser 重制版</title>
+</head>
+<body>
+  <div id="app">
+    <!-- 主界面:对应原版 #title-screen -->
+    <section class="screen title-screen" id="title-screen" aria-label="霓虹防线游戏主界面">
+      <img class="title-screen__backdrop" src="/assets/maps/scene-01-h4-v3.png" alt="夜之城 H4 防区" draggable="false" />
+      <div class="title-screen__scrim"></div>
+      <div class="title-screen__hud">
+        <div class="title-screen__content">
+          <span class="title-screen__kicker">NEON DEFENSE // NIGHT CITY</span>
+          <div class="title-screen__title-frame">
+            <span class="title-screen__title-code">NIGHT CITY // DEFENSE GRID 04</span>
+            <h1 class="title-screen__title" data-text="霓虹防线">霓虹防线</h1>
+          </div>
+          <button class="neon-button" id="start-game" type="button">▶ 开始游戏</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 指挥中心:对应原版 #command-center -->
+    <section class="screen command-center" id="command-center" aria-label="霓虹防线战役中心" hidden>
+      <div class="grid-overlay"></div>
+      <header class="command-header">
+        <div class="command-brand">
+          <span class="command-brand__mark" aria-hidden="true">//</span>
+          <div class="command-brand__copy">
+            <span>NEON DEFENSE // NIGHT CITY GRID</span>
+            <strong>霓虹防线</strong>
+          </div>
+        </div>
+
+        <nav class="command-tabs" role="tablist" aria-label="主界面分类">
+          <button class="command-tab" type="button" role="tab" data-command-tab="missions" aria-selected="true">关卡选择</button>
+          <button class="command-tab" type="button" role="tab" data-command-tab="growth" aria-selected="false">塔楼成长</button>
+          <button class="command-tab" type="button" role="tab" data-command-tab="balance" aria-selected="false">数值测试</button>
+        </nav>
+
+        <div class="command-profile">
+          <div class="profile-stat"><span>研发点</span><strong id="research-points">0</strong></div>
+          <div class="profile-stat"><span>强化等级</span><strong id="growth-total">00</strong></div>
+          <button class="command-close" id="command-close" type="button" aria-label="返回主界面" title="返回主界面">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="command-panel mission-panel" data-command-panel="missions" aria-label="关卡选择">
+        <aside class="mission-rail">
+          <div class="rail-heading"><span>CAMPAIGN NETWORK</span><strong>战区节点</strong></div>
+          <div class="mission-list" id="mission-list"></div>
+        </aside>
+
+        <div class="mission-brief">
+          <div class="mission-visual"><img id="mission-preview" src="" alt="" /></div>
+          <div class="mission-brief__hud">
+            <div>
+              <span class="mission-code" id="mission-code"></span>
+              <h2 class="mission-title" id="mission-title"></h2>
+              <p class="mission-meta" id="mission-meta"></p>
+              <div class="mission-difficulty" id="mission-difficulty"></div>
+            </div>
+            <button class="deploy-button" id="deploy-mission" type="button">DEPLOY // 进入战区</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="command-panel growth-panel" data-command-panel="growth" aria-label="塔楼成长" hidden>
+        <div class="growth-heading">
+          <div><span>PERMANENT TOWER AUGMENTS</span><h2>塔楼成长矩阵</h2></div>
+          <p>强化对所有关卡永久生效。每级提升 6% 伤害与 3% 射程,完成波次可获得研发点。</p>
+        </div>
+        <div class="growth-grid" id="growth-grid"></div>
+      </section>
+
+      <section class="command-panel balance-panel" data-command-panel="balance" aria-label="数值测试" hidden>
+        <div class="balance-heading">
+          <div><span>AUTONOMOUS BALANCE LAB</span><h2>玩家代理测试矩阵</h2></div>
+          <output id="balance-status">READY // 等待任务</output>
+        </div>
+        <form class="balance-controls" id="balance-controls">
+          <label class="balance-control">关卡
+            <select id="balance-map" aria-label="测试关卡"></select>
+          </label>
+          <label class="balance-control">难度
+            <select id="balance-difficulty" aria-label="测试难度">
+              <option value="all">全部难度</option>
+              <option value="easy">简单</option>
+              <option value="normal" selected>普通</option>
+              <option value="hard">困难</option>
+            </select>
+          </label>
+          <label class="balance-control">代理策略
+            <select id="balance-strategy" aria-label="代理策略">
+              <option value="adaptive" selected>自适应</option>
+              <option value="offense">输出优先</option>
+              <option value="defense">防守优先</option>
+            </select>
+          </label>
+          <label class="balance-control">测试波数
+            <input id="balance-waves" type="number" min="1" max="30" value="10" inputmode="numeric">
+          </label>
+          <label class="balance-control">样本数
+            <select id="balance-runs" aria-label="测试样本数">
+              <option value="10">10</option>
+              <option value="30" selected>30</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+          <button class="balance-run" id="balance-run" type="submit">运行代理测试</button>
+        </form>
+        <div class="balance-progress" aria-hidden="true"><i id="balance-progress"></i></div>
+        <div class="balance-results" id="balance-results" aria-live="polite">
+          <div class="balance-empty">NO REPORT // 尚无测试报告</div>
+        </div>
+      </section>
+    </section>
+
+    <!-- 战场:Phaser 画布 + HUD 覆盖层,对应原版 #board / .topbar / .wave-console / .player-status 等 -->
+    <div class="screen" id="game-root" hidden>
+      <div id="stage">
+        <div id="game-canvas"></div>
+
+        <header class="topbar">
+          <div class="brand">
+            <span class="brand-mark" aria-hidden="true">//</span>
+            <div>
+              <h1>霓虹防线</h1>
+              <span class="counter" id="counter">已部署 0 / 0</span>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button class="icon-button music-toggle" id="hud-toggle-music" type="button" aria-label="音乐开关" title="音乐开关">♫</button>
+            <button class="icon-button voice-toggle" id="hud-toggle-voice" type="button" aria-label="语音开关" title="语音开关">♪</button>
+            <button class="icon-button" id="return-command-center" type="button" aria-label="主界面" title="主界面">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
+                <path d="M4 10.5L12 4l8 6.5V20h-6v-6h-4v6H4z"/>
+              </svg>
+            </button>
+            <button class="icon-button" id="intel-button" type="button" aria-label="战术档案" title="战术档案">i</button>
+            <button class="icon-button" id="help-button" type="button" aria-label="操作说明" title="操作说明">?</button>
+            <button class="icon-button" id="reset-deployment" type="button" aria-label="清空部署" title="清空部署">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <aside class="wave-console" aria-label="波次控制">
+          <div class="wave-readout">
+            <span>WAVE</span>
+            <strong id="wave-value">01</strong>
+            <small>敌军 <b id="enemy-count">0</b></small>
+          </div>
+          <div class="speed-control" role="group" aria-label="战斗倍速">
+            <span>SPEED</span>
+            <button class="speed-button" type="button" data-speed="1" aria-pressed="true" aria-label="一倍速">1×</button>
+            <button class="speed-button" type="button" data-speed="2" aria-pressed="false" aria-label="二倍速">2×</button>
+            <button class="speed-button" type="button" data-speed="3" aria-pressed="false" aria-label="三倍速">3×</button>
+          </div>
+          <div class="auto-demo-control">
+            <button class="auto-demo-toggle" id="auto-demo-toggle" type="button" aria-pressed="false">AUTO 演示</button>
+            <output class="auto-demo-status" id="auto-demo-status" data-active="false">代理待命</output>
+          </div>
+          <button id="start-wave" type="button"><span aria-hidden="true">▶</span> 发动波次</button>
+        </aside>
+
+        <div class="wave-toast" id="wave-toast"></div>
+
+        <section class="tower-picker" id="tower-picker" aria-label="选择塔楼" hidden>
+          <div class="tower-picker__bar">
+            <span>TOWER SELECT // 选择塔型</span>
+            <button class="picker-close" id="picker-close" type="button" aria-label="关闭塔楼选择" title="关闭塔楼选择">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18"/>
+              </svg>
+            </button>
+          </div>
+          <div class="tower-options" id="tower-options"></div>
+        </section>
+
+        <section class="tower-actions" id="tower-actions" aria-label="塔楼操作" hidden>
+          <div class="tower-actions__title">
+            <span id="tower-actions-name"></span>
+          </div>
+          <div class="tower-actions__stats" id="tower-actions-stats"></div>
+          <div class="tower-actions__buttons">
+            <button class="tower-action" id="tower-upgrade" type="button"></button>
+            <button class="tower-action dismantle" id="tower-sell" type="button"></button>
+          </div>
+        </section>
+
+        <section class="intel-panel" id="intel-panel" aria-label="战术档案" hidden>
+          <div class="intel-panel__header">
+            <div><span>TACTICAL ARCHIVE</span><strong>塔楼档案</strong></div>
+            <button class="picker-close" id="intel-close" type="button" aria-label="关闭战术档案" title="关闭战术档案">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18"/>
+              </svg>
+            </button>
+          </div>
+          <div class="intel-content" id="intel-content"></div>
+        </section>
+
+        <section class="intel-panel" id="help-panel" aria-label="操作说明" hidden>
+          <div class="intel-panel__header">
+            <div><span>FIELD MANUAL</span><strong>操作说明</strong></div>
+            <button class="picker-close" id="help-close" type="button" aria-label="关闭操作说明" title="关闭操作说明">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18"/>
+              </svg>
+            </button>
+          </div>
+          <div class="intel-content">
+            <ul class="help-list">
+              <li>点击空闲塔位选择要建造的塔楼,金币足够即可建造。</li>
+              <li>点击已建塔楼可查看详情、升级或拆除(拆除返还部分金币)。</li>
+              <li>右上角 <b>SPEED</b> 可调整战斗倍速,<b>发动波次</b> 可提前触发下一波。</li>
+              <li>顶部图标依次为:音乐 / 语音 / 主界面 / 战术档案 / 操作说明 / 清空部署。</li>
+            </ul>
+          </div>
+        </section>
+
+        <div class="wave-message" id="wave-message" aria-live="polite"></div>
+
+        <footer class="player-status" aria-label="玩家状态">
+          <div class="status-item">
+            <span class="status-label">金币</span>
+            <strong class="status-value" id="coin-value">0</strong>
+          </div>
+          <span class="status-divider" aria-hidden="true"></span>
+          <div class="status-item status-health">
+            <span class="status-label">城防血量</span>
+            <strong class="status-value" id="health-value">0</strong>
+            <span class="health-meter" aria-hidden="true"><i id="health-fill"></i></span>
+          </div>
+        </footer>
+
+        <div class="hint" id="hint">BUILD GRID // 塔位待命</div>
+
+        <div class="end-overlay" id="end-overlay" hidden>
+          <div>
+            <h2 id="end-title"></h2>
+            <p id="end-subtitle"></p>
+            <button class="neon-button" id="end-return" type="button">返回指挥中心</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
