@@ -24,13 +24,13 @@ export interface BossDefinition {
 export const BOSS_TYPES: Record<BossId, BossDefinition> = {
   enforcer: {
     id: 'enforcer',
-    name: '执法者·零号',
+    name: '亚当·重锤',
     hp: 18000,
     speed: 10,
     armor: 0.25,
     reward: 900,
     attack: 80,
-    image: 'assets/enemies/boss-01-enforcer-zero-cutout.png',
+    image: 'assets/enemies/adam-smasher.png',
     size: 0.105,
     mechanical: true,
     boss: true,

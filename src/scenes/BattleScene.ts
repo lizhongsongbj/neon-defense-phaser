@@ -56,6 +56,7 @@ export class BattleScene extends Phaser.Scene {
   private hudTimer = 0
   private voice!: VoiceSystem
   private music!: MusicController
+  private lastBaseDamageSfxAt = -Infinity
   /** 下一波整备倒计时(秒),原 `_0x3ebe3b`;0 表示战斗中或需要玩家手动发动 */
   private nextWaveCountdown = 0
 
@@ -71,11 +72,18 @@ export class BattleScene extends Phaser.Scene {
     this.mercActors.clear()
     this.droneActors.clear()
     this.slotMarkers = []
+    this.lastBaseDamageSfxAt = -Infinity
 
     this.campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState
     this.voice = this.game.registry.get(VOICE_REGISTRY_KEY) as VoiceSystem
     this.music = this.game.registry.get(MUSIC_REGISTRY_KEY) as MusicController
     this.mapLevel = MAP_LEVELS[this.campaign.mapIndex]
+    EventBus.emit(GameEvents.AchievementSignal, {
+      type: 'mission-start',
+      mapIndex: this.campaign.mapIndex,
+      difficulty: this.campaign.difficulty,
+      demoActive: this.campaign.demoActive,
+    })
     this.geometry = buildMapGeometry(this.mapLevel)
     this.totalWaves = CAMPAIGN_WAVE_COUNTS[this.campaign.mapIndex] ?? 5
     this.effects = new EffectsLayer(this)
@@ -96,15 +104,12 @@ export class BattleScene extends Phaser.Scene {
       now: 0,
     }
 
-    const mapKey = `map-${this.campaign.mapIndex}`
-    this.add
-      .image(GAME_WIDTH / 2, GAME_HEIGHT / 2, this.textures.exists(mapKey) ? mapKey : '__MISSING')
-      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
-      .setInteractive()
-      .on('pointerdown', () => this.clearSelection())
+    this.drawMapBackground()
 
-    this.drawPaths()
-    this.drawSlots()
+    if (this.mapLevel.available) {
+      this.drawPaths()
+      this.drawSlots()
+    }
     this.restoreSavedTowers()
 
     this.nextWaveCountdown = 0
@@ -113,6 +118,44 @@ export class BattleScene extends Phaser.Scene {
     this.emitHud()
 
     this.events.once('shutdown', () => this.teardown())
+  }
+
+  private drawMapBackground() {
+    const mapKey = `map-${this.campaign.mapIndex}`
+    const background = this.textures.exists(mapKey)
+      ? this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, mapKey).setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+      : this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x050b10)
+
+    background
+      .setInteractive()
+      .on('pointerdown', () => this.clearSelection())
+
+    if (!this.mapLevel.available) {
+      const grid = this.add.graphics()
+      grid.lineStyle(1, 0x17313a, 0.55)
+      for (let x = 0; x <= GAME_WIDTH; x += 64) grid.lineBetween(x, 0, x, GAME_HEIGHT)
+      for (let y = 0; y <= GAME_HEIGHT; y += 64) grid.lineBetween(0, y, GAME_WIDTH, y)
+      grid.lineStyle(2, 0x20f4e6, 0.2)
+      grid.strokeRect(24, 24, GAME_WIDTH - 48, GAME_HEIGHT - 48)
+
+      this.add
+        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 18, '关卡地图已清空', {
+          fontFamily: 'sans-serif',
+          fontSize: '34px',
+          fontStyle: 'bold',
+          color: '#20f4e6',
+        })
+        .setOrigin(0.5)
+      this.add
+        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 28, '等待接入新版地图、美术、路线与防御节点', {
+          fontFamily: 'sans-serif',
+          fontSize: '16px',
+          color: '#7c9aa3',
+        })
+        .setOrigin(0.5)
+    }
+
+    return background
   }
 
   private drawPaths() {
@@ -242,6 +285,7 @@ export class BattleScene extends Phaser.Scene {
       attacks: 0,
     }
     this.battle.towers.push(tower)
+    EventBus.emit(GameEvents.AchievementSignal, { type: 'tower-built', towerType: tower.typeId })
 
     const screen = boardToScreen(tower.source)
     const baseSize = spriteSize(slot.scale)
@@ -466,7 +510,26 @@ export class BattleScene extends Phaser.Scene {
               this.effects.playShot(towerScreen, targetScreen, event.effect)
             }
           }
+          if (target) {
+            EventBus.emit(GameEvents.AchievementSignal, {
+              type: 'tower-attack',
+              towerType: tower.typeId,
+              enemyId: target.id,
+              enemyType: target.typeId,
+              killed: event.result.killed,
+              air: target.air,
+              armored: target.armor >= 0.25,
+              phaseCapable: target.phaseCapable,
+              chainIndex: event.chainIndex,
+              source: event.effect,
+            })
+          }
           if (event.result.destroyedComponent && target?.typeId === 'enforcer') {
+            EventBus.emit(GameEvents.AchievementSignal, {
+              type: 'boss-component',
+              bossType: 'enforcer',
+              component: event.result.destroyedComponent,
+            })
             const voiceEvent = ENFORCER_COMPONENT_EVENT[event.result.destroyedComponent]
             if (voiceEvent) this.voice?.play('enforcer', voiceEvent, { priority: 2 })
           }
@@ -477,6 +540,7 @@ export class BattleScene extends Phaser.Scene {
 
     tickEnemyTraits(this.geometry, this.battle.enemies, this.battle.now, dtSeconds)
 
+    let baseDamageThisFrame = 0
     for (const enemy of this.battle.enemies) {
       if (enemy.dead || enemy.blocked) continue
       enemy.distance += enemy.speed * dtSeconds
@@ -484,9 +548,10 @@ export class BattleScene extends Phaser.Scene {
         enemy.dead = true
         this.battle.leaks += 1
         this.battle.health = Math.max(0, this.battle.health - 1)
-        this.voice?.play('lan', 'damage', { chance: 0.6 })
+        baseDamageThisFrame += 1
       }
     }
+    if (baseDamageThisFrame > 0) this.playBaseDamageFeedback(baseDamageThisFrame)
 
     for (const enemy of this.battle.enemies) {
       if (enemy.dead) continue
@@ -605,11 +670,31 @@ export class BattleScene extends Phaser.Scene {
     EventBus.emit(GameEvents.HudUpdate, payload)
   }
 
+  private playBaseDamageFeedback(damage: number) {
+    const intensity = Math.min(0.018, 0.006 + Math.max(0, damage - 1) * 0.0025)
+    this.cameras.main.shake(220, intensity, true)
+
+    // 同一瞬间多个敌人突破时只播放一次，避免音效叠加爆音。
+    const now = this.time.now
+    if (now - this.lastBaseDamageSfxAt >= 240 && this.cache.audio.exists('sfx-base-damage')) {
+      this.sound.play('sfx-base-damage', { volume: 0.9 })
+      this.lastBaseDamageSfxAt = now
+    }
+    this.voice?.play('lan', 'damage', { chance: 0.6, priority: 3 })
+  }
+
   private onVictory(reward = 0) {
     this.ended = true
     this.persistProgress()
     this.voice?.play('lan', 'victory', { priority: 5 })
     const result = this.campaign.completeMission(this.battle.mapIndex)
+    EventBus.emit(GameEvents.AchievementSignal, {
+      type: 'mission-victory',
+      mapIndex: this.battle.mapIndex,
+      difficulty: this.battle.difficulty,
+      health: this.battle.health,
+      maxHealth: MAX_HEALTH,
+    })
     EventBus.emit(GameEvents.Victory, { unlockedMapIndex: result.unlocked, newlyUnlocked: result.newlyUnlocked, reward })
   }
 

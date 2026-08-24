@@ -47,11 +47,14 @@ export class PreloadScene extends Phaser.Scene {
       this.load.image(`enemy-${boss.id}`, boss.image)
     }
     MAP_LEVELS.forEach((map, index) => {
-      this.load.image(`map-${index}`, map.image)
+      if (map.available) this.load.image(`map-${index}`, map.image)
     })
     this.load.image('unit-mercenary-shield', 'assets/units/mercenary-shield.png')
     this.load.image('unit-mercenary-rifle', 'assets/units/mercenary-rifle.png')
     this.load.image('unit-drone-hive', 'assets/towers/drone-hive-unit.png')
+
+    // 基地遭到突破时的即时反馈音效；独立于语音冷却，确保扣血时立即发声。
+    this.load.audio('sfx-base-damage', 'assets/audio/voices/lan/fortress_damaged.mp3')
 
     for (const voice of allVoiceFiles()) {
       this.load.audio(voice.key, voice.path)
@@ -69,3 +72,4 @@ export class PreloadScene extends Phaser.Scene {
     EventBus.emit(GameEvents.AssetsReady)
   }
 }
+

@@ -7,6 +7,9 @@ import { TitleScreen } from './ui/TitleScreen'
 import { CommandCenterUI } from './ui/CommandCenterUI'
 import { BattleHud } from './ui/BattleHud'
 import { AutoDemo } from './ui/AutoDemo'
+import { installWebGameGuards, signalWebGameReady } from './platform/WebPlatform'
+import { AchievementSystem } from './systems/AchievementSystem'
+import { AchievementPanel } from './ui/AchievementPanel'
 
 /**
  * App shell —— 对应原版 index.html 里 title-screen/command-center/scene 三段式导航,
@@ -14,6 +17,7 @@ import { AutoDemo } from './ui/AutoDemo'
  * 两者通过固定 1280x800 的 #stage 共享同一套坐标系,靠 EventBus 通信。
  */
 const campaign = CampaignState.loadOrCreate()
+const achievementSystem = new AchievementSystem()
 
 const game = new Phaser.Game(gameConfig)
 game.registry.set(REGISTRY_KEY, campaign)
@@ -22,13 +26,18 @@ const gameRoot = document.getElementById('game-root') as HTMLElement
 const stage = document.getElementById('stage') as HTMLElement
 
 function applyStageScale() {
-  const scale = Math.min(window.innerWidth / GAME_WIDTH, window.innerHeight / GAME_HEIGHT)
-  stage.style.transform = `scale(${scale})`
+  const viewport = window.visualViewport
+  const viewportWidth = viewport?.width ?? window.innerWidth
+  const viewportHeight = viewport?.height ?? window.innerHeight
+  const scale = Math.min(1.25, viewportWidth / GAME_WIDTH, viewportHeight / GAME_HEIGHT)
+  stage.style.transform = `scale(${Math.max(0.1, scale)})`
 }
 applyStageScale()
 window.addEventListener('resize', applyStageScale)
+window.visualViewport?.addEventListener('resize', applyStageScale)
 
 const battleHud = new BattleHud(game)
+new AchievementPanel(achievementSystem)
 const autoDemo = new AutoDemo(campaign, game)
 
 const commandCenterUI = new CommandCenterUI(
@@ -63,7 +72,7 @@ EventBus.on(GameEvents.ReturnToCommandCenter, () => {
   commandCenterUI.show()
 })
 
-if (import.meta.env.DEV) {
+if ((import.meta as ImportMeta & { env?: { DEV?: boolean } }).env?.DEV) {
   const commandTabs = document.querySelector('.command-tabs')
   if (commandTabs) {
     const studioLink = document.createElement('a')
@@ -76,3 +85,7 @@ if (import.meta.env.DEV) {
     commandTabs.append(studioLink)
   }
 }
+
+
+installWebGameGuards()
+signalWebGameReady()

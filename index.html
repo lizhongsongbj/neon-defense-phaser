@@ -10,7 +10,7 @@
   <div id="app">
     <!-- 主界面:对应原版 #title-screen -->
     <section class="screen title-screen" id="title-screen" aria-label="霓虹防线游戏主界面">
-      <img class="title-screen__backdrop" src="/assets/maps/scene-01-h4-v3.png" alt="夜之城 H4 防区" draggable="false" />
+      <div class="title-screen__backdrop" aria-hidden="true"></div>
       <div class="title-screen__scrim"></div>
       <div class="title-screen__hud">
         <div class="title-screen__content">
@@ -41,6 +41,7 @@
           <button class="command-tab" type="button" role="tab" data-command-tab="growth" aria-selected="false">塔楼成长</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="balance" aria-selected="false">数值测试</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="animations" aria-selected="false">动画面板</button>
+          <button class="command-tab achievement-launch" id="achievement-command-button" type="button" aria-label="打开成就面板">成就</button>
         </nav>
 
         <div class="command-profile">
@@ -164,6 +165,7 @@
               </svg>
             </button>
             <button class="icon-button" id="intel-button" type="button" aria-label="战术档案" title="战术档案">i</button>
+            <button class="icon-button achievement-hud-button" id="achievement-button" type="button" aria-label="成就" title="成就">★</button>
             <button class="icon-button" id="help-button" type="button" aria-label="操作说明" title="操作说明">?</button>
             <button class="icon-button" id="reset-deployment" type="button" aria-label="清空部署" title="清空部署">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -243,7 +245,7 @@
               <li>点击空闲塔位选择要建造的塔楼,金币足够即可建造。</li>
               <li>点击已建塔楼可查看详情、升级或拆除(拆除返还部分金币)。</li>
               <li>右上角 <b>SPEED</b> 可调整战斗倍速,<b>发动波次</b> 可提前触发下一波。</li>
-              <li>顶部图标依次为:音乐 / 语音 / 主界面 / 战术档案 / 操作说明 / 清空部署。</li>
+              <li>顶部图标依次为:音乐 / 语音 / 主界面 / 战术档案 / 成就 / 操作说明 / 清空部署。</li>
             </ul>
           </div>
         </section>
@@ -274,6 +276,25 @@
         </div>
       </div>
     </div>
+    <section class="achievement-overlay" id="achievement-overlay" aria-label="成就面板" aria-modal="true" role="dialog" hidden>
+      <button class="achievement-overlay__backdrop" id="achievement-backdrop" type="button" aria-label="关闭成就面板"></button>
+      <div class="achievement-panel">
+        <header class="achievement-panel__header">
+          <div class="achievement-panel__heading"><span>ACHIEVEMENT ARCHIVE // NIGHT CITY</span><h2>成就档案</h2><p>记录战役行动、塔楼专精与未公开的特殊协议。</p></div>
+          <div class="achievement-panel__summary"><strong id="achievement-completed-count">0 / 22</strong><span>已完成</span><i><b id="achievement-total-progress"></b></i></div>
+          <button class="achievement-close" id="achievement-close" type="button" aria-label="关闭成就面板">×</button>
+        </header>
+        <nav class="achievement-filters" id="achievement-filters" aria-label="成就筛选">
+          <button type="button" data-achievement-filter="all" aria-pressed="true">全部</button>
+          <button type="button" data-achievement-filter="campaign" aria-pressed="false">战役行动</button>
+          <button type="button" data-achievement-filter="tower" aria-pressed="false">塔楼专精</button>
+          <button type="button" data-achievement-filter="challenge" aria-pressed="false">综合挑战</button>
+          <button type="button" data-achievement-filter="unlocked" aria-pressed="false">已完成</button>
+        </nav>
+        <div class="achievement-grid" id="achievement-grid"></div>
+      </div>
+    </section>
+    <div class="achievement-notification-host" id="achievement-notification-host" aria-live="polite" aria-atomic="true"></div>
   </div>
   <script type="module" src="/src/main.ts"></script>
 </body>

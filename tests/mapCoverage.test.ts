@@ -8,7 +8,7 @@ import { buildMapGeometry, findNearestRoutePoint, toBoardUnits } from '../src/sy
  * 最低射程覆盖到路线(220 为磁轨狙击台 1 级射程,105/175 为近战/通用判定阈值)。
  */
 test('每张地图的塔位都在最低射程内可达', () => {
-  for (const map of MAP_LEVELS) {
+  for (const map of MAP_LEVELS.filter((level) => level.available)) {
     const geometry = buildMapGeometry(map)
     const coverage = map.slots.map((slot, index) => ({
       slot: index + 1,

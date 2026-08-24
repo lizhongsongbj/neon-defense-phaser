@@ -15,7 +15,7 @@ const cards = await page.locator('.intel-enemy-card').count()
 const images = await page.locator('.intel-enemy-card img').evaluateAll(imgs => imgs.map(img => ({ complete: img.complete, width: img.naturalWidth, src: img.getAttribute('src') })))
 const text = await page.locator('#intel-content').innerText()
 await page.screenshot({ path: 'tools/smoke-shots/10-enemy-intel.png' })
-console.log(JSON.stringify({ cards, images, hasHp: text.includes('生命'), hasBoss: text.includes('执法者·零号'), errors }, null, 2))
+console.log(JSON.stringify({ cards, images, hasHp: text.includes('生命'), hasBoss: text.includes('亚当·重锤'), errors }, null, 2))
 await browser.close()
 if (cards !== 7 || images.some(x => !x.complete || x.width === 0) || errors.length) process.exit(1)
 

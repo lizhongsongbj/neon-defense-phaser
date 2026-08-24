@@ -49,6 +49,17 @@ export class CampaignState {
       state.health = data.health
       state.wave = data.wave
       state.savedTowers = data.towers
+
+      // 旧版六关地图已清空：把旧存档安全收束到当前翻修占位战区。
+      state.mapIndex = Math.max(0, Math.min(MAP_LEVELS.length - 1, state.mapIndex))
+      state.unlockedMapIndex = Math.max(0, Math.min(MAP_LEVELS.length - 1, state.unlockedMapIndex))
+      state.completedMaps = MAP_LEVELS.map((_, index) => Boolean(data.completedMaps[index]))
+      if (!MAP_LEVELS[state.mapIndex]?.available) {
+        state.coins = CAMPAIGN_STARTING_COINS[state.mapIndex] ?? 0
+        state.health = MAX_HEALTH
+        state.wave = 1
+        state.savedTowers = []
+      }
     }
     return state
   }

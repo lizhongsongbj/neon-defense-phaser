@@ -90,13 +90,13 @@ test('相同参数的波次计划可重复并保持确定性', () => {
   assert.ok(a.length > 0)
 })
 
-test('第6关每5波出现Boss，其他地图每10波出现Boss并交替执法者与夏娃', () => {
+test('第6关每5波出现Boss，其他地图每10波出现Boss并交替亚当·重锤与夏娃', () => {
   const wave5Map5 = buildWavePlan(5, 5)
-  assert.ok(wave5Map5.some((e) => e.boss && e.type === 'enforcer'), '第6关第5波应出现执法者')
+  assert.ok(wave5Map5.some((e) => e.boss && e.type === 'enforcer'), '第6关第5波应出现亚当·重锤')
   const wave10Map5 = buildWavePlan(10, 5)
   assert.ok(wave10Map5.some((e) => e.boss && e.type === 'eve'), '第6关第10波应出现夏娃-9')
   const wave10Map0 = buildWavePlan(10, 0)
-  assert.ok(wave10Map0.some((e) => e.boss && e.type === 'enforcer'), '第1关第10波应出现执法者')
+  assert.ok(wave10Map0.some((e) => e.boss && e.type === 'enforcer'), '第1关第10波应出现亚当·重锤')
   const wave20Map0 = buildWavePlan(20, 0)
   assert.ok(wave20Map0.some((e) => e.boss && e.type === 'eve'), '第1关第20波应出现夏娃-9')
   const wave5Map0 = buildWavePlan(5, 0)

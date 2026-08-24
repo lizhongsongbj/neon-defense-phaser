@@ -53,7 +53,7 @@ export const MUSIC_TRACKS: MusicTrack[] = [
   { id: 'level_03_neon_market_braindance_club', name: '霓虹市场:失真记忆', file: 'level-03-neon-market-braindance-club.mp3', role: 'level', sceneId: 'scene-03-neon-market-braindance-club' },
   { id: 'level_04_megatower_cloud_club', name: 'H8 云端会所:玻璃牢笼', file: 'level-04-megatower-cloud-club.mp3', role: 'level', sceneId: 'scene-04-megatower-cloud-club' },
   { id: 'level_05_corporate_hotel_siege', name: '企业酒店围攻:封锁线', file: 'level-05-corporate-hotel-siege.mp3', role: 'level', sceneId: 'scene-05-corporate-hotel-siege' },
-  { id: 'boss_01_enforcer_zero', name: '执法者·零号:焦土协议', file: 'boss-01-enforcer-zero.mp3', role: 'boss', bossId: 'enforcer_zero' },
+  { id: 'boss_01_enforcer_zero', name: '亚当·重锤:焦土协议', file: 'boss-01-enforcer-zero.mp3', role: 'boss', bossId: 'enforcer_zero' },
   { id: 'boss_02_eve_9', name: '夏娃-9:永久静默', file: 'boss-02-eve-9.mp3', role: 'boss', bossId: 'eve_9' },
 ]
 

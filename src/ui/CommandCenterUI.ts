@@ -57,7 +57,7 @@ export class CommandCenterUI {
     this.growthTotalEl = document.getElementById('growth-total') as HTMLElement
     this.growthGrid = document.getElementById('growth-grid') as HTMLElement
     this.closeButton = document.getElementById('command-close') as HTMLButtonElement
-    this.tabs = Array.from(this.el.querySelectorAll('.command-tab'))
+    this.tabs = Array.from(this.el.querySelectorAll('[data-command-tab]'))
     this.panels = {
       missions: this.el.querySelector('[data-command-panel="missions"]') as HTMLElement,
       growth: this.el.querySelector('[data-command-panel="growth"]') as HTMLElement,
@@ -122,10 +122,10 @@ export class CommandCenterUI {
       row.className = 'mission-row'
       const code = String(index + 1).padStart(2, '0')
       row.innerHTML = `
-        <img src="${map.image}" alt="${map.name}" />
+        ${map.available ? `<img src="${map.image}" alt="${map.name}" />` : '<span class="mission-row__empty" aria-hidden="true">EMPTY</span>'}
         <span class="mission-row__copy">
           <b>${code} · ${map.name}</b>
-          <small>${CAMPAIGN_WAVE_COUNTS[index]} 波 · ${CAMPAIGN_ENEMY_COUNTS[index]} 种敌军 · THREAT ${CAMPAIGN_THREAT_LEVELS[index].toFixed(2)}</small>
+          <small>${map.available ? `${CAMPAIGN_WAVE_COUNTS[index]} 波 · ${CAMPAIGN_ENEMY_COUNTS[index]} 种敌军 · THREAT ${CAMPAIGN_THREAT_LEVELS[index].toFixed(2)}` : '等待新版地图数据'}</small>
         </span>
         <em data-role="status"></em>
       `
@@ -205,7 +205,7 @@ export class CommandCenterUI {
       row.dataset.status = status
       row.setAttribute('aria-selected', String(index === this.selectedMapIndex))
       const statusEl = row.querySelector('[data-role="status"]') as HTMLElement
-      statusEl.textContent = STATUS_LABEL[status]
+      statusEl.textContent = MAP_LEVELS[index].available ? STATUS_LABEL[status] : 'RENOVATION'
     })
 
     Array.from(this.difficultyEl.querySelectorAll<HTMLButtonElement>('button')).forEach((btn) => {
@@ -214,21 +214,37 @@ export class CommandCenterUI {
 
     const map = MAP_LEVELS[this.selectedMapIndex]
     const code = String(this.selectedMapIndex + 1).padStart(2, '0')
-    this.visualImg.src = map.image
-    this.visualImg.alt = map.name
-    this.codeEl.textContent = `SECTOR ${code} // ONLINE`
+    this.visualImg.hidden = !map.available
+    this.visualImg.parentElement?.classList.toggle('mission-visual--empty', !map.available)
+    if (map.available) {
+      this.visualImg.src = map.image
+      this.visualImg.alt = map.name
+    } else {
+      this.visualImg.removeAttribute('src')
+      this.visualImg.alt = ''
+    }
+    this.codeEl.textContent = `SECTOR ${code} // ${map.available ? 'ONLINE' : 'RENOVATION'}`
     this.titleEl.textContent = map.name
-    this.metaEl.innerHTML = `
-      <span>威胁系数 <b>${CAMPAIGN_THREAT_LEVELS[this.selectedMapIndex].toFixed(2)}</b></span>
-      <span>关卡波次 <b>${CAMPAIGN_WAVE_COUNTS[this.selectedMapIndex]}</b></span>
-      <span>敌军种类 <b>${CAMPAIGN_ENEMY_COUNTS[this.selectedMapIndex]}</b></span>
-      <span>防御节点 <b>${map.slots.length}</b></span>
-      <span>初始金币 <b>${CAMPAIGN_STARTING_COINS[this.selectedMapIndex]}</b></span>
-      <span class="menu-save-status">存档已同步</span>
-    `
+    this.metaEl.innerHTML = map.available
+      ? `
+        <span>威胁系数 <b>${CAMPAIGN_THREAT_LEVELS[this.selectedMapIndex].toFixed(2)}</b></span>
+        <span>关卡波次 <b>${CAMPAIGN_WAVE_COUNTS[this.selectedMapIndex]}</b></span>
+        <span>敌军种类 <b>${CAMPAIGN_ENEMY_COUNTS[this.selectedMapIndex]}</b></span>
+        <span>防御节点 <b>${map.slots.length}</b></span>
+        <span>初始金币 <b>${CAMPAIGN_STARTING_COINS[this.selectedMapIndex]}</b></span>
+        <span class="menu-save-status">网页版战区已就绪</span>
+      `
+      : `
+        <span>地图美术 <b>待接入</b></span>
+        <span>路线数据 <b>待重做</b></span>
+        <span>防御节点 <b>待重做</b></span>
+        <span>部署状态 <b>已暂停</b></span>
+        <span class="menu-save-status">等待新版地图</span>
+      `
+
     const unlocked = this.campaign.isMapUnlocked(this.selectedMapIndex)
-    this.deployButton.disabled = !unlocked || !this.assetsReady
-    this.deployButton.textContent = !this.assetsReady ? '资源加载中…' : !unlocked ? '未解锁' : 'DEPLOY // 进入战区'
+    this.deployButton.disabled = !map.available || !unlocked || !this.assetsReady
+    this.deployButton.textContent = !map.available ? '地图翻修中 // 暂停部署' : !this.assetsReady ? '资源加载中…' : !unlocked ? '未解锁' : 'DEPLOY // 进入战区'
 
     this.researchPointsEl.textContent = String(this.campaign.researchPoints)
     const growthTotal = TOWER_IDS.reduce((sum, id) => sum + this.campaign.towerGrowthBonus(id), 0)
@@ -258,3 +274,4 @@ export class CommandCenterUI {
     })
   }
 }
+

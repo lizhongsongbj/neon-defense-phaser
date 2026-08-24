@@ -72,6 +72,9 @@ export const GameEvents = {
   AssetsReady: 'assets-ready',
   ResetDeployment: 'reset-deployment',
   EarlyWaveBonus: 'early-wave-bonus',
+  AchievementSignal: 'achievement-signal',
+  AchievementUnlocked: 'achievement-unlocked',
+  AchievementStateChanged: 'achievement-state-changed',
   /** AUTO 演示代理请求重开指定关卡(不持久化存档),原 `window.neonDemoGame.restart` */
   RestartBattle: 'restart-battle',
 } as const

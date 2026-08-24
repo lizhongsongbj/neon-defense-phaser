@@ -1,5 +1,5 @@
 /**
- * 执法者·零号 部件系统 —— 原样迁移自 霓虹防线/gameplay.js `_0x4f0989` 中
+ * 亚当·重锤 部件系统 —— 原样迁移自 霓虹防线/gameplay.js `_0x4f0989` 中
  * `typeId === "enforcer"` 分支。三个部件(盾牌/导弹舱/推进器)各自独立受损,
  * 分别影响护甲、攻击力和移动速度。
  */
@@ -10,7 +10,7 @@ import type { EnemyState } from '../types'
 
 export type EnforcerVoiceEvent = 'enraged' | 'core'
 
-/** 每帧按当前部件血量刷新执法者的战斗数值,返回本帧触发的语音事件(如果有) */
+/** 每帧按当前部件血量刷新亚当·重锤的战斗数值,返回本帧触发的语音事件(如果有) */
 export function tickEnforcer(enemy: EnemyState, mapIndex: number): EnforcerVoiceEvent | null {
   const def = BOSS_TYPES.enforcer
   const shield = enemy.components.find((c) => c.name === '盾牌')

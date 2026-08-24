@@ -109,15 +109,17 @@ const enemyData = [
   ['matriarch','育质母体','/assets/enemies/new/enemy-09-tissue-matriarch.png','#78ff8e','组织脉动爬行','组织灌注脉冲'],
   ['bonebreaker','骨铠破障兽','/assets/enemies/new/enemy-10-bonebreaker.png','#66e8ff','骨铠重踏','破障冲撞与骨铠震击'],
   ['enforcer','执法者·零号','/assets/enemies/boss-01-enforcer-zero-cutout.png','#ff4f74','重型推进','盾牌冲撞与导弹齐射'],
+  ['adam-smasher','亚当·重锤','/assets/enemies/adam-smasher.png','#ff364f','装甲重踏','臂炮齐射与近身重击'],
   ['eve','夏娃-9','/assets/enemies/mother-city-eve-9-clean-no-white.png','#ff62d3','节点迁移','核心城市脉冲'],
 ] as const
 const existingMove: Record<string,string>={gang:'/assets/animations/enemies/enemy-01-gang-cyborg-move.webp',riot:'/assets/animations/enemies/enemy-02-riot-mech-move.webp',ninja:'/assets/animations/enemies/enemy-03-phase-ninja-move.webp',aerostat:'/assets/animations/enemies/enemy-04-corporate-airship-fly.webp',devourer:'/assets/animations/enemies/enemy-05-data-devourer-move.webp',neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-move.webp',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-move.webp',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-move.webp'}
 const existingAttack: Record<string,string>={neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-attack.webp',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-attack.webp',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-attack.webp'}
 const existingDeath: Record<string,string>={neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-death.webp',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-death.webp',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-death.webp'}
+const bossEnemyIds = new Set(['enforcer', 'adam-smasher', 'eve'])
 const enemies: AnimationCatalogEntry[] = enemyData.flatMap(([id,name,image,accent,move,attack]) => [
-  {id:`${id}-move`,category:'enemy',family:name,name,level:'敌军',action:id==='aerostat'||id==='hijacker'?'飞行':'行走',description:`${name}的${move}循环，速度感、重量和轮廓必须符合单位身份。`,timeline:'接触地面/悬浮推进 → 重心转移 → 循环无跳帧',referenceImage:image,previewAsset:existingMove[id],status:existingMove[id]?'available':'planned',motion:id==='aerostat'||id==='hijacker'?'fly':'walk',accent,tags:[name,'移动']},
-  {id:`${id}-attack`,category:'enemy',family:name,name,level:'敌军',action:'攻击',description:`${name}发动${attack}，必须保留该敌人的武器、体量与阵营特征。`,timeline:`锁定防线 → ${attack}前摇 → 命中反馈 → 收招`,referenceImage:image,previewAsset:existingAttack[id],status:existingAttack[id]?'available':'planned',motion:'attack',accent,tags:[name,'攻击']},
-  {id:`${id}-death`,category:'enemy',family:name,name,level:'敌军',action:'死亡',description:`${name}被摧毁。机械单位爆出电火花与部件，生物/义体单位使用故障化倒地，不出现血腥表现。`,timeline:'受致命伤 → 核心失稳 → 轮廓故障/倒地 → 粒子消散',referenceImage:image,previewAsset:existingDeath[id],status:existingDeath[id]?'available':'planned',motion:'death',accent,tags:[name,'死亡']},
+  {id:`${id}-move`,category:'enemy',family:name,name,level:bossEnemyIds.has(id)?'Boss':'敌军',action:id==='aerostat'||id==='hijacker'?'飞行':'行走',description:`${name}的${move}循环，速度感、重量和轮廓必须符合单位身份。`,timeline:'接触地面/悬浮推进 → 重心转移 → 循环无跳帧',referenceImage:image,previewAsset:existingMove[id],status:existingMove[id]?'available':'planned',motion:id==='aerostat'||id==='hijacker'?'fly':'walk',accent,tags:[name,...(bossEnemyIds.has(id)?['Boss']:[]),'移动']},
+  {id:`${id}-attack`,category:'enemy',family:name,name,level:bossEnemyIds.has(id)?'Boss':'敌军',action:'攻击',description:`${name}发动${attack}，必须保留该敌人的武器、体量与阵营特征。`,timeline:`锁定防线 → ${attack}前摇 → 命中反馈 → 收招`,referenceImage:image,previewAsset:existingAttack[id],status:existingAttack[id]?'available':'planned',motion:'attack',accent,tags:[name,...(bossEnemyIds.has(id)?['Boss']:[]),'攻击']},
+  {id:`${id}-death`,category:'enemy',family:name,name,level:bossEnemyIds.has(id)?'Boss':'敌军',action:'死亡',description:`${name}被摧毁。机械单位爆出电火花与部件，生物/义体单位使用故障化倒地，不出现血腥表现。`,timeline:'受致命伤 → 核心失稳 → 轮廓故障/倒地 → 粒子消散',referenceImage:image,previewAsset:existingDeath[id],status:existingDeath[id]?'available':'planned',motion:'death',accent,tags:[name,...(bossEnemyIds.has(id)?['Boss']:[]),'死亡']},
 ])
 
 const unit = (id:string,category:AnimationCategory,family:string,name:string,action:string,image:string,motion:AnimationMotion,accent:string,description:string):AnimationCatalogEntry=>({id,category,family,name,level:'单位',action,description,timeline:action==='死亡'?'受击失衡 → 装备火花 → 倒地/坠落 → 信标熄灭':action==='攻击'||action==='轰炸'?'锁定 → 武器前摇 → 命中动作 → 复位':'启动 → 重心/高度循环 → 转向 → 无缝循环',referenceImage:image,status:'planned',motion,accent,tags:[family,name,action]})
@@ -147,4 +149,3 @@ const towerAttackForms = towerForms.filter((form) => !towerAttackDisabledFamilie
 
 export const ANIMATION_CATALOG: readonly AnimationCatalogEntry[]=[...towerAttackForms.map(tower),...enemies,...units]
 export const ANIMATION_CATEGORY_LABEL:Record<AnimationCategory,string>={tower:'防御塔攻击',enemy:'怪物动画',mercenary:'佣兵动画',drone:'无人机动画'}
-
