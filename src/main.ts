@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import './styles/theme.css'
+import './styles/hacker-pulse.css'
 import { gameConfig, GAME_WIDTH, GAME_HEIGHT } from './config/gameConfig'
 import { CampaignState, REGISTRY_KEY } from './state/CampaignState'
 import { EventBus, GameEvents } from './state/EventBus'

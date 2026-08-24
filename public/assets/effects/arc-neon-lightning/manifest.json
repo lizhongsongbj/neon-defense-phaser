@@ -1,0 +1,14 @@
+{
+  "source": "/assets/animations/towers/tower-02-arc-neon-attack.webp",
+  "frameCount": 16,
+  "frameDurationMs": 55,
+  "canvas": {
+    "width": 512,
+    "height": 512
+  },
+  "timing": {
+    "charge": "frames 1-6",
+    "reveal": "frames 7-13",
+    "dissolve": "frames 14-16"
+  }
+}

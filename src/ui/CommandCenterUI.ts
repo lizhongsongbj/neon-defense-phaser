@@ -7,6 +7,7 @@ import { CampaignState } from '../state/CampaignState'
 import { MUSIC_REGISTRY_KEY, type MusicController } from '../audio'
 import { BalancePanel } from './BalancePanel'
 import { AnimationPanel } from './AnimationPanel'
+import { EffectPanel } from './EffectPanel'
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = { easy: '简单', normal: '标准', hard: '困难' }
 const STATUS_LABEL: Record<'cleared' | 'online' | 'locked', string> = { cleared: 'CLEARED', online: 'ONLINE', locked: 'LOCKED' }
@@ -34,6 +35,7 @@ export class CommandCenterUI {
   private readonly panels: Record<string, HTMLElement>
   private readonly balancePanel: BalancePanel
   private readonly animationPanel: AnimationPanel
+  private readonly effectPanel: EffectPanel
 
   private selectedMapIndex = 0
   private selectedDifficulty: Difficulty = 'normal'
@@ -63,12 +65,14 @@ export class CommandCenterUI {
       growth: this.el.querySelector('[data-command-panel="growth"]') as HTMLElement,
       balance: this.el.querySelector('[data-command-panel="balance"]') as HTMLElement,
       animations: this.el.querySelector('[data-command-panel="animations"]') as HTMLElement,
+      effects: this.el.querySelector('[data-command-panel="effects"]') as HTMLElement,
     }
 
     this.selectedMapIndex = campaign.isMapUnlocked(campaign.mapIndex) ? campaign.mapIndex : campaign.unlockedMapIndex
     this.selectedDifficulty = campaign.difficulty
     this.balancePanel = new BalancePanel(campaign, () => this.selectedMapIndex)
     this.animationPanel = new AnimationPanel()
+    this.effectPanel = new EffectPanel()
 
     this.buildMissionList()
     this.buildDifficultyButtons()
@@ -107,6 +111,7 @@ export class CommandCenterUI {
         })
         if (target === 'balance') this.balancePanel.onTabActivated()
         if (target === 'animations') this.animationPanel.activate()
+        if (target === 'effects') this.effectPanel.activate()
       })
     })
   }

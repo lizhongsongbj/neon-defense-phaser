@@ -1,6 +1,6 @@
 export type AnimationCategory = 'tower' | 'enemy' | 'mercenary' | 'drone'
 export type AnimationStatus = 'available' | 'planned'
-export type AnimationMotion = 'pulse' | 'recoil' | 'arc' | 'scan' | 'launch' | 'gravity' | 'nano' | 'rewrite' | 'walk' | 'fly' | 'attack' | 'bomb' | 'death' | 'glitch' | 'burst'
+export type AnimationMotion = 'pulse' | 'recoil' | 'arc' | 'scan' | 'scan-dual' | 'scan-deep' | 'scan-wide' | 'scan-focused' | 'launch' | 'gravity' | 'nano' | 'rewrite' | 'walk' | 'fly' | 'attack' | 'bomb' | 'death' | 'glitch' | 'burst'
 
 export interface AnimationCatalogEntry {
   id: string
@@ -13,10 +13,21 @@ export interface AnimationCatalogEntry {
   timeline: string
   referenceImage: string
   previewAsset?: string
+  attackEffectAsset?: string
+  attackEffectKind?: 'hacker-pulse' | 'arc-lightning'
   status: AnimationStatus
   motion: AnimationMotion
   accent: string
   tags: readonly string[]
+  headPulse?: TowerHeadPulse
+}
+
+export interface TowerHeadPulse {
+  x: number
+  y: number
+  scale: number
+  accent: string
+  secondary: string
 }
 
 interface TowerForm {
@@ -30,6 +41,9 @@ interface TowerForm {
   attack: string
   timeline: string
   previewAsset?: string
+  attackEffectAsset?: string
+  attackEffectKind?: 'hacker-pulse' | 'arc-lightning'
+  headPulse?: TowerHeadPulse
 }
 
 const tower = (form: TowerForm): AnimationCatalogEntry => {
@@ -42,23 +56,23 @@ const tower = (form: TowerForm): AnimationCatalogEntry => {
       ? `${form.name}本体保持待机，战斗表现完全由${form.family === '街头兵营' ? '佣兵小队' : '无人机编队'}的出动与攻击承担。`
       : `${form.name}发动“${form.attack}”。动作轮廓、蓄能方式和打击反馈必须直接对应名称与战斗定位。`,
     referenceImage: form.image,
-    status: form.previewAsset ? 'available' : 'planned',
+    status: form.previewAsset || form.attackEffectAsset ? 'available' : 'planned',
     tags: [form.family, form.level, form.attack],
   }
 }
 
 const towerForms: TowerForm[] = [
   {id:'rail-l1',family:'磁轨狙击',name:'磁轨狙击',level:'Lv1',image:'/assets/towers/generated-raw-selected/tower-01-magnetic-rail-base-cutout.png',previewAsset:'/assets/animations/towers/tower-01-magnetic-rail-attack.webp',motion:'recoil',accent:'#34c9ff',attack:'单轨狙击',timeline:'0.35秒磁轨充能 → 0.08秒蓝白贯穿束 → 0.42秒后坐复位'},
-  {id:'rail-l2',family:'磁轨狙击',name:'磁轨校准台',level:'Lv2',image:'/assets/generated/progression/tier-2/mag-rail-tier-2.png',motion:'recoil',accent:'#34c9ff',attack:'校准穿刺',timeline:'瞄准环双重收束 → 轨道校准闪光 → 高速穿刺 → 稳定器回正'},
-  {id:'rail-l3',family:'磁轨狙击',name:'双极加速炮',level:'Lv3',image:'/assets/generated/cutout/mag-rail-tier-3-2026-08-23T11-48-26-946Z.png',motion:'recoil',accent:'#63d9ff',attack:'双极加速',timeline:'双轨交替点亮 → 电容并联放电 → 粗重贯穿束 → 双臂吸收后坐'},
-  {id:'rail-a',family:'磁轨狙击',name:'天穹裁决者',level:'Lv4-A',image:'/assets/generated/cutout/mag-rail-sky-verdict-2026-08-23T11-25-23-710Z.png',motion:'burst',accent:'#8be9ff',attack:'天穹裁决',timeline:'锁定空域 → 双目标标线 → 高空裁决束贯穿 → 云层电离残光'},
-  {id:'rail-b',family:'磁轨狙击',name:'量子贯城炮',level:'Lv4-B',image:'/assets/generated/cutout/mag-rail-city-piercer-2026-08-23T11-25-22-347Z.png',motion:'recoil',accent:'#9a7dff',attack:'贯城炮击',timeline:'量子核心压缩 → 炮身锁死 → 四段贯穿冲击 → 地面震波与热雾'},
+  {id:'rail-l2',family:'磁轨狙击',name:'磁轨校准台',level:'Lv2',image:'/assets/generated/progression/tier-2/mag-rail-tier-2.png',previewAsset:'/assets/animations/towers/tower-01-magnetic-rail-tier-2-attack.webp?v=reference-l1-20260824',motion:'recoil',accent:'#34c9ff',attack:'校准穿刺',timeline:'瞄准环双重收束 → 轨道校准闪光 → 高速穿刺 → 稳定器回正'},
+  {id:'rail-l3',family:'磁轨狙击',name:'双极加速炮',level:'Lv3',image:'/assets/generated/cutout/mag-rail-tier-3-2026-08-23T11-48-26-946Z.png',previewAsset:'/assets/animations/towers/tower-01-magnetic-rail-tier-3-attack.webp?v=reference-l1-20260824',motion:'recoil',accent:'#63d9ff',attack:'双极加速',timeline:'双轨交替点亮 → 电容并联放电 → 粗重贯穿束 → 双臂吸收后坐'},
+  {id:'rail-a',family:'磁轨狙击',name:'天穹裁决者',level:'Lv4-A',image:'/assets/generated/cutout/mag-rail-sky-verdict-2026-08-23T11-25-23-710Z.png',previewAsset:'/assets/animations/towers/tower-01-magnetic-rail-sky-verdict-attack.webp?v=reference-l1-20260824',motion:'burst',accent:'#8be9ff',attack:'天穹裁决',timeline:'锁定空域 → 双目标标线 → 高空裁决束贯穿 → 云层电离残光'},
+  {id:'rail-b',family:'磁轨狙击',name:'量子贯城炮',level:'Lv4-B',image:'/assets/generated/cutout/mag-rail-city-piercer-2026-08-23T11-25-22-347Z.png',previewAsset:'/assets/animations/towers/tower-01-magnetic-rail-city-piercer-attack.webp?v=reference-l1-20260824',motion:'recoil',accent:'#9a7dff',attack:'贯城炮击',timeline:'量子核心压缩 → 炮身锁死 → 四段贯穿冲击 → 地面震波与热雾'},
 
   {id:'arc-l1',family:'电弧塔',name:'电弧塔',level:'Lv1',image:'/assets/towers/generated-raw-selected/tower-02-arc-neon-base-cutout-1.png',previewAsset:'/assets/animations/towers/tower-02-arc-neon-attack.webp',motion:'arc',accent:'#20f4e6',attack:'三段电弧',timeline:'线圈升压 → 主电弧击中 → 两次分叉跳跃 → 余电消散'},
-  {id:'arc-l2',family:'电弧塔',name:'高压电弧站',level:'Lv2',image:'/assets/generated/progression/tier-2/arc-neon-tier-2.png',motion:'arc',accent:'#20f4e6',attack:'高压连锁',timeline:'多线圈同步升压 → 青白电弧桥 → 三目标连锁 → 绝缘环降温'},
-  {id:'arc-l3',family:'电弧塔',name:'霓虹电网核',level:'Lv3',image:'/assets/generated/cutout/arc-neon-tier-3-2026-08-23T11-49-31-954Z.png',motion:'arc',accent:'#5affeb',attack:'电网脉冲',timeline:'核心旋转 → 环形电网展开 → 三路电弧同时捕获 → 网络收束'},
-  {id:'arc-a',family:'电弧塔',name:'霓虹雷暴核',level:'Lv4-A',image:'/assets/generated/cutout/arc-neon-storm-core-2026-08-23T11-25-45-551Z.png',motion:'burst',accent:'#6efff3',attack:'五链雷暴',timeline:'六线圈风暴蓄能 → 五目标连续雷击 → 核心过载闪白 → 蒸汽冷却'},
-  {id:'arc-b',family:'电弧塔',name:'超导潮汐塔',level:'Lv4-B',image:'/assets/generated/cutout/arc-neon-superconductor-2026-08-23T11-25-37-154Z.png',motion:'arc',accent:'#55ffc2',attack:'超导潮汐',timeline:'冷却液加速 → 低矮环形电潮扩散 → 潮湿目标共振 → 绿色场域驻留'},
+  {id:'arc-l2',attackEffectAsset:'/assets/effects/arc-neon-lightning/arc-neon-lightning.webp',attackEffectKind:'arc-lightning',family:'电弧塔',name:'高压电弧站',level:'Lv2',image:'/assets/generated/progression/tier-2/arc-neon-tier-2.png',motion:'arc',accent:'#20f4e6',attack:'高压连锁',timeline:'多线圈同步升压 → 青白电弧桥 → 三目标连锁 → 绝缘环降温'},
+  {id:'arc-l3',attackEffectAsset:'/assets/effects/arc-neon-lightning/arc-neon-lightning.webp',attackEffectKind:'arc-lightning',family:'电弧塔',name:'霓虹电网核',level:'Lv3',image:'/assets/generated/cutout/arc-neon-tier-3-2026-08-23T11-49-31-954Z.png',motion:'arc',accent:'#5affeb',attack:'电网脉冲',timeline:'核心旋转 → 环形电网展开 → 三路电弧同时捕获 → 网络收束'},
+  {id:'arc-a',attackEffectAsset:'/assets/effects/arc-neon-lightning/arc-neon-lightning.webp',attackEffectKind:'arc-lightning',family:'电弧塔',name:'霓虹雷暴核',level:'Lv4-A',image:'/assets/generated/cutout/arc-neon-storm-core-2026-08-23T11-25-45-551Z.png',motion:'burst',accent:'#6efff3',attack:'五链雷暴',timeline:'六线圈风暴蓄能 → 五目标连续雷击 → 核心过载闪白 → 蒸汽冷却'},
+  {id:'arc-b',attackEffectAsset:'/assets/effects/arc-neon-lightning/arc-neon-lightning.webp',attackEffectKind:'arc-lightning',family:'电弧塔',name:'超导潮汐塔',level:'Lv4-B',image:'/assets/generated/cutout/arc-neon-superconductor-2026-08-23T11-25-37-154Z.png',motion:'arc',accent:'#55ffc2',attack:'超导潮汐',timeline:'冷却液加速 → 低矮环形电潮扩散 → 潮湿目标共振 → 绿色场域驻留'},
 
   {id:'merc-l1',family:'街头兵营',name:'街头兵营',level:'Lv1',image:'/assets/towers/generated-raw-selected/tower-03-mercenary-outpost-base-cutout.png',motion:'launch',accent:'#c99245',attack:'佣兵出动',timeline:'塔体保持静止 → 佣兵在集结点接敌 → 小队成员独立开火 → 命中反馈'},
   {id:'merc-l2',family:'街头兵营',name:'铬街前哨',level:'Lv2',image:'/assets/generated/progression/tier-2/mercenary-tier-2.png',motion:'launch',accent:'#dda85b',attack:'前哨增援',timeline:'侧门解锁 → 盾兵先行 → 步枪兵跟进 → 铬钢门闭合'},
@@ -66,11 +80,11 @@ const towerForms: TowerForm[] = [
   {id:'merc-a',family:'街头兵营',name:'铬钢不破营',level:'Lv4-A',image:'/assets/generated/cutout/mercenary-chrome-fortress-2026-08-23T11-25-49-027Z.png',motion:'burst',accent:'#f1c784',attack:'不破防线',timeline:'护墙锁定 → 三名重装佣兵列阵 → 盾击与齐射 → 医疗模块脉冲'},
   {id:'merc-b',family:'街头兵营',name:'血刃夜行队',level:'Lv4-B',image:'/assets/generated/cutout/mercenary-night-blades-2026-08-23T11-25-52-392Z.png',motion:'attack',accent:'#ff4d62',attack:'夜行处决',timeline:'红色警戒灯熄灭 → 隐身投影闪烁 → 双人高速突进 → 血红刃光处决'},
 
-  {id:'hack-l1',family:'黑客中继',name:'黑客中继',level:'Lv1',image:'/assets/towers/generated-raw-selected/tower-04-hacker-relay-base-cutout.png',previewAsset:'/assets/animations/towers/tower-04-hacker-relay-attack.webp',motion:'scan',accent:'#79ff9e',attack:'入侵扫描',timeline:'天线定向 → 绿色扫描环扩张 → 目标出现故障框 → 数据回流'},
-  {id:'hack-l2',family:'黑客中继',name:'入侵中继站',level:'Lv2',image:'/assets/generated/progression/tier-2/hacker-tier-2.png',motion:'scan',accent:'#79ff9e',attack:'多频入侵',timeline:'双频段同步 → 两层扫描环扫过战场 → 多目标标记刷新'},
-  {id:'hack-l3',family:'黑客中继',name:'深网控制台',level:'Lv3',image:'/assets/generated/cutout/hacker-tier-3-2026-08-23T11-53-44-631Z.png',motion:'glitch',accent:'#72ffbd',attack:'深网接管',timeline:'数据面板翻转 → 深网隧道开启 → 目标信号扭曲 → 控制链闭合'},
-  {id:'hack-a',family:'黑客中继',name:'零日统御台',level:'Lv4-A',image:'/assets/generated/cutout/hacker-zero-day-control-2026-08-23T11-11-56-802Z.png',motion:'scan',accent:'#52ff9b',attack:'零日统御',timeline:'多频桅杆全亮 → 全场扫描环推进 → 联网目标集体停顿 → 零日标记驻留'},
-  {id:'hack-b',family:'黑客中继',name:'黑冰崩解器',level:'Lv4-B',image:'/assets/generated/cutout/hacker-black-ice-breaker-2026-08-23T11-13-18-369Z.png',motion:'glitch',accent:'#d44bff',attack:'黑冰崩解',timeline:'黑冰核心压暗 → 紫红定向脉冲 → 护盾像素化崩裂 → 危险代码燃烧'},
+  {id:'hack-l1',family:'黑客中继',name:'黑客中继',level:'Lv1',image:'/assets/towers/generated-raw-selected/tower-04-hacker-relay-base-cutout.png',motion:'scan',accent:'#79ff9e',attack:'入侵扫描',timeline:'天线定向 → 绿色扫描环扩张 → 目标出现故障框 → 数据回流',attackEffectAsset:'/assets/effects/hacker-relay-selected-pulse/hacker-relay-selected-pulse.webp',attackEffectKind:'hacker-pulse',headPulse:{x:50,y:22,scale:.82,accent:'#79ff9e',secondary:'#c9ffe0'}},
+  {id:'hack-l2',family:'黑客中继',name:'入侵中继站',level:'Lv2',image:'/assets/generated/progression/tier-2/hacker-tier-2.png',motion:'scan-dual',accent:'#79ff9e',attack:'多频入侵',timeline:'天线定向 → 双层绿色扫描环依次扩张 → 多目标故障框同步出现 → 双路数据回流',attackEffectAsset:'/assets/effects/hacker-relay-selected-pulse/hacker-relay-selected-pulse.webp',attackEffectKind:'hacker-pulse',headPulse:{x:50,y:20,scale:.94,accent:'#79ff9e',secondary:'#c9ffe0'}},
+  {id:'hack-l3',family:'黑客中继',name:'深网控制台',level:'Lv3',image:'/assets/generated/cutout/hacker-tier-3-2026-08-23T11-53-44-631Z.png',motion:'scan-deep',accent:'#72ffbd',attack:'深网接管',timeline:'数据面板定向 → 固定青绿色深网扫描环下潜 → 控制节点逐个锁定 → 接管数据稳定回流',attackEffectAsset:'/assets/effects/hacker-relay-selected-pulse/hacker-relay-selected-pulse.webp',attackEffectKind:'hacker-pulse',headPulse:{x:50,y:18,scale:1.04,accent:'#79ff9e',secondary:'#c9ffe0'}},
+  {id:'hack-a',family:'黑客中继',name:'零日统御台',level:'Lv4-A',image:'/assets/generated/cutout/hacker-zero-day-control-2026-08-23T11-11-56-802Z.png',motion:'scan-wide',accent:'#52ff9b',attack:'零日统御',timeline:'多频桅杆定向 → 宽域绿色扫描环覆盖全场 → 联网目标集体停顿 → 零日标记与数据回流驻留',attackEffectAsset:'/assets/effects/hacker-relay-selected-pulse/hacker-relay-selected-pulse.webp',attackEffectKind:'hacker-pulse',headPulse:{x:50,y:17,scale:1.16,accent:'#79ff9e',secondary:'#c9ffe0'}},
+  {id:'hack-b',family:'黑客中继',name:'黑冰崩解器',level:'Lv4-B',image:'/assets/generated/cutout/hacker-black-ice-breaker-2026-08-23T11-13-18-369Z.png',motion:'scan-focused',accent:'#d44bff',attack:'黑冰崩解',timeline:'定向阵列锁定 → 固定紫色窄域扫描束锁住三个目标 → 护盾故障框崩裂 → 危险代码回流',attackEffectAsset:'/assets/effects/hacker-relay-selected-pulse/hacker-relay-selected-pulse.webp',attackEffectKind:'hacker-pulse',headPulse:{x:50,y:19,scale:1.02,accent:'#79ff9e',secondary:'#c9ffe0'}},
 
   {id:'drone-l1',family:'无人机巢',name:'无人机巢',level:'Lv1',image:'/assets/towers/generated-raw-selected/tower-05-drone-hive-base-new-drones.png',motion:'launch',accent:'#e8ffff',attack:'双机出击',timeline:'巢体保持静止 → 两架无人机离巢 → 分别锁定目标 → 俯冲攻击后返航'},
   {id:'drone-l2',family:'无人机巢',name:'蜂群发射巢',level:'Lv2',image:'/assets/generated/progression/tier-2/drone-tier-2.png',motion:'launch',accent:'#d9ffff',attack:'蜂群截击',timeline:'发射轨点亮 → 双机弹射 → 空中编队转向 → 交叉射击'},
@@ -112,9 +126,9 @@ const enemyData = [
   ['adam-smasher','亚当·重锤','/assets/enemies/adam-smasher.png','#ff364f','装甲重踏','臂炮齐射与近身重击'],
   ['eve','夏娃-9','/assets/enemies/mother-city-eve-9-clean-no-white.png','#ff62d3','节点迁移','核心城市脉冲'],
 ] as const
-const existingMove: Record<string,string>={gang:'/assets/animations/enemies/enemy-01-gang-cyborg-move.webp',riot:'/assets/animations/enemies/enemy-02-riot-mech-move.webp',ninja:'/assets/animations/enemies/enemy-03-phase-ninja-move.webp',aerostat:'/assets/animations/enemies/enemy-04-corporate-airship-fly.webp',devourer:'/assets/animations/enemies/enemy-05-data-devourer-move.webp',neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-move.webp',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-move.webp',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-move.webp'}
-const existingAttack: Record<string,string>={neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-attack.webp',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-attack.webp',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-attack.webp'}
-const existingDeath: Record<string,string>={neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-death.webp',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-death.webp',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-death.webp'}
+const existingMove: Record<string,string>={gang:'/assets/animations/enemies/enemy-01-gang-cyborg-move.webp?v=whole-body-gait-20260824',riot:'/assets/animations/enemies/enemy-02-riot-mech-move.webp',ninja:'/assets/animations/enemies/enemy-03-phase-ninja-move.webp',aerostat:'/assets/animations/enemies/enemy-04-corporate-airship-fly.webp',devourer:'/assets/animations/enemies/enemy-05-data-devourer-move.webp',neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-move.webp?v=no-color-lines-20260824',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-move.webp?v=no-color-lines-20260824',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-move.webp'}
+const existingAttack: Record<string,string>={neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-attack.webp?v=no-color-lines-20260824',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-attack.webp?v=no-color-lines-20260824',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-attack.webp'}
+const existingDeath: Record<string,string>={neurohound:'/assets/animations/enemies/enemy-08-neuro-hound-death.webp?v=no-color-lines-20260824',matriarch:'/assets/animations/enemies/enemy-09-tissue-matriarch-death.webp?v=no-color-lines-20260824',bonebreaker:'/assets/animations/enemies/enemy-10-bonebreaker-death.webp'}
 const bossEnemyIds = new Set(['enforcer', 'adam-smasher', 'eve'])
 const enemies: AnimationCatalogEntry[] = enemyData.flatMap(([id,name,image,accent,move,attack]) => [
   {id:`${id}-move`,category:'enemy',family:name,name,level:bossEnemyIds.has(id)?'Boss':'敌军',action:id==='aerostat'||id==='hijacker'?'飞行':'行走',description:`${name}的${move}循环，速度感、重量和轮廓必须符合单位身份。`,timeline:'接触地面/悬浮推进 → 重心转移 → 循环无跳帧',referenceImage:image,previewAsset:existingMove[id],status:existingMove[id]?'available':'planned',motion:id==='aerostat'||id==='hijacker'?'fly':'walk',accent,tags:[name,...(bossEnemyIds.has(id)?['Boss']:[]),'移动']},

@@ -21,7 +21,8 @@
     "assets:alpha:audit": "node tools/transparent-assets.mjs",
     "assets:alpha:fix": "node tools/transparent-assets.mjs --apply",
     "assets:alpha:check": "node tools/transparent-assets.mjs --check",
-    "animations:bio:generate": "node tools/generate-biological-enemy-animations.mjs"
+    "animations:bio:generate": "node tools/generate-biological-enemy-animations.mjs",
+    "animations:rail:generate": "node tools/generate-mag-rail-upgrade-animations.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

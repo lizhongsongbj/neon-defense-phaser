@@ -51,7 +51,15 @@ export class PreloadScene extends Phaser.Scene {
     })
     this.load.image('unit-mercenary-shield', 'assets/units/mercenary-shield.png')
     this.load.image('unit-mercenary-rifle', 'assets/units/mercenary-rifle.png')
-    this.load.image('unit-drone-hive', 'assets/towers/drone-hive-unit.png')
+    this.load.image('unit-drone-hive', 'assets/generated/cutout/drone-hive-unit-2026-08-24T16-11-53-567Z.png')
+    this.load.image('remnant-biological', 'assets/effects/death-remnants/biological-blood-puddle.png')
+    this.load.image('remnant-mechanical', 'assets/effects/death-remnants/mechanical-parts-pile.png')
+    this.load.image('drone-crash-flame', 'assets/effects/drone-crash-flame.png')
+
+    for (let frame = 1; frame <= 16; frame += 1) {
+      const suffix = String(frame).padStart(2, '0')
+      this.load.image(`fx-hacker-selected-pulse-${suffix}`, `assets/effects/hacker-relay-selected-pulse/frame-${suffix}.png`)
+    }
 
     // 基地遭到突破时的即时反馈音效；独立于语音冷却，确保扣血时立即发声。
     this.load.audio('sfx-base-damage', 'assets/audio/voices/lan/fortress_damaged.mp3')

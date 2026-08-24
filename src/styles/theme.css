@@ -1,8 +1,7 @@
 /**
- * 霓虹防线视觉主题 —— 对照原版 霓虹防线/index.html 的最终计算样式(getComputedStyle)
- * 逐项抽取的青/粉/黄三色霓虹配色、等宽字体、裁角面板、故障标题动画,
- * 用于新版主界面/指挥中心/战斗 HUD 的 HTML+CSS 外层,与 Phaser 画布内的战场拼接。
- */
+ * 闇撹櫣闃茬嚎瑙嗚涓婚 鈥斺€?瀵圭収鍘熺増 闇撹櫣闃茬嚎/index.html 鐨勬渶缁堣绠楁牱寮?getComputedStyle)
+ * 閫愰」鎶藉彇鐨勯潚/绮?榛勪笁鑹查湏铏归厤鑹层€佺瓑瀹藉瓧浣撱€佽瑙掗潰鏉裤€佹晠闅滄爣棰樺姩鐢?
+ * 鐢ㄤ簬鏂扮増涓荤晫闈?鎸囨尌涓績/鎴樻枟 HUD 鐨?HTML+CSS 澶栧眰,涓?Phaser 鐢诲竷鍐呯殑鎴樺満鎷兼帴銆? */
 
 :root {
   --neon-cyan: #20f4e6;
@@ -38,7 +37,7 @@ html, body {
 .screen { position: fixed; inset: 0; z-index: 10; }
 .screen[hidden] { display: none; }
 
-/* ---------------- 通用组件 ---------------- */
+/* ---------------- 閫氱敤缁勪欢 ---------------- */
 
 .neon-frame {
   position: relative;
@@ -96,7 +95,7 @@ html, body {
   pointer-events: none;
 }
 
-/* 原版 .icon-button —— 顶部图标按钮(音乐/语音/主界面/档案/说明/重置)共用样式 */
+/* 鍘熺増 .icon-button 鈥斺€?椤堕儴鍥炬爣鎸夐挳(闊充箰/璇煶/涓荤晫闈?妗ｆ/璇存槑/閲嶇疆)鍏辩敤鏍峰紡 */
 .icon-button {
   display: grid;
   place-items: center;
@@ -129,7 +128,7 @@ html, body {
 .picker-close:hover { color: #05080d; background: var(--neon-pink); }
 .picker-close svg { width: 16px; height: 16px; }
 
-/* ---------------- 主界面(title-screen) ---------------- */
+/* ---------------- 涓荤晫闈?title-screen) ---------------- */
 
 .title-screen {
   isolation: isolate;
@@ -210,7 +209,7 @@ html, body {
 }
 .title-screen .neon-button { margin-top: 34px; }
 
-/* ---------------- 指挥中心(command-center) ---------------- */
+/* ---------------- 鎸囨尌涓績(command-center) ---------------- */
 
 .command-center {
   display: grid;
@@ -472,7 +471,7 @@ html, body {
   .balance-grid { grid-template-columns: 1fr; }
 }
 
-/* ---------------- 战斗 HUD(叠在 Phaser 画布上方) ---------------- */
+/* ---------------- 鎴樻枟 HUD(鍙犲湪 Phaser 鐢诲竷涓婃柟) ---------------- */
 
 #game-root {
   position: fixed;
@@ -484,8 +483,8 @@ html, body {
 }
 #game-root[hidden] { display: none; }
 
-/* #stage 是固定 1280x800 的逻辑坐标系,画布与 HUD 元素共享同一套像素坐标,
-   整体通过 transform: scale() 适配视口,避免 Phaser 内部坐标与 DOM 覆盖层错位。 */
+/* #stage 鏄浐瀹?1280x800 鐨勯€昏緫鍧愭爣绯?鐢诲竷涓?HUD 鍏冪礌鍏变韩鍚屼竴濂楀儚绱犲潗鏍?
+   鏁翠綋閫氳繃 transform: scale() 閫傞厤瑙嗗彛,閬垮厤 Phaser 鍐呴儴鍧愭爣涓?DOM 瑕嗙洊灞傞敊浣嶃€?*/
 #stage {
   position: relative;
   width: 1280px;
@@ -765,7 +764,7 @@ html, body {
 
 .command-tab-link { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 
-/* ---------------- 全单位动画面板 ---------------- */
+/* ---------------- 鍏ㄥ崟浣嶅姩鐢婚潰鏉?---------------- */
 .animation-panel {
   position: relative;
   min-height: 0;
@@ -817,8 +816,10 @@ html, body {
 .animation-detail__copy dd { margin: 5px 0 0; color: #e3ffff; font-size: 10px; line-height: 1.5; }
 .animation-replay { padding: 11px 16px; border: 1px solid var(--animation-accent); color: #061014; background: var(--animation-accent); font: 900 10px/1 var(--font-mono); cursor: pointer; }
 
-/* 静态素材的动作预演；已有 WebP 会在同一容器内直接播放。 */
+/* 闈欐€佺礌鏉愮殑鍔ㄤ綔棰勬紨锛涘凡鏈?WebP 浼氬湪鍚屼竴瀹瑰櫒鍐呯洿鎺ユ挱鏀俱€?*/
+.animation-card.has-asset img, .animation-detail__preview.has-asset img { animation: none; transform: none; }
 .motion-pulse img, .motion-scan img { animation: anim-pulse 1.8s ease-in-out infinite; }
+.motion-scan-dual img, .motion-scan-deep img, .motion-scan-wide img, .motion-scan-focused img { animation: anim-hacker-scan 1.8s ease-in-out infinite; }
 .motion-recoil img { transform-origin: 50% 70%; animation: anim-recoil 1.7s cubic-bezier(.2,.8,.3,1) infinite; }
 .motion-arc img { animation: anim-arc 1.05s steps(2,end) infinite; }
 .motion-launch img, .motion-bomb img { animation: anim-launch 1.5s ease-in-out infinite; }
@@ -831,7 +832,17 @@ html, body {
 .motion-death img { animation: anim-death 2.2s ease-in-out infinite; }
 .motion-burst img { animation: anim-burst 1.5s ease-in-out infinite; }
 .motion-pulse .animation-card__fx, .motion-scan .animation-card__fx, .motion-gravity .animation-card__fx, .motion-burst .animation-card__fx, .motion-rewrite .animation-card__fx { animation: anim-ring 1.6s ease-out infinite; }
+.motion-scan-dual .animation-card__fx, .motion-scan-deep .animation-card__fx, .motion-scan-wide .animation-card__fx, .motion-scan-focused .animation-card__fx { opacity: 1; }
+.motion-scan-dual .animation-card__fx { animation: anim-hacker-ring-dual 1.8s ease-out infinite; box-shadow: 0 0 0 9px color-mix(in srgb, var(--animation-accent) 20%, transparent); }
+.motion-scan-deep .animation-card__fx { animation: anim-hacker-ring-deep 2s ease-in-out infinite; border-radius: 16%; }
+.motion-scan-wide .animation-card__fx { inset: 7%; animation: anim-hacker-ring-wide 2.1s ease-out infinite; }
+.motion-scan-focused .animation-card__fx { inset: 24% 9%; animation: anim-hacker-ring-focused 1.7s ease-in-out infinite; border-radius: 12%; }
 @keyframes anim-pulse { 0%,100%{transform:scale(1);filter:brightness(1)} 45%{transform:scale(1.04);filter:brightness(1.35)} 55%{transform:scale(.99);filter:brightness(1.9)} }
+@keyframes anim-hacker-scan { 0%,100%{transform:scale(1) translateY(0)} 45%{transform:scale(1.025) translateY(-2px)} 58%{transform:scale(.995) translateY(1px)} }
+@keyframes anim-hacker-ring-dual { 0%{opacity:.75;transform:scale(.28)} 58%{opacity:.28} 100%{opacity:0;transform:scale(1.3)} }
+@keyframes anim-hacker-ring-deep { 0%,100%{opacity:.15;transform:scaleX(.38) scaleY(.2) translateY(-36%)} 50%{opacity:.78;transform:scaleX(1.02) scaleY(.72) translateY(28%)} }
+@keyframes anim-hacker-ring-wide { 0%{opacity:.82;transform:scale(.18)} 72%{opacity:.24} 100%{opacity:0;transform:scale(1.5)} }
+@keyframes anim-hacker-ring-focused { 0%,100%{opacity:.2;transform:scaleX(.28)} 42%{opacity:.9;transform:scaleX(1)} 66%{opacity:.42;transform:scaleX(.72)} }
 @keyframes anim-recoil { 0%,34%,100%{transform:translateX(0) scale(1)} 38%{transform:translateX(-9px) scaleX(.97);filter:brightness(2)} 48%{transform:translateX(3px)} 62%{transform:translateX(0)} }
 @keyframes anim-arc { 0%,55%,100%{filter:brightness(1)} 58%{transform:scale(1.04);filter:brightness(2.3) drop-shadow(0 0 14px var(--animation-accent))} 68%{transform:scale(.99);filter:brightness(1.35)} }
 @keyframes anim-launch { 0%,100%{transform:translateY(4px)} 38%{transform:translateY(-5px) scale(1.02)} 52%{transform:translateY(-12px) scale(.96);filter:brightness(1.5)} 72%{transform:translateY(1px)} }
@@ -1160,3 +1171,180 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   .achievement-overlay, .achievement-panel, .achievement-notification, .achievement-card { transition: none !important; }
 }
+
+/* ---------------- 鍏ㄧ礌鏉愮壒鏁堥潰鏉?---------------- */
+.effect-panel {
+  position: relative;
+  min-height: 0;
+  padding: 22px 28px 30px;
+  overflow: hidden;
+  background: radial-gradient(circle at 78% 0, rgba(255, 62, 165, .12), transparent 32%), radial-gradient(circle at 18% 100%, rgba(32,244,230,.08), transparent 38%), rgba(2, 8, 12, .96);
+}
+.effect-panel__header { display:flex; align-items:end; justify-content:space-between; gap:24px; margin-bottom:14px; }
+.effect-panel__header span { color:var(--neon-pink-soft); font:900 10px/1 var(--font-mono); letter-spacing:.14em; }
+.effect-panel__header h2 { margin:7px 0 5px; color:var(--text-bright); font:900 25px/1 var(--font-display); letter-spacing:.04em; }
+.effect-panel__header p { max-width:820px; margin:0; color:#8ca8aa; font-size:10px; }
+.effect-panel__header output { flex:0 0 auto; padding:8px 11px; border:1px solid rgba(255,62,165,.38); color:var(--neon-yellow); background:rgba(18,5,16,.78); font:800 9px/1 var(--font-mono); }
+.effect-toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px; }
+.effect-filters { display:flex; flex-wrap:wrap; gap:6px; }
+.effect-filters button { padding:7px 10px; border:1px solid rgba(255,62,165,.28); color:#a9a0ad; background:#110812; font:800 9px/1 var(--font-mono); cursor:pointer; }
+.effect-filters button[aria-pressed="true"] { border-color:var(--neon-pink); color:#fff; background:#8c174f; box-shadow:3px 3px 0 rgba(32,244,230,.68); }
+.effect-search { display:flex; align-items:center; min-width:260px; border:1px solid rgba(32,244,230,.28); background:#061015; }
+.effect-search span { padding:0 9px; color:var(--neon-cyan); font:900 8px/1 var(--font-mono); }
+.effect-search input { width:100%; height:32px; border:0; outline:0; color:#eaffff; background:transparent; font:10px/1 var(--font-mono); }
+.effect-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; height:calc(100vh - 205px); padding:1px 8px 28px 1px; overflow:auto; align-content:start; }
+.effect-card { --effect-accent:#20f4e6; --effect-secondary:#ff3ea5; min-width:0; padding:0; border:1px solid rgba(255,62,165,.18); color:inherit; background:rgba(9,12,20,.9); text-align:left; cursor:pointer; transition:border-color .16s ease,transform .16s ease,box-shadow .16s ease; }
+.effect-card:hover { z-index:2; border-color:var(--effect-accent); transform:translateY(-2px); box-shadow:4px 4px 0 color-mix(in srgb,var(--effect-secondary) 55%,transparent); }
+.effect-preview { position:relative; display:grid; place-items:center; height:134px; overflow:hidden; background:radial-gradient(circle,color-mix(in srgb,var(--effect-accent) 12%,transparent),transparent 62%),linear-gradient(135deg,rgba(255,255,255,.025),transparent); }
+.effect-preview::before,.effect-detail__preview::before { content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size:14px 14px; }
+.effect-preview em { position:absolute; z-index:8; left:6px; bottom:5px; padding:3px 5px; border:1px solid color-mix(in srgb,var(--effect-accent) 48%,transparent); color:var(--effect-accent); background:rgba(1,7,10,.86); font:normal 7px/1 var(--font-mono); }
+.effect-card__body { display:block; min-height:124px; padding:9px 10px 11px; border-top:1px solid rgba(255,62,165,.14); }
+.effect-card__body small,.effect-card__body strong,.effect-card__body span,.effect-card__body i { display:block; }
+.effect-card__body small { color:#71878c; font:800 7px/1 var(--font-mono); letter-spacing:.05em; }
+.effect-card__body strong { margin-top:6px; color:#f4ffff; font-size:13px; }
+.effect-card__body span { margin-top:7px; color:#92aaac; font-size:8px; line-height:1.5; }
+.effect-card__body i { margin-top:8px; color:var(--effect-accent); font:normal 7px/1.4 var(--font-mono); }
+.effect-empty { grid-column:1/-1; padding:50px; border:1px dashed rgba(255,62,165,.25); color:#718b8c; text-align:center; }
+
+.effect-stage { position:relative; z-index:2; display:block; width:78%; height:74%; filter:drop-shadow(0 0 10px color-mix(in srgb,var(--effect-accent) 38%,transparent)); }
+.effect-core,.effect-beam,.effect-ring,.effect-scanline,.effect-shard,.effect-particle { position:absolute; display:block; pointer-events:none; }
+.effect-core { z-index:4; left:50%; top:50%; width:22px; height:22px; border:2px solid #fff; border-radius:50%; background:var(--effect-accent); box-shadow:0 0 8px #fff,0 0 24px var(--effect-accent),0 0 45px var(--effect-secondary); transform:translate(-50%,-50%); }
+.effect-beam { z-index:3; left:8%; right:8%; top:50%; height:6px; border-radius:99px; background:linear-gradient(90deg,transparent,var(--effect-secondary) 15%,#fff 48%,var(--effect-accent) 72%,transparent); box-shadow:0 0 10px var(--effect-accent); transform:translateY(-50%) scaleX(.2); opacity:0; }
+.effect-ring { z-index:2; left:50%; top:50%; width:52px; height:52px; border:2px solid var(--effect-accent); border-radius:50%; box-shadow:0 0 12px var(--effect-accent),inset 0 0 8px var(--effect-secondary); transform:translate(-50%,-50%) scale(.2); opacity:0; }
+.effect-ring--b { width:82px; height:82px; border-color:var(--effect-secondary); }
+.effect-scanline { z-index:5; left:12%; right:12%; top:15%; height:2px; background:linear-gradient(90deg,transparent,var(--effect-accent),#fff,var(--effect-accent),transparent); box-shadow:0 0 8px var(--effect-accent); opacity:0; }
+.effect-shard { z-index:4; left:50%; top:50%; width:7px; height:26px; clip-path:polygon(50% 0,100% 70%,55% 100%,0 65%); background:linear-gradient(var(--effect-accent),var(--effect-secondary)); opacity:0; }
+.effect-shard--b { transform:rotate(90deg); }
+.effect-particle { --angle:calc(var(--i) * 30deg); left:50%; top:50%; width:5px; height:5px; border-radius:50%; background:var(--effect-accent); box-shadow:0 0 6px var(--effect-accent); opacity:0; }
+
+.effect-particles .effect-particle { animation:fx-particles 1.8s ease-out infinite; animation-delay:calc(var(--i) * -45ms); }
+.effect-beam .effect-beam,.effect-trail .effect-beam { animation:fx-beam 1.55s ease-in-out infinite; }
+.effect-arc .effect-beam { height:4px; filter:url("#none"); animation:fx-arc 1.2s steps(3,end) infinite; }
+.effect-burst .effect-core { animation:fx-core-burst 1.6s ease-out infinite; }
+.effect-burst .effect-ring,.effect-shockwave .effect-ring,.effect-shield .effect-ring { animation:fx-ring 1.7s ease-out infinite; }
+.effect-shockwave .effect-ring--b,.effect-shield .effect-ring--b { animation-delay:.22s; }
+.effect-dissolve .effect-particle,.effect-smoke .effect-particle { animation:fx-dissolve 2s ease-out infinite; }
+.effect-glitch .effect-core,.effect-glitch .effect-ring { animation:fx-glitch 1.4s steps(2,end) infinite; opacity:.8; }
+.effect-scan .effect-scanline { animation:fx-scan 1.6s ease-in-out infinite; }
+.effect-scan .effect-ring { animation:fx-ring 1.6s ease-out infinite; }
+.effect-shards .effect-shard { animation:fx-shard 1.7s ease-out infinite; }
+.effect-shards .effect-shard--b { animation-delay:.2s; }
+.effect-trail .effect-core { animation:fx-trail-core 1.5s ease-in-out infinite; }
+
+.effect-detail { position:absolute; z-index:55; inset:0; display:grid; place-items:center; background:rgba(0,3,7,.88); backdrop-filter:blur(6px); }
+.effect-detail[hidden] { display:none; }
+.effect-detail__panel { position:relative; display:grid; grid-template-columns:minmax(340px,52%) minmax(280px,48%); width:min(930px,90vw); min-height:500px; border:1px solid var(--effect-accent); background:#061015; box-shadow:8px 8px 0 color-mix(in srgb,var(--effect-secondary) 65%,transparent); }
+.effect-detail__close { position:absolute; z-index:10; top:12px; right:12px; }
+.effect-detail__preview { --effect-accent:inherit; --effect-secondary:inherit; position:relative; display:grid; place-items:center; min-height:500px; overflow:hidden; background:radial-gradient(circle,color-mix(in srgb,var(--effect-accent) 18%,transparent),transparent 62%),#04090f; }
+.effect-detail__preview .effect-stage { width:82%; height:72%; transform:scale(1.45); }
+.effect-detail__copy { padding:48px 34px 28px; }
+.effect-detail__copy > span { color:var(--effect-accent); font:900 9px/1 var(--font-mono); letter-spacing:.08em; }
+.effect-detail__copy h3 { margin:10px 0 15px; color:#fff; font:900 28px/1.1 var(--font-display); }
+.effect-detail__copy p { color:#acc4c4; font-size:12px; line-height:1.7; }
+.effect-detail__copy dl { display:grid; gap:9px; margin:22px 0; }
+.effect-detail__copy dl div { padding:10px; border-left:2px solid var(--effect-accent); background:rgba(255,255,255,.025); }
+.effect-detail__copy dt { color:#718a8d; font-size:8px; }
+.effect-detail__copy dd { margin:5px 0 0; color:#e5ffff; font-size:10px; line-height:1.5; }
+.effect-replay { padding:11px 16px; border:1px solid var(--effect-accent); color:#051015; background:var(--effect-accent); font:900 10px/1 var(--font-mono); cursor:pointer; }
+
+@keyframes fx-particles { 0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(4px) scale(.4)} 18%{opacity:1} 80%{opacity:.45} 100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(64px) scale(.1)} }
+@keyframes fx-beam { 0%,28%,100%{opacity:0;transform:translateY(-50%) scaleX(.05)} 38%{opacity:1;transform:translateY(-50%) scaleX(1)} 52%{opacity:.9;transform:translateY(-50%) scaleX(.92)} 68%{opacity:0;transform:translateY(-50%) scaleX(1)} }
+@keyframes fx-arc { 0%,35%,100%{opacity:0;transform:translateY(-50%) scaleX(.1) rotate(-4deg)} 42%{opacity:1;transform:translateY(-50%) scaleX(1) rotate(3deg)} 48%{transform:translateY(-50%) scaleX(.9) rotate(-2deg)} 60%{opacity:.2} }
+@keyframes fx-core-burst { 0%,30%,100%{opacity:.7;transform:translate(-50%,-50%) scale(.35)} 44%{opacity:1;transform:translate(-50%,-50%) scale(1.5)} 64%{opacity:.15;transform:translate(-50%,-50%) scale(2.2)} }
+@keyframes fx-ring { 0%,24%{opacity:0;transform:translate(-50%,-50%) scale(.15)} 36%{opacity:.95} 100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)} }
+@keyframes fx-dissolve { 0%,15%{opacity:0;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(6px)} 35%{opacity:.9} 100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--angle)) translate(48px,-42px) scale(1.8);filter:blur(3px)} }
+@keyframes fx-glitch { 0%,30%,100%{opacity:.8;transform:translate(-50%,-50%) scale(.7);clip-path:inset(0)} 36%{transform:translate(-44%,-55%) scale(1.1);clip-path:inset(10% 0 55%)} 44%{transform:translate(-58%,-45%) scale(.8);clip-path:inset(55% 0 8%)} 55%{transform:translate(-50%,-50%) scale(1.25);clip-path:inset(0)} }
+@keyframes fx-scan { 0%,100%{opacity:0;top:12%} 20%{opacity:1} 75%{opacity:.85;top:82%} 90%{opacity:0;top:88%} }
+@keyframes fx-shard { 0%,25%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.3)} 38%{opacity:1} 100%{opacity:0;transform:translate(55px,-42px) rotate(220deg) scale(.7)} }
+@keyframes fx-trail-core { 0%,100%{transform:translate(-220%,-50%) scale(.7);opacity:0} 25%{opacity:1} 70%{opacity:1} 88%{transform:translate(150%,-50%) scale(1);opacity:0} }
+@media(max-width:1050px){.effect-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(max-width:780px){.effect-panel{padding:14px}.effect-panel__header,.effect-toolbar{align-items:stretch;flex-direction:column}.effect-grid{grid-template-columns:repeat(2,minmax(0,1fr));height:calc(100vh - 290px)}.effect-detail__panel{grid-template-columns:1fr;max-height:90vh;overflow:auto}.effect-detail__preview{min-height:300px}.effect-detail__preview .effect-stage{transform:scale(1.05)}}
+
+.effect-remnant { position:absolute; z-index:1; left:50%; bottom:8%; width:64%; height:48%; object-fit:contain; transform:translateX(-50%); opacity:.9; filter:drop-shadow(0 4px 5px rgba(0,0,0,.55)); }
+.effect-detail__preview .effect-remnant { width:72%; height:58%; bottom:5%; }
+
+/* 写实锟斤拷位锟斤拷锟斤拷预锟捷ｏ拷佣锟斤拷锟斤拷锟斤拷锟斤拷失锟斤拷锟斤拷血锟斤拷锟斤拷兀锟斤拷锟斤拷嘶锟斤拷锟阶癸拷佟锟斤拷鸹ā锟斤拷锟斤拷锟斤拷筒泻锟斤拷锟斤拷锟绞癸拷锟酵拷霉锟斤拷锟斤拷锟?*/
+.effect-stage--mercenary-death,.effect-stage--drone-death { filter:drop-shadow(0 5px 7px rgba(0,0,0,.7)); }
+.effect-stage--mercenary-death .effect-body-fall { position:absolute; z-index:3; left:50%; top:30%; width:42px; height:58px; border:2px solid #8b9b9a; border-radius:48% 38% 42% 34%; background:linear-gradient(145deg,#36484b,#111a1d 58%,#6b1820); transform:translate(-50%,-50%) rotate(-18deg); animation:fx-body-fall 2.3s ease-in infinite; }
+.effect-stage--mercenary-death .effect-body-fall::after { content:""; position:absolute; left:15px; bottom:-13px; width:13px; height:18px; background:#1a2427; border:1px solid #8a9a98; transform:rotate(-28deg); }
+.effect-blood-drop { --angle:calc(var(--i) * 41deg); position:absolute; z-index:5; left:50%; top:39%; width:4px; height:7px; border-radius:70% 30% 65% 35%; background:#8d1521; box-shadow:0 0 3px #d83745; opacity:0; animation:fx-blood-drop 1.9s ease-out infinite; animation-delay:calc(var(--i) * 70ms); }
+.effect-blood-drop:nth-child(3n) { background:#c52e3c; width:3px; height:5px; }
+.effect-blood-splash { position:absolute; z-index:2; left:50%; bottom:15%; width:58px; height:13px; border-radius:50%; background:radial-gradient(ellipse,#791923 0 38%,transparent 70%); opacity:.75; animation:fx-blood-splash 2.3s ease-in infinite; }
+
+.effect-crash-flash { position:absolute; z-index:6; left:50%; top:55%; width:18px; height:13px; border-radius:50%; background:#fff3c2; box-shadow:0 0 9px #fff,0 0 22px #ff8c35; opacity:0; animation:fx-crash-flash 2.1s ease-out infinite; }
+.effect-crash-spark { --angle:calc(var(--i) * 25.7deg); position:absolute; z-index:7; left:50%; top:55%; width:15px; height:2px; border-radius:99px; background:linear-gradient(90deg,#fff,#ff9b32 50%,transparent); box-shadow:0 0 4px #ff9b32; opacity:0; transform-origin:left center; animation:fx-crash-spark 2.1s cubic-bezier(.15,.2,.65,1) infinite; animation-delay:calc(var(--i) * 28ms); }
+.effect-crash-spark:nth-child(3n) { background:linear-gradient(90deg,#fff,#73eaff 50%,transparent); box-shadow:0 0 4px #73eaff; }
+.effect-smoke-puff { --smoke-x:calc((var(--i) - 1.5) * 13px); position:absolute; z-index:3; left:50%; top:56%; width:18px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 35%,#68777a,#283235 65%,transparent 72%); opacity:0; animation:fx-smoke-puff 2.1s ease-out infinite; animation-delay:calc(var(--i) * 100ms); }
+@keyframes fx-body-fall { 0%,18% { opacity:0; transform:translate(-50%,-68%) rotate(-4deg); } 30% { opacity:1; } 72% { opacity:1; transform:translate(-50%,10%) rotate(78deg); } 100% { opacity:0; transform:translate(-50%,18%) rotate(90deg); } }
+@keyframes fx-blood-drop { 0%,24% { opacity:0; transform:translate(-50%,-50%) rotate(var(--angle)) translateX(2px) scale(.4); } 34% { opacity:1; } 80% { opacity:.75; } 100% { opacity:0; transform:translate(-50%,-50%) rotate(var(--angle)) translate(34px,38px) scale(.65); } }
+@keyframes fx-blood-splash { 0%,55% { opacity:0; transform:translateX(-50%) scale(.5); } 68% { opacity:.8; transform:translateX(-50%) scale(1); } 100% { opacity:0; transform:translateX(-50%) scale(1.25); } }
+@keyframes fx-drone-fall { 0%,17% { opacity:0; transform:translate(-50%,-75%) rotate(-8deg); } 26% { opacity:1; } 65% { opacity:1; transform:translate(-50%,24%) rotate(170deg); } 72% { opacity:.35; transform:translate(-50%,28%) rotate(205deg) scale(.75); } 100% { opacity:0; transform:translate(-50%,28%) rotate(220deg) scale(.6); } }
+@keyframes fx-crash-flash { 0%,56% { opacity:0; transform:translate(-50%,-50%) scale(.25); } 62% { opacity:1; transform:translate(-50%,-50%) scale(1.5); } 72% { opacity:0; transform:translate(-50%,-50%) scale(2.4); } 100% { opacity:0; } }
+@keyframes fx-crash-spark { 0%,54% { opacity:0; transform:rotate(var(--angle)) translateX(0) scaleX(.25); } 62% { opacity:1; } 84% { opacity:.65; transform:rotate(var(--angle)) translateX(65px) scaleX(.8); } 100% { opacity:0; transform:rotate(var(--angle)) translateX(84px) scaleX(.25); } }
+@keyframes fx-smoke-puff { 0%,53% { opacity:0; transform:translate(-50%,-50%) scale(.35); } 65% { opacity:.62; } 100% { opacity:0; transform:translate(calc(-50% + var(--smoke-x)),-90%) scale(1.8); } }
+
+
+/* 鏃犱汉鏈哄潬姣侀婕斾笌瀹炴満鐨勯樁娈典竴鑷达細鐑熼浘閬斀鏈熼棿涓嶆彁鍓嶆樉绀烘畫楠搞€?*/
+.effect-stage--drone-death .effect-remnant { opacity:0; animation:fx-remnant-reveal 2.1s ease-out infinite; animation-delay:.08s; }
+@keyframes fx-remnant-reveal { 0%,72% { opacity:0; transform:translateX(-50%) scale(.72); filter:blur(4px) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } 84% { opacity:.9; transform:translateX(-50%) scale(1); filter:blur(0) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } 100% { opacity:.9; transform:translateX(-50%) scale(1); filter:blur(0) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } }
+
+/* 浣跨敤绱犳潗鐢熷浘涓殑鐪熷疄鏃犱汉鏈轰綔涓哄潬姣佸墠鏈綋锛屾挒鍑诲悗鐢辩伀鑺便€佺儫闆惧拰娈嬮鎺ョ鐢婚潰銆?*/
+.effect-drone-precrash { position:absolute; z-index:4; left:50%; top:39%; width:64%; height:48%; border:0; border-radius:0; background:none; object-fit:contain; transform:translate(-50%,-50%) rotate(-22deg); filter:drop-shadow(0 3px 4px rgba(0,0,0,.75)); animation:fx-drone-fall 2.1s cubic-bezier(.35,.05,.7,.95) infinite; }
+
+
+
+
+
+/* 红色燃烧火焰与非规律火花：残骸在本体淡出完成的同一时刻出现。 */
+.effect-crash-flame { position:absolute; z-index:6; left:50%; top:52%; width:10px; height:24px; clip-path:polygon(48% 0,78% 36%,100% 54%,72% 100%,43% 74%,18% 100%,0 57%,27% 34%); background:linear-gradient(180deg,#ff8060 0%,#ec302a 42%,#9c1425 100%); filter:drop-shadow(0 0 4px #ef3028); opacity:0; transform-origin:50% 100%; animation:fx-red-flame 1.2s ease-out infinite; animation-delay:calc(var(--i) * 75ms); }
+.effect-crash-flame:nth-child(2n) { width:7px; height:18px; top:56%; background:linear-gradient(180deg,#ffb05a,#ed3a27 55%,#851326); }
+.effect-crash-spark { --spark-delay:0ms; --spark-rotate:0deg; --dx:0px; --dy:0px; animation-delay:var(--spark-delay); }
+@keyframes fx-red-flame { 0%,52% { opacity:0; transform:translate(-50%,-15%) scale(.45,.55) rotate(-6deg); } 63% { opacity:.96; } 100% { opacity:0; transform:translate(calc(-50% + var(--dx, 0px)), -100%) scale(1.1,.7) rotate(8deg); } }
+@keyframes fx-crash-spark { 0%,54% { opacity:0; transform:translate(0,0) rotate(var(--spark-rotate)) scaleX(.2); } 61% { opacity:1; } 78% { opacity:.72; transform:translate(calc(var(--dx) * .55),calc(var(--dy) * .55)) rotate(var(--spark-rotate)) scaleX(.9); } 100% { opacity:0; transform:translate(var(--dx),var(--dy)) rotate(var(--spark-rotate)) scaleX(.25); } }
+
+
+/* 无人机死亡严格分为三段且无空帧：0-42% 下坠，42-76% 火苗，76% 起残骸。 */
+.effect-stage--drone-death .effect-drone-precrash { animation:fx-drone-three-stage 2.6s cubic-bezier(.35,.05,.7,.95) infinite; }
+.effect-stage--drone-death .effect-drone-flame { position:absolute; z-index:6; left:50%; top:55%; width:42%; height:52%; object-fit:contain; transform:translate(-50%,-76%); transform-origin:50% 88%; opacity:0; filter:drop-shadow(0 0 6px rgba(238,48,35,.72)); animation:fx-drone-flame-stage 2.6s ease-in-out infinite; }
+.effect-stage--drone-death .effect-remnant { animation:fx-drone-remnant-stage 2.6s linear infinite; }
+@keyframes fx-drone-three-stage { 0% { opacity:1; transform:translate(-50%,-78%) rotate(-5deg); } 40% { opacity:1; transform:translate(-50%,22%) rotate(168deg); } 41.99% { opacity:1; } 42%,100% { opacity:0; transform:translate(-50%,22%) rotate(168deg); } }
+@keyframes fx-drone-flame-stage { 0%,41.99% { opacity:0; transform:translate(-50%,-76%) scale(.72,.82) rotate(-2deg); } 42% { opacity:.98; transform:translate(-50%,-76%) scale(.86,.94) rotate(-2deg); } 52% { opacity:1; transform:translate(-50%,-80%) scale(1.06,1.12) rotate(2deg); } 65% { opacity:.94; transform:translate(-50%,-77%) scale(.92,1.06) rotate(-3deg); } 75.99% { opacity:.88; transform:translate(-50%,-79%) scale(1.02,.96) rotate(1deg); } 76%,100% { opacity:0; } }
+@keyframes fx-drone-remnant-stage { 0%,75.99% { opacity:0; } 76%,100% { opacity:.9; } }
+
+
+/* 三阶段柔和衔接：无人机/火苗约5%重叠，火苗/残骸约10%重叠。 */
+.effect-stage--drone-death .effect-drone-precrash { animation-name:fx-drone-overlap-stage; }
+.effect-stage--drone-death .effect-drone-flame { animation-name:fx-drone-flame-overlap-stage; }
+.effect-stage--drone-death .effect-remnant { animation-name:fx-drone-remnant-overlap-stage; }
+@keyframes fx-drone-overlap-stage { 0% { opacity:1; transform:translate(-50%,-78%) rotate(-5deg); } 39% { opacity:1; transform:translate(-50%,22%) rotate(168deg); } 44% { opacity:0; transform:translate(-50%,23%) rotate(174deg) scale(.94); } 44.01%,100% { opacity:0; } }
+@keyframes fx-drone-flame-overlap-stage { 0%,38.99% { opacity:0; transform:translate(-50%,-76%) scale(.7,.78); } 39% { opacity:.68; transform:translate(-50%,-76%) scale(.82,.9); } 45% { opacity:1; transform:translate(-50%,-80%) scale(1.04,1.1); } 66% { opacity:.96; transform:translate(-50%,-77%) scale(.94,1.04); } 70% { opacity:.9; } 80% { opacity:0; transform:translate(-50%,-74%) scale(.84,.74); } 80.01%,100% { opacity:0; } }
+@keyframes fx-drone-remnant-overlap-stage { 0%,69.99% { opacity:0; transform:translateX(-50%) scale(.84); filter:blur(2px) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } 70% { opacity:.12; } 78% { opacity:.9; transform:translateX(-50%) scale(1); filter:blur(0) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } 100% { opacity:.9; transform:translateX(-50%) scale(1); filter:blur(0) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } }
+
+
+/* 延长两处交叠：无人机/火苗约13%，火苗/残骸约22%。 */
+.effect-stage--drone-death .effect-drone-precrash { animation-name:fx-drone-long-overlap-stage; }
+.effect-stage--drone-death .effect-drone-flame { animation-name:fx-drone-flame-long-overlap-stage; }
+.effect-stage--drone-death .effect-remnant { animation-name:fx-drone-remnant-long-overlap-stage; }
+@keyframes fx-drone-long-overlap-stage { 0% { opacity:1; transform:translate(-50%,-78%) rotate(-5deg); } 39% { opacity:1; transform:translate(-50%,22%) rotate(168deg); } 52% { opacity:0; transform:translate(-50%,24%) rotate(178deg) scale(.9); } 52.01%,100% { opacity:0; } }
+@keyframes fx-drone-flame-long-overlap-stage { 0%,38.99% { opacity:0; transform:translate(-50%,-76%) scale(.7,.78); } 39% { opacity:.62; transform:translate(-50%,-76%) scale(.82,.9); } 48% { opacity:1; transform:translate(-50%,-80%) scale(1.05,1.12); } 62% { opacity:.98; transform:translate(-50%,-78%) scale(.96,1.06); } 72% { opacity:.86; } 84% { opacity:0; transform:translate(-50%,-73%) scale(.8,.68); } 84.01%,100% { opacity:0; } }
+@keyframes fx-drone-remnant-long-overlap-stage { 0%,61.99% { opacity:0; transform:translateX(-50%) scale(.8); filter:blur(3px) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } 62% { opacity:.08; } 76% { opacity:.72; transform:translateX(-50%) scale(.96); filter:blur(.5px) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } 84%,100% { opacity:.9; transform:translateX(-50%) scale(1); filter:blur(0) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } }
+
+
+/* 佣兵死亡采用真实佣兵图像，不再使用椭圆血斑和方块身体；三个阶段沿用无人机的交叠逻辑。 */
+.effect-stage--mercenary-death .effect-body-fall,.effect-stage--mercenary-death .effect-blood-splash { display:none !important; }
+.effect-stage--mercenary-death .effect-mercenary-predeath { position:absolute; z-index:4; left:50%; top:38%; width:64%; height:48%; border:0; border-radius:0; background:none; object-fit:contain; filter:drop-shadow(0 4px 5px rgba(0,0,0,.72)); transform-origin:50% 82%; animation:fx-mercenary-image-death 2.7s ease-in-out infinite; }
+.effect-stage--mercenary-death .effect-blood-drop { --dx:0px; --dy:0px; --drop-rotate:0deg; animation:fx-mercenary-blood-drop 2.7s cubic-bezier(.18,.3,.62,1) infinite; animation-delay:calc(var(--i) * 30ms); }
+.effect-stage--mercenary-death .effect-remnant { animation:fx-mercenary-remnant-reveal 2.7s linear infinite; }
+@keyframes fx-mercenary-image-death { 0%,18% { opacity:1; transform:translate(-50%,-58%) rotate(-2deg); } 42% { opacity:1; transform:translate(-50%,-3%) rotate(68deg); } 56% { opacity:.45; transform:translate(-50%,2%) rotate(82deg) scale(.96); } 64% { opacity:0; transform:translate(-50%,4%) rotate(88deg) scale(.92); } 64.01%,100% { opacity:0; } }
+@keyframes fx-mercenary-blood-drop { 0%,35% { opacity:0; transform:translate(-50%,-50%) rotate(var(--drop-rotate)) scale(.4); } 42% { opacity:.92; } 66% { opacity:.72; transform:translate(calc(-50% + var(--dx) * .62),calc(-50% + var(--dy) * .62)) rotate(var(--drop-rotate)) scale(.8); } 82%,100% { opacity:0; transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--drop-rotate)) scale(.45); } }
+@keyframes fx-mercenary-remnant-reveal { 0%,51.99% { opacity:0; transform:translateX(-50%) scale(.82); filter:blur(2px) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } 52% { opacity:.08; } 68% { opacity:.68; transform:translateX(-50%) scale(.96); filter:blur(.5px) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } 78%,100% { opacity:.82; transform:translateX(-50%) scale(1); filter:blur(0) drop-shadow(0 4px 5px rgba(0,0,0,.55)); } }
+
+
+/* 血滴起点固定在佣兵躯干区域，随倒地阶段开始喷出，不再从地面中央生成。 */
+.effect-stage--mercenary-death .effect-blood-drop { left:50%; top:42%; transform-origin:0 0; }
+@keyframes fx-mercenary-blood-drop { 0%,35% { opacity:0; transform:translate(-50%,-50%) rotate(var(--drop-rotate)) scale(.35); } 40% { opacity:.95; transform:translate(-50%,-50%) rotate(var(--drop-rotate)) scale(.75); } 66% { opacity:.72; transform:translate(calc(-50% + var(--dx) * .62),calc(-50% + var(--dy) * .62)) rotate(var(--drop-rotate)) scale(.8); } 82%,100% { opacity:0; transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--drop-rotate)) scale(.45); } }
+
+
+/* 血滴在佣兵完成倒地后才从落地躯干位置出现。 */
+.effect-stage--mercenary-death .effect-blood-drop { left:50%; top:49%; }
+@keyframes fx-mercenary-blood-drop { 0%,46% { opacity:0; transform:translate(-50%,-50%) rotate(var(--drop-rotate)) scale(.35); } 50% { opacity:.95; transform:translate(-50%,-50%) rotate(var(--drop-rotate)) scale(.75); } 70% { opacity:.72; transform:translate(calc(-50% + var(--dx) * .62),calc(-50% + var(--dy) * .62)) rotate(var(--drop-rotate)) scale(.8); } 86%,100% { opacity:0; transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--drop-rotate)) scale(.45); } }

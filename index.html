@@ -42,6 +42,7 @@
           <button class="command-tab" type="button" role="tab" data-command-tab="balance" aria-selected="false">数值测试</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="animations" aria-selected="false">动画面板</button>
           <button class="command-tab achievement-launch" id="achievement-command-button" type="button" aria-label="打开成就面板">成就</button>
+          <button class="command-tab" type="button" role="tab" data-command-tab="effects" aria-selected="false">特效面板</button>
         </nav>
 
         <div class="command-profile">
@@ -139,6 +140,29 @@
           <button class="picker-close animation-detail__close" id="animation-detail-close" type="button" aria-label="关闭动画详情">×</button>
           <div class="animation-detail__preview" id="animation-detail-preview"></div>
           <div class="animation-detail__copy"><span id="animation-detail-code"></span><h3 id="animation-detail-name"></h3><p id="animation-detail-description"></p><dl><div><dt>动作时间线</dt><dd id="animation-detail-timeline"></dd></div><div><dt>素材状态</dt><dd id="animation-detail-status"></dd></div></dl><button class="animation-replay" id="animation-replay" type="button">REPLAY // 重新播放</button></div>
+        </div></aside>
+      </section>
+      <section class="command-panel effect-panel" data-command-panel="effects" aria-label="全素材特效面板" hidden>
+        <header class="effect-panel__header">
+          <div><span>VFX FORGE // UNIVERSAL EFFECT LIBRARY</span><h2>全素材特效面板</h2><p>包括通用粒子、光束、冲击波、状态效果、全部连携特效，以及怪物、佣兵和无人机死亡特效。</p></div>
+          <output id="effect-count">正在建立特效索引…</output>
+        </header>
+        <div class="effect-toolbar">
+          <div class="effect-filters" role="group" aria-label="特效分类">
+            <button type="button" data-effect-filter="all" aria-pressed="true">全部</button>
+            <button type="button" data-effect-filter="core" aria-pressed="false">粒子/光束</button>
+            <button type="button" data-effect-filter="synergy" aria-pressed="false">连携</button>
+            <button type="button" data-effect-filter="enemy-death" aria-pressed="false">怪物死亡</button>
+            <button type="button" data-effect-filter="mercenary-death" aria-pressed="false">佣兵死亡</button>
+            <button type="button" data-effect-filter="drone-death" aria-pressed="false">无人机死亡</button>
+          </div>
+          <label class="effect-search"><span>SEARCH</span><input id="effect-search" type="search" placeholder="搜索粒子、光束、单位或连携…" autocomplete="off" /></label>
+        </div>
+        <div class="effect-grid" id="effect-grid"></div>
+        <aside class="effect-detail" id="effect-detail" hidden><div class="effect-detail__panel">
+          <button class="picker-close effect-detail__close" id="effect-detail-close" type="button" aria-label="关闭特效详情">×</button>
+          <div class="effect-detail__preview" id="effect-detail-preview"></div>
+          <div class="effect-detail__copy"><span id="effect-detail-code"></span><h3 id="effect-detail-name"></h3><p id="effect-detail-description"></p><dl><div><dt>特效时间线</dt><dd id="effect-detail-timeline"></dd></div><div><dt>合成层级</dt><dd id="effect-detail-layers"></dd></div></dl><button class="effect-replay" id="effect-replay" type="button">REPLAY // 重新播放</button></div>
         </div></aside>
       </section>
     </section>

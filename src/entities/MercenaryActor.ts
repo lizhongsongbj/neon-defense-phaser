@@ -4,17 +4,20 @@
 export class MercenaryActor extends Phaser.GameObjects.Container {
   private readonly units: Phaser.GameObjects.Image[]
   private readonly homeX: number[]
+  private readonly wasDown: boolean[]
 
   constructor(scene: Phaser.Scene, count: number) {
     super(scene, 0, 0)
     this.units = []
     this.homeX = []
+    this.wasDown = []
     for (let i = 0; i < count; i += 1) {
       const key = i === 0 ? 'unit-mercenary-shield' : 'unit-mercenary-rifle'
       const x = (i - (count - 1) / 2) * 16
       const img = scene.add.image(x, 0, scene.textures.exists(key) ? key : '__MISSING')
       img.setDisplaySize(20, 26)
       this.homeX.push(x)
+      this.wasDown.push(false)
       this.units.push(img)
       this.add(img)
     }
@@ -22,9 +25,31 @@ export class MercenaryActor extends Phaser.GameObjects.Container {
     scene.add.existing(this)
   }
 
-  sync(x: number, y: number, downFlags: boolean[]) {
+  sync(x: number, y: number, downFlags: boolean[], onDeath?: (at: { x: number; y: number }) => void) {
     this.setPosition(x, y)
-    this.units.forEach((img, i) => img.setAlpha(downFlags[i] ? 0.25 : 1))
+    this.units.forEach((img, i) => {
+      const down = Boolean(downFlags[i])
+      if (down && !this.wasDown[i]) {
+        this.scene.tweens.killTweensOf(img)
+        // 佣兵接近完全倒地后，再从其当前落地位置生成血滴。
+        this.scene.time.delayedCall(360, () => {
+          if (!img.active) return
+          onDeath?.({ x: this.x + img.x, y: this.y + img.y + 2 })
+        })
+        this.scene.tweens.add({
+          targets: img,
+          rotation: i % 2 === 0 ? -1.28 : 1.28,
+          y: 9,
+          alpha: 0,
+          duration: 430,
+          ease: 'Sine.easeIn',
+        })
+      } else if (!down && this.wasDown[i]) {
+        this.scene.tweens.killTweensOf(img)
+        img.setPosition(this.homeX[i], 0).setRotation(0).setAlpha(1)
+      }
+      this.wasDown[i] = down
+    })
   }
 
   playAttack(index: number, target: { x: number; y: number }): { x: number; y: number } {

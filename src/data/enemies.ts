@@ -36,7 +36,7 @@ export const ENEMY_TYPES: Record<EnemyId, EnemyDefinition> = {
   gang: {
     id: 'gang', name: '帮派义体兵', hp: 180, speed: 28, armor: 0, reward: 18, attack: 12,
     image: 'assets/enemies/generated-raw-selected/enemy-01-gang-cyborg-base-cutout.png', size: 0.038,
-    moveAnimation: 'assets/animations/enemies/enemy-01-gang-cyborg-move.webp',
+    moveAnimation: 'assets/animations/enemies/enemy-01-gang-cyborg-move.webp?v=whole-body-gait-20260824',
     trait: '无护甲，数量多；佣兵和电弧塔克制',
   },
   riot: {
@@ -104,3 +104,4 @@ export const ENEMY_TYPES: Record<EnemyId, EnemyDefinition> = {
 }
 
 export const ENEMY_IDS: EnemyId[] = ['gang', 'riot', 'ninja', 'aerostat', 'devourer', 'faraday', 'hijacker', 'neurohound', 'matriarch', 'bonebreaker']
+

@@ -9,10 +9,12 @@ export class TowerActor extends Phaser.GameObjects.Container {
   private readonly levelTag: Phaser.GameObjects.Text
   readonly rangeIndicator: Phaser.GameObjects.Ellipse
   private readonly hitZone: Phaser.GameObjects.Zone
+  private readonly baseSize: number
 
   constructor(scene: Phaser.Scene, state: TowerState, baseSize: number) {
     super(scene, 0, 0)
     this.tower = state
+    this.baseSize = baseSize
     const key = `tower-${state.typeId}`
 
     this.sprite = scene.add.image(0, 0, scene.textures.exists(key) ? key : '__MISSING')
@@ -39,6 +41,9 @@ export class TowerActor extends Phaser.GameObjects.Container {
     scene.add.existing(this)
   }
 
+  attackOrigin(): { x: number; y: number } {
+    return { x: this.x, y: this.y - this.baseSize * 0.4 }
+  }
   setLevel(level: number) {
     this.levelTag.setText(`LV.${level}`)
   }

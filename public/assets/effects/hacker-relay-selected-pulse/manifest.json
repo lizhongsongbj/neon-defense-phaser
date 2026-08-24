@@ -1,0 +1,26 @@
+{
+  "source": "/assets/animations/towers/tower-04-hacker-relay-attack.webp",
+  "selection": "/assets/image-studio/hacker-relay-pulse-selection.json",
+  "frameCount": 16,
+  "frameRate": 18,
+  "frameDurationMs": 55,
+  "crop": {
+    "x": 14,
+    "y": 29,
+    "width": 247,
+    "height": 101
+  },
+  "sourceSize": {
+    "width": 512,
+    "height": 512
+  },
+  "anchor": {
+    "x": 1,
+    "y": 0.5
+  },
+  "timing": {
+    "generate": "frames 1-6",
+    "reveal": "frames 7-13",
+    "dissolve": "frames 14-16"
+  }
+}

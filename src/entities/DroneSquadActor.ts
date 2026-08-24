@@ -12,7 +12,7 @@ export class DroneSquadActor extends Phaser.GameObjects.Container {
       const angle = (Math.PI * 2 * i) / Math.max(1, count) - Math.PI / 2
       const orbit = { x: Math.cos(angle) * 24, y: Math.sin(angle) * 13 - 7 }
       const image = scene.add.image(orbit.x, orbit.y, scene.textures.exists('unit-drone-hive') ? 'unit-drone-hive' : '__MISSING')
-      image.setDisplaySize(30, 30).setDepth(2)
+      image.setDisplaySize(48, 48).setDepth(2)
       this.drones.push(image)
       this.busy.push(false)
       this.orbitPositions.push(orbit)
@@ -29,6 +29,43 @@ export class DroneSquadActor extends Phaser.GameObjects.Container {
       const base = this.orbitPositions[index]
       drone.setPosition(base.x, base.y + Math.sin(now / 360 + index * Math.PI) * 3)
       drone.setRotation(Math.sin(now / 700 + index) * 0.08)
+    })
+  }
+
+  playDeath(index: number, onDeath: (at: { x: number; y: number }) => void) {
+    const slot = Math.abs(index) % this.drones.length
+    const drone = this.drones[slot]
+    if (!drone) return
+    this.busy[slot] = true
+    this.scene.tweens.killTweensOf(drone)
+    const crashX = drone.x + Phaser.Math.Between(-24, 24)
+    const crashY = drone.y + Phaser.Math.Between(32, 52)
+    this.scene.tweens.add({
+      targets: drone,
+      x: crashX,
+      y: crashY,
+      rotation: drone.rotation + Phaser.Math.FloatBetween(4.5, 7.5),
+      alpha: 0.18,
+      duration: 420,
+      ease: 'Quad.easeIn',
+      onComplete: () => {
+        // 落地时火苗立即出现，无人机本体再用数帧淡出，让二者短暂重叠。
+        const impact = { x: this.x + crashX, y: this.y + crashY }
+        onDeath(impact)
+        this.scene.tweens.add({
+          targets: drone,
+          alpha: 0,
+          duration: 360,
+          ease: 'Sine.easeOut',
+          onComplete: () => drone.setVisible(false),
+        })
+        this.scene.time.delayedCall(5000, () => {
+          if (!drone.active) return
+          const home = this.orbitPositions[slot]
+          drone.setPosition(home.x, home.y).setRotation(0).setAlpha(1).setVisible(true)
+          this.busy[slot] = false
+        })
+      },
     })
   }
 

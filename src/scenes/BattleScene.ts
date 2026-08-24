@@ -494,6 +494,7 @@ export class BattleScene extends Phaser.Scene {
       this.syncDroneActor(tower)
       if (events.length) {
         const towerScreen = boardToScreen(tower.source)
+        let hackerPulsePlayed = false
         for (const event of events) {
           const target = this.battle.enemies.find((e) => e.id === event.targetId)
           if (target) {
@@ -506,6 +507,14 @@ export class BattleScene extends Phaser.Scene {
               const squad = this.droneActors.get(tower.id)
               if (squad) squad.dispatch(event.droneIndex ?? 0, targetScreen, () => this.effects.playImpact(targetScreen, event.effect))
               else this.effects.playImpact(targetScreen, event.effect)
+            } else if (event.effect === 'hacker') {
+              if (!hackerPulsePlayed) {
+                const origin = this.towerActors.get(tower.id)?.attackOrigin() ?? towerScreen
+                this.effects.playHackerPulse(origin, targetScreen, tower.level)
+                hackerPulsePlayed = true
+              } else {
+                this.effects.playImpact(targetScreen, event.effect)
+              }
             } else {
               this.effects.playShot(towerScreen, targetScreen, event.effect)
             }
@@ -564,6 +573,8 @@ export class BattleScene extends Phaser.Scene {
       if (!enemy.dead) continue
       const leaked = enemy.distance >= 1000
       if (!leaked) {
+        const deathPosition = boardToScreen(enemyPosition(this.geometry, enemy))
+        this.effects.playDeathRemnant(deathPosition, enemy.mechanical, enemy.isBoss)
         const reward = scaleReward(enemy.reward, this.battle.mapIndex)
         this.battle.coins += reward
         this.battle.kills += 1
@@ -620,7 +631,10 @@ export class BattleScene extends Phaser.Scene {
       this.mercActors.set(tower.id, actor)
     }
     const screen = boardToScreen(tower.rallyPoint)
-    actor.sync(screen.x, screen.y, tower.mercs.map((m) => Boolean(m.respawnAt)))
+    actor.sync(screen.x, screen.y, tower.mercs.map((m) => Boolean(m.respawnAt)), (at) => {
+      this.effects.playMercenaryDeath(at)
+      this.voice?.play('street-mercenary', 'down', { chance: 0.45 })
+    })
   }
 
   private syncDroneActor(tower: TowerState) {
