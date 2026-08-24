@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run assets:alpha:check && tsc -b && vite build",
     "preview": "vite preview",
     "test": "node --import tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
@@ -15,7 +15,13 @@
     "smoke:balance": "node tools/check-balance-panel.mjs",
     "smoke:auto-demo": "node tools/check-auto-demo.mjs",
     "audit:campaign": "node --import tsx tools/balance-campaign-audit.ts",
-    "sweep:hard": "node --import tsx tools/balance-hard-sweep.ts"
+    "sweep:hard": "node --import tsx tools/balance-hard-sweep.ts",
+    "report:towers": "node tools/generate-tower-stats-report.mjs && node --import tsx tools/generate-tower-expansion-report.mjs",
+    "smoke:animations": "node tools/check-animation-panel.mjs",
+    "assets:alpha:audit": "node tools/transparent-assets.mjs",
+    "assets:alpha:fix": "node tools/transparent-assets.mjs --apply",
+    "assets:alpha:check": "node tools/transparent-assets.mjs --check",
+    "animations:bio:generate": "node tools/generate-biological-enemy-animations.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
@@ -27,6 +33,7 @@
     "vite": "^7.0.0"
   },
   "dependencies": {
-    "phaser": "3.90.0"
+    "phaser": "3.90.0",
+    "sharp": "^0.34.3"
   }
 }

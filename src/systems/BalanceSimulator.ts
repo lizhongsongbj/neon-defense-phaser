@@ -19,7 +19,7 @@ import { MAX_REWARD } from '../data/waveEconomy'
 import { TOWER_IDS, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
 import { buildMapGeometry, type MapGeometry } from './PathSystem'
 import { buildWavePlan, scheduleWave } from './WaveSpawner'
-import { spawnEnemy, isEnemyPhasedAt } from './CombatSystem'
+import { spawnEnemy, isEnemyPhasedAt, tickEnemyTraits } from './CombatSystem'
 import { resolveTowerAttack } from './towerBehaviors'
 import { tickEnforcer } from './bossBehaviors/Enforcer'
 import { tickEve } from './bossBehaviors/Eve'
@@ -142,6 +142,8 @@ function simulateWave(
         growth: growthFor(tower.typeId),
       })
     }
+
+    tickEnemyTraits(geometry, battle.enemies, battle.now, TICK_SECONDS)
 
     for (const enemy of battle.enemies) {
       if (enemy.dead || enemy.blocked) continue

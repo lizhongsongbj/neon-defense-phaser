@@ -82,11 +82,11 @@ function selectItem(item: AssetItem) {
   generatedAsset = generatedAssets.get(item.id) ?? null
   selectedTower.textContent = `${item.towerName} // ${item.categoryId.toUpperCase()}`
   selectedName.textContent = item.name
-  referenceImage.src = item.referenceAsset
+  referenceImage.src = `${item.referenceAsset}?v=alpha-20260824-2`
   referenceImage.alt = `${item.towerName}基础造型参考`
   promptInput.value = item.prompt
   if (generatedAsset) {
-    resultImage.src = `${generatedAsset.imageUrl}?v=${encodeURIComponent(generatedAsset.fileName)}`
+    resultImage.src = `${generatedAsset.imageUrl}?v=${encodeURIComponent(generatedAsset.fileName)}-alpha-20260824-2`
     resultImage.hidden = false
     resultPlaceholder.hidden = true
     resultDetails.hidden = false
@@ -153,10 +153,10 @@ function bindStudioSections() {
     })
   })
 }
+
 function renderMonsterLibrary() {
   type HostileDefinition = EnemyDefinition | BossDefinition
   const hostiles: HostileDefinition[] = [...Object.values(ENEMY_TYPES), ...Object.values(BOSS_TYPES)]
-
   monsterCount.textContent = `${hostiles.length} 个已接入单位 // 点击图像查看原图`
   monsterLibraryGrid.replaceChildren(...hostiles.map((def, index) => {
     const isBoss = 'boss' in def && def.boss
@@ -175,19 +175,12 @@ function renderMonsterLibrary() {
       </div>
       <div class="monster-library-card__copy">
         <strong>${def.name}</strong>
-        <div>
-          <span>生命 <b>${def.hp}</b></span>
-          ${shield}
-          <span>攻击 <b>${def.attack}</b></span>
-          <span>速度 <b>${def.speed}</b></span>
-          <span>护甲 <b>${Math.round(def.armor * 100)}%</b></span>
-        </div>
-      </div>
-    `
+        <div><span>生命 <b>${def.hp}</b></span>${shield}<span>攻击 <b>${def.attack}</b></span><span>速度 <b>${def.speed}</b></span><span>护甲 <b>${Math.round(def.armor * 100)}%</b></span><span>赏金 <b>${def.reward}</b></span></div>
+        <p>${def.trait}</p>
+      </div>`
     return card
   }))
 }
-
 async function loadConfig() {
   try {
     const response = await fetch('/api/image-studio/config', { cache: 'no-store' })

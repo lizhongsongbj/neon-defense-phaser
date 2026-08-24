@@ -12,3 +12,21 @@ public/assets/generated/raw/*
 public/assets/generated/cutout/*
 !public/assets/generated/raw/.gitkeep
 !public/assets/generated/cutout/.gitkeep
+
+# Local asset-generation scratch files and backups
+.tmp-*
+/*-b64.txt
+/*-base64.txt
+/*-workbench.png
+/*-generated.jpg
+/*-reference.jpg
+/asset-config-backups/
+/asset-swap-backups/
+/asset-white-removal-backups/
+/tools/asset-alpha-backup-*/
+/tools/white-preview/
+/tools/white-remnant-preview/
+/public/assets/towers/new-concepts/revised/*-backup.png
+/public/assets/animations/towers/*.visible-white-temp
+/grey-tide-level-2-regenerated.png
+/tools/asset-alpha-audit.json

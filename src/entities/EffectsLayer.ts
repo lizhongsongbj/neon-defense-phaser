@@ -10,7 +10,7 @@ const EFFECT_COLORS: Record<string, number> = {
 
 /**
  * 攻击特效层 —— 原版对应 `.combat-projectile` / `.combat-impact` / `.combat-flash` 元素,
- * 这里用 Phaser Graphics + Tween 简化重现:一条飞行的短线 + 命中处的扩散圆环。
+ * 塔楼本体只为磁轨、电弧和黑客攻击提供发射点；佣兵与无人机由各自单位演员负责出动。
  */
 export class EffectsLayer {
   private readonly scene: Phaser.Scene
@@ -21,26 +21,7 @@ export class EffectsLayer {
 
   playShot(from: { x: number; y: number }, to: { x: number; y: number }, effect: string) {
     const color = EFFECT_COLORS[effect] ?? 0xffffff
-    if (effect === 'drone' && this.scene.textures.exists('unit-drone-hive')) {
-      const angle = Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y)
-      const drone = this.scene.add
-        .image(from.x, from.y, 'unit-drone-hive')
-        .setDisplaySize(42, 42)
-        .setRotation(angle + Math.PI / 2)
-        .setDepth(90)
-      this.scene.tweens.add({
-        targets: drone,
-        x: to.x,
-        y: to.y,
-        duration: 260,
-        ease: 'Sine.easeIn',
-        onComplete: () => {
-          drone.destroy()
-          this.playImpact(to, effect)
-        },
-      })
-      return
-    }
+
     const line = this.scene.add.line(0, 0, from.x, from.y, to.x, to.y, color, 0.9).setLineWidth(2)
     line.setOrigin(0, 0)
     this.scene.tweens.add({

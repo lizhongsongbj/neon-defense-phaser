@@ -10,6 +10,11 @@ export type VoiceCategory =
   | 'ninja'
   | 'aerostat'
   | 'devourer'
+  | 'faraday'
+  | 'hijacker'
+  | 'neurohound'
+  | 'matriarch'
+  | 'bonebreaker'
   | 'enforcer'
   | 'eve'
   | 'mag-rail-sniper'
@@ -46,6 +51,11 @@ export const VOICE_CATALOG: Record<VoiceCategory, Record<string, string[]>> = {
   devourer: {
     spawn: ['data_devourer/open_port.mp3', 'data_devourer/strip_access.mp3', 'data_devourer/memory_belongs.mp3'],
   },
+  faraday: { spawn: [] },
+  hijacker: { spawn: [] },
+  neurohound: { spawn: [] },
+  matriarch: { spawn: [] },
+  bonebreaker: { spawn: [] },
   enforcer: {
     entrance: ['enforcer_zero/entrance.mp3'],
     shield: ['enforcer_zero/shield_broken.mp3'],
@@ -110,7 +120,7 @@ export function voiceClassId(category: VoiceCategory, event: string): string {
   if (category === 'enforcer' || category === 'eve') return 'boss_mechanic'
   if (category === 'lan' && ['wave', 'finalWave', 'damage', 'routeSplit', 'defeat'].includes(event)) return 'battle_warning'
   if (['mag-rail-sniper', 'arc-neon', 'street-mercenary', 'hacker-relay', 'drone-hive'].includes(category)) return 'tactical_feedback'
-  if (['gang', 'riot', 'ninja', 'aerostat', 'devourer'].includes(category)) return 'enemy_bark'
+  if (['gang', 'riot', 'ninja', 'aerostat', 'devourer', 'faraday', 'hijacker', 'neurohound', 'matriarch', 'bonebreaker'].includes(category)) return 'enemy_bark'
   return 'character_flavor'
 }
 

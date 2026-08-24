@@ -1,8 +1,8 @@
-﻿import { copyFile, mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
+﻿import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { extname, resolve, sep } from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { fileURLToPath } from 'node:url'
-import { PNG } from 'pngjs'
+import sharp from 'sharp'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 
 const workspaceRoot = fileURLToPath(new URL('.', import.meta.url))
@@ -149,53 +149,102 @@ async function requestOriginImage(
   return extractImageBytes(payload)
 }
 
-function isConnectedBackgroundPixel(png: PNG, pixelIndex: number): boolean {
-  const offset = pixelIndex * 4
-  const red = png.data[offset]
-  const green = png.data[offset + 1]
-  const blue = png.data[offset + 2]
-  const alpha = png.data[offset + 3]
-  if (alpha <= 8) return true
-  const brightest = Math.max(red, green, blue)
-  const darkest = Math.min(red, green, blue)
-  return red >= 238 && green >= 238 && blue >= 238 && brightest - darkest <= 12
+interface TransparencyResult {
+  buffer: Buffer
+  removedWhitePixels: number
+  alphaChecked: true
 }
 
-function removeEdgeWhiteBackground(source: Buffer): Buffer {
-  const png = PNG.sync.read(source)
-  const { width, height } = png
+const whiteBackgroundMinimum = 235
+const whiteBackgroundMaxSpread = 26
+
+function removeWhiteRegion(
+  data: Buffer,
+  width: number,
+  height: number,
+  channels: number,
+  options: { whiteMinimum: number; maxSpread: number; seedTransparentPixels: boolean },
+): number {
   const visited = new Uint8Array(width * height)
-  const queue: number[] = []
+  const queue = new Int32Array(width * height)
+  let head = 0
+  let tail = 0
+  let removed = 0
 
-  const enqueue = (x: number, y: number) => {
-    if (x < 0 || y < 0 || x >= width || y >= height) return
-    const index = y * width + x
-    if (visited[index] || !isConnectedBackgroundPixel(png, index)) return
+  const state = (index: number) => {
+    const offset = index * channels
+    const red = data[offset]
+    const green = data[offset + 1]
+    const blue = data[offset + 2]
+    const alpha = data[offset + 3]
+    return {
+      transparent: alpha <= 8,
+      white: alpha > 8
+        && Math.min(red, green, blue) >= options.whiteMinimum
+        && Math.max(red, green, blue) - Math.min(red, green, blue) <= options.maxSpread,
+    }
+  }
+
+  const enqueue = (index: number) => {
+    if (index < 0 || index >= width * height || visited[index]) return
+    const pixel = state(index)
+    if (!pixel.white && !(options.seedTransparentPixels && pixel.transparent)) return
     visited[index] = 1
-    queue.push(index)
+    queue[tail] = index
+    tail += 1
   }
 
-  for (let x = 0; x < width; x += 1) {
-    enqueue(x, 0)
-    enqueue(x, height - 1)
-  }
-  for (let y = 0; y < height; y += 1) {
-    enqueue(0, y)
-    enqueue(width - 1, y)
+  if (options.seedTransparentPixels) {
+    for (let index = 0; index < width * height; index += 1) {
+      if (data[index * channels + 3] <= 8) enqueue(index)
+    }
+  } else {
+    for (let x = 0; x < width; x += 1) {
+      enqueue(x)
+      enqueue((height - 1) * width + x)
+    }
+    for (let y = 1; y < height - 1; y += 1) {
+      enqueue(y * width)
+      enqueue(y * width + width - 1)
+    }
   }
 
-  for (let cursor = 0; cursor < queue.length; cursor += 1) {
-    const index = queue[cursor]
+  while (head < tail) {
+    const index = queue[head]
+    head += 1
+    const pixel = state(index)
+    if (pixel.white) {
+      data[index * channels + 3] = 0
+      removed += 1
+    }
     const x = index % width
     const y = Math.floor(index / width)
-    png.data[index * 4 + 3] = 0
-    enqueue(x - 1, y)
-    enqueue(x + 1, y)
-    enqueue(x, y - 1)
-    enqueue(x, y + 1)
+    if (x > 0) enqueue(index - 1)
+    if (x < width - 1) enqueue(index + 1)
+    if (y > 0) enqueue(index - width)
+    if (y < height - 1) enqueue(index + width)
   }
+  return removed
+}
 
-  return PNG.sync.write(png)
+async function removeEdgeWhiteBackground(source: Buffer): Promise<TransparencyResult> {
+  const image = sharp(source, { limitInputPixels: false }).ensureAlpha()
+  const { data, info } = await image.raw().toBuffer({ resolveWithObject: true })
+  const { width, height, channels } = info
+  const backgroundRemoved = removeWhiteRegion(data, width, height, channels, {
+    whiteMinimum: whiteBackgroundMinimum,
+    maxSpread: whiteBackgroundMaxSpread,
+    seedTransparentPixels: false,
+  })
+  const fringeRemoved = removeWhiteRegion(data, width, height, channels, {
+    whiteMinimum: 210,
+    maxSpread: 35,
+    seedTransparentPixels: true,
+  })
+  const buffer = await sharp(data, { raw: { width, height, channels } })
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toBuffer()
+  return { buffer, removedWhitePixels: backgroundRemoved + fringeRemoved, alphaChecked: true }
 }
 
 interface GeneratedAssetRecord {
@@ -205,6 +254,8 @@ interface GeneratedAssetRecord {
   rawUrl: string
   imageUrl: string
   cutoutApplied: boolean
+  alphaChecked: boolean
+  removedWhitePixels: number
 }
 
 async function listGeneratedAssets(specification: AssetSpecification): Promise<GeneratedAssetRecord[]> {
@@ -237,6 +288,8 @@ async function listGeneratedAssets(specification: AssetSpecification): Promise<G
       rawUrl: rawSet.has(fileName) ?  `/assets/generated/raw/${fileName}` : `/assets/generated/cutout/${fileName}`,
       imageUrl: cutoutApplied ? `/assets/generated/cutout/${fileName}` : `/assets/generated/raw/${fileName}`,
       cutoutApplied,
+      alphaChecked: cutoutApplied,
+      removedWhitePixels: 0,
     }]
   })
 }
@@ -276,7 +329,6 @@ function imageStudioPlugin(environment: ImageEnvironment): Plugin {
             if (!item) throw new Error('没有找到对应的素材配置。')
 
             const size = allowedSizes.has(String(body.size)) ? String(body.size) : '1024x1024'
-            const outputMode = body.outputMode === 'opaque' ? 'opaque' : 'cutout'
             const itemPrompt = String(body.prompt || item.prompt).trim().slice(0, 12_000)
             if (!itemPrompt) throw new Error('提示词不能为空。')
             const prompt = `${specification.stylePrompt}\n\n具体升级要求：${itemPrompt}`
@@ -289,18 +341,10 @@ function imageStudioPlugin(environment: ImageEnvironment): Plugin {
             const rawPath = resolve(rawDirectory, baseName)
             await writeFile(rawPath, bytes)
 
-            let imageUrl = `/assets/generated/raw/${baseName}`
-            let cutoutApplied = false
-            if (outputMode === 'cutout') {
-              try {
-                const cutout = removeEdgeWhiteBackground(bytes)
-                await writeFile(resolve(cutoutDirectory, baseName), cutout)
-                imageUrl = `/assets/generated/cutout/${baseName}`
-                cutoutApplied = true
-              } catch {
-                // Non-PNG responses remain available as raw candidates.
-              }
-            }
+            const transparency = await removeEdgeWhiteBackground(bytes)
+            await writeFile(resolve(cutoutDirectory, baseName), transparency.buffer)
+            const imageUrl = `/assets/generated/cutout/${baseName}`
+            const cutoutApplied = true
 
             sendJson(response, 200, {
               id: item.id,
@@ -309,6 +353,8 @@ function imageStudioPlugin(environment: ImageEnvironment): Plugin {
               rawUrl: `/assets/generated/raw/${baseName}`,
               imageUrl,
               cutoutApplied,
+              alphaChecked: transparency.alphaChecked,
+              removedWhitePixels: transparency.removedWhitePixels,
             })
             return
           }
@@ -323,13 +369,16 @@ function imageStudioPlugin(environment: ImageEnvironment): Plugin {
               throw new Error('只能发布本工作台生成的候选图。')
             }
             const source = localPublicPath(imageUrl)
+            const transparency = await removeEdgeWhiteBackground(await readFile(source))
             await mkdir(publishDirectory, { recursive: true })
             const target = resolve(publishDirectory, item.targetFile)
-            await copyFile(source, target)
+            await writeFile(target, transparency.buffer)
             sendJson(response, 200, {
               id: item.id,
               gameUrl: `/assets/towers/fourth-tier/${item.targetFile}`,
               targetFile: item.targetFile,
+              alphaChecked: transparency.alphaChecked,
+              removedWhitePixels: transparency.removedWhitePixels,
             })
             return
           }

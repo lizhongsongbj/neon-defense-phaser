@@ -254,10 +254,18 @@ export class BattleHud {
         def.mechanical ? '机械' : '生物',
         'phase' in def && def.phase ? '相位' : null,
         'network' in def && def.network ? '网络' : null,
+        'energyResistance' in def && def.energyResistance ? '抗能量' : null,
+        'droneEvasion' in def && def.droneEvasion ? '链路欺骗' : null,
+        'enrageThreshold' in def && def.enrageThreshold ? '痛觉超频' : null,
+        'healingAura' in def && def.healingAura ? '生物修复' : null,
+        'energyResistance' in def && typeof def.energyResistance === 'number' && def.energyResistance < 0 ? '能量弱点' : null,
+        !def.mechanical && def.armor >= 0.5 ? '骨铠' : null,
       ]
         .filter(Boolean)
         .map((badge) => `<span>${badge}</span>`)
         .join('')
+      const matchup = 'countersTower' in def && def.countersTower && def.counteredByTower
+        ? `<p class="intel-enemy__matchup"><span>克制 ${def.countersTower}</span><b>弱点 ${def.counteredByTower}</b></p>` : ''
       const shield = 'shield' in def && def.shield ? `<li><span>护盾</span><b>${def.shield}</b></li>` : ''
       const components = 'components' in def && def.components
         ? `<p class="intel-enemy__components">部件：${def.components.join(' / ')} · 单件 ${def.componentHp} HP</p>`
@@ -282,6 +290,7 @@ export class BattleHud {
               <li><span>护甲</span><b>${Math.round(def.armor * 100)}%</b></li>
             </ul>
             ${components}
+            ${matchup}
             <p class="intel-enemy__trait">${def.trait}</p>
           </div>
         </article>

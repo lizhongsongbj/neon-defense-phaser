@@ -31,7 +31,7 @@ export function resolveDroneHive(tower: TowerState, ctx: TowerAttackContext): At
 
   const events: AttackEvent[] = []
   for (let i = 0; i < combat.drones; i += 1) {
-    const result = applyDamage(ctx.geometry, target, damage, 'physical', { position: tower.source }, 0, ctx.now)
+    const result = applyDamage(ctx.geometry, target, damage, 'physical', { position: tower.source, typeId: 'drone-hive' }, 0, ctx.now)
     tower.damageDealt += result.dealt
     events.push({ targetId: target.id, damage, kind: 'physical', result, effect: 'drone', droneIndex: i })
   }

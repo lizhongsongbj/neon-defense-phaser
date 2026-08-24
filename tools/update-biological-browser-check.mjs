@@ -1,0 +1,6 @@
+﻿import fs from 'node:fs'
+const file='tools/check-new-counter-enemies.mjs'
+let s=fs.readFileSync(file,'utf8')
+s=s.replace(`const cards=await page.locator('.intel-enemy-card').count();const text=await page.locator('#intel-content').innerText();`, `const cards=await page.locator('.intel-enemy-card').count();const text=await page.locator('#intel-content').innerText();`)
+s=s.replace(`console.log(JSON.stringify({cards,hasElectromagnetic:text.includes('电磁镇暴体'),hasHijacker:text.includes('劫持浮游体'),imagesOk:images.every(x=>x.ok),errors},null,2));await browser.close();if(cards!==9||!text.includes('电磁镇暴体')||!text.includes('劫持浮游体')||!images.every(x=>x.ok)||errors.length)process.exit(1)`, `const expected=['电磁镇暴体','劫持浮游体','神经猎犬','育质母体','骨铠破障兽'];const namesOk=expected.every(name=>text.includes(name));const aerostatCard=page.locator('.intel-enemy-card').filter({hasText:'企业浮空艇'});const aerostatMechanical=(await aerostatCard.innerText()).includes('机械');console.log(JSON.stringify({cards,namesOk,aerostatMechanical,imagesOk:images.every(x=>x.ok),errors},null,2));await browser.close();if(cards!==12||!namesOk||!aerostatMechanical||!images.every(x=>x.ok)||errors.length)process.exit(1)`)
+fs.writeFileSync(file,s,'utf8')

@@ -6,9 +6,9 @@ import type { EnemyId } from './enemies'
  */
 export const CAMPAIGN_ENEMY_ROSTERS: EnemyId[][] = [
   ['gang', 'riot'],
-  ['gang', 'riot', 'ninja'],
-  ['gang', 'riot', 'ninja', 'aerostat'],
-  ['gang', 'riot', 'ninja', 'aerostat', 'devourer'],
-  ['gang', 'riot', 'ninja', 'aerostat', 'devourer'],
-  ['gang', 'riot', 'ninja', 'aerostat', 'devourer'],
+  ['gang', 'riot', 'ninja', 'neurohound'],
+  ['gang', 'riot', 'ninja', 'aerostat', 'neurohound'],
+  ['gang', 'riot', 'ninja', 'aerostat', 'devourer', 'faraday', 'neurohound', 'matriarch'],
+  ['gang', 'riot', 'ninja', 'aerostat', 'devourer', 'faraday', 'hijacker', 'neurohound', 'matriarch', 'bonebreaker'],
+  ['gang', 'riot', 'ninja', 'aerostat', 'devourer', 'faraday', 'hijacker', 'neurohound', 'matriarch', 'bonebreaker'],
 ]

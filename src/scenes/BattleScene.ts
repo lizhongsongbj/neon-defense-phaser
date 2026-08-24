@@ -1,12 +1,12 @@
 import Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { MAP_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_STARTING_COINS, type MapLevel, type Point2 } from '../data/maps'
-import { TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
+import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
 import { scaleReward, towerGrowthBonuses, RANGE_PROJECTION_Y, MAX_HEALTH, type Difficulty } from '../data/balance'
 import { COUNTDOWN_SECONDS, earlyWaveReward } from '../data/waveEconomy'
 import { buildMapGeometry, toBoardUnits, type MapGeometry } from '../systems/PathSystem'
 import { buildWavePlan, scheduleWave } from '../systems/WaveSpawner'
-import { spawnEnemy, enemyPosition, isEnemyPhasedAt } from '../systems/CombatSystem'
+import { spawnEnemy, enemyPosition, isEnemyPhasedAt, tickEnemyTraits } from '../systems/CombatSystem'
 import { resolveTowerAttack, effectiveRange } from '../systems/towerBehaviors'
 import { tickEnforcer } from '../systems/bossBehaviors/Enforcer'
 import { tickEve } from '../systems/bossBehaviors/Eve'
@@ -16,6 +16,7 @@ import type { BattleState, EnemyState, TowerState, WaveRosterEntry } from '../sy
 import { EnemyActor } from '../entities/EnemyActor'
 import { TowerActor } from '../entities/TowerActor'
 import { MercenaryActor } from '../entities/MercenaryActor'
+import { DroneSquadActor } from '../entities/DroneSquadActor'
 import { EffectsLayer } from '../entities/EffectsLayer'
 import { CampaignState, REGISTRY_KEY } from '../state/CampaignState'
 import { EventBus, GameEvents, type BattleHudPayload } from '../state/EventBus'
@@ -43,6 +44,7 @@ export class BattleScene extends Phaser.Scene {
   private towerActors = new Map<string, TowerActor>()
   private enemyActors = new Map<number, EnemyActor>()
   private mercActors = new Map<string, MercenaryActor>()
+  private droneActors = new Map<string, DroneSquadActor>()
   private slotMarkers: Phaser.GameObjects.Arc[] = []
   private effects!: EffectsLayer
 
@@ -67,6 +69,7 @@ export class BattleScene extends Phaser.Scene {
     this.towerActors.clear()
     this.enemyActors.clear()
     this.mercActors.clear()
+    this.droneActors.clear()
     this.slotMarkers = []
 
     this.campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState
@@ -246,6 +249,7 @@ export class BattleScene extends Phaser.Scene {
     actor.setPosition(screen.x, screen.y)
     actor.onPointerDown(() => this.selectTower(tower.id))
     this.towerActors.set(tower.id, actor)
+    if (tower.typeId === 'drone-hive') this.syncDroneActor(tower)
     this.slotMarkers[slotIndex]?.setVisible(false)
   }
 
@@ -318,6 +322,8 @@ export class BattleScene extends Phaser.Scene {
     this.towerActors.delete(tower.id)
     this.mercActors.get(tower.id)?.destroy()
     this.mercActors.delete(tower.id)
+    this.droneActors.get(tower.id)?.destroy()
+    this.droneActors.delete(tower.id)
     this.slotMarkers[tower.slotIndex]?.setVisible(true)
     this.clearSelection()
     this.persistProgress()
@@ -341,6 +347,8 @@ export class BattleScene extends Phaser.Scene {
     this.towerActors.clear()
     for (const actor of this.mercActors.values()) actor.destroy()
     this.mercActors.clear()
+    for (const actor of this.droneActors.values()) actor.destroy()
+    this.droneActors.clear()
     this.slotMarkers.forEach((marker) => marker.setVisible(true))
     this.battle.towers = []
     this.battle.coins = CAMPAIGN_STARTING_COINS[this.battle.mapIndex] ?? this.battle.coins
@@ -438,13 +446,25 @@ export class BattleScene extends Phaser.Scene {
         now: this.battle.now,
         growth,
       })
+      this.syncMercenaryActor(tower)
+      this.syncDroneActor(tower)
       if (events.length) {
         const towerScreen = boardToScreen(tower.source)
         for (const event of events) {
           const target = this.battle.enemies.find((e) => e.id === event.targetId)
           if (target) {
             const targetScreen = boardToScreen(enemyPosition(this.geometry, target))
-            this.effects.playShot(towerScreen, targetScreen, event.effect)
+            if (event.effect === 'mercenary') {
+              const origin = this.mercActors.get(tower.id)?.playAttack(event.unitIndex ?? 0, targetScreen)
+                ?? boardToScreen(tower.rallyPoint ?? tower.source)
+              this.effects.playShot(origin, targetScreen, event.effect)
+            } else if (event.effect === 'drone') {
+              const squad = this.droneActors.get(tower.id)
+              if (squad) squad.dispatch(event.droneIndex ?? 0, targetScreen, () => this.effects.playImpact(targetScreen, event.effect))
+              else this.effects.playImpact(targetScreen, event.effect)
+            } else {
+              this.effects.playShot(towerScreen, targetScreen, event.effect)
+            }
           }
           if (event.result.destroyedComponent && target?.typeId === 'enforcer') {
             const voiceEvent = ENFORCER_COMPONENT_EVENT[event.result.destroyedComponent]
@@ -452,9 +472,10 @@ export class BattleScene extends Phaser.Scene {
           }
         }
       }
-      this.syncMercenaryActor(tower)
       if (this.selectedTowerId === tower.id) this.emitTowerInfo(tower)
     }
+
+    tickEnemyTraits(this.geometry, this.battle.enemies, this.battle.now, dtSeconds)
 
     for (const enemy of this.battle.enemies) {
       if (enemy.dead || enemy.blocked) continue
@@ -535,6 +556,17 @@ export class BattleScene extends Phaser.Scene {
     }
     const screen = boardToScreen(tower.rallyPoint)
     actor.sync(screen.x, screen.y, tower.mercs.map((m) => Boolean(m.respawnAt)))
+  }
+
+  private syncDroneActor(tower: TowerState) {
+    if (tower.typeId !== 'drone-hive') return
+    let actor = this.droneActors.get(tower.id)
+    if (!actor) {
+      actor = new DroneSquadActor(this, TOWER_COMBAT['drone-hive'].drones)
+      this.droneActors.set(tower.id, actor)
+    }
+    const screen = boardToScreen(tower.source)
+    actor.sync(screen.x, screen.y, this.battle.now)
   }
 
   private persistProgress() {

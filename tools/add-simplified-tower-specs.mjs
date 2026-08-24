@@ -18,7 +18,7 @@ for(const [idPrefix,towerName,names,suffixes,promptKey] of lines){
    const tier=index<3?index+1:4
    const branch=index===3?'A':index===4?'B':undefined
    spec.items.push({
-     id,tier,...(branch?{branch}:{}),categoryId:idPrefix,towerName:`${towerName} · 简化版`,name:names[index],
+     id,tier,...(branch?{branch}:{}),categoryId:idPrefix,towerName,name:names[index],
      referenceAsset:`/assets/towers/new-concepts/${idPrefix}-${suffix}.png`,
      targetFile:`simplified-${idPrefix}-${suffix}.png`,
      prompt:`${prompts[promptKey]} 当前为第${tier}级${branch?`分支${branch}`:''}，必须保留该等级原有的主要轮廓和分支功能差异；赛博朋克科技感优先，干净、克制、游戏尺度可读。纯白背景，无文字，无水印。`

@@ -1,0 +1,13 @@
+﻿import { chromium } from 'playwright-core'
+const browser=await chromium.launch({executablePath:'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',headless:true})
+const page=await browser.newPage({viewport:{width:1280,height:800}})
+const errors=[];page.on('pageerror',e=>errors.push(String(e)))
+await page.goto('http://127.0.0.1:5174/',{waitUntil:'networkidle',timeout:30000})
+await page.click('#start-game');await page.waitForTimeout(400)
+await page.click('[data-command-tab="animations"]');await page.waitForTimeout(500)
+const systemButton=await page.locator('[data-animation-filter="system"]').count()
+const cards=await page.locator('#animation-grid .animation-card').count()
+const text=await page.locator('[data-command-panel="animations"]').innerText()
+await page.screenshot({path:'tools/smoke-shots/15-animation-panel-without-system.png'})
+console.log(JSON.stringify({systemButton,cards,mentionsSystemCombo:text.includes('系统/连携'),errors},null,2))
+await browser.close();if(systemButton||cards!==60||text.includes('系统/连携')||errors.length)process.exit(1)

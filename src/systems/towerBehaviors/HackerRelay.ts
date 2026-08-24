@@ -29,7 +29,7 @@ export function resolveHackerRelay(tower: TowerState, ctx: TowerAttackContext): 
     enemy.shieldBlockedUntil = ctx.now + durationMs
 
     const damage = effectiveDamage(combat.damage * tower.level, ctx.growth.damage)
-    const result = applyDamage(ctx.geometry, enemy, damage, 'energy', { position: tower.source }, 0, ctx.now)
+    const result = applyDamage(ctx.geometry, enemy, damage, 'energy', { position: tower.source, typeId: 'hacker-relay' }, 0, ctx.now)
     tower.damageDealt += result.dealt
     events.push({ targetId: enemy.id, damage, kind: 'energy', result, effect: 'hacker' })
   })

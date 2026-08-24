@@ -39,7 +39,7 @@ export function resolveStreetMercenary(tower: TowerState, ctx: TowerAttackContex
   )
 
   const events: AttackEvent[] = []
-  mercs.forEach((merc) => {
+  mercs.forEach((merc, unitIndex) => {
     if (merc.respawnAt) {
       if (ctx.now < merc.respawnAt) return
       merc.respawnAt = 0
@@ -64,10 +64,10 @@ export function resolveStreetMercenary(tower: TowerState, ctx: TowerAttackContex
     merc.cooldown -= ctx.dt
     if (merc.cooldown <= 0) {
       const damage = effectiveDamage(combat.damage * combat.damageScale[tower.level - 1], ctx.growth.damage)
-      const result = applyDamage(ctx.geometry, target, damage, 'physical', { position: tower.source }, 0, ctx.now)
+      const result = applyDamage(ctx.geometry, target, damage, 'physical', { position: tower.source, typeId: 'street-mercenary' }, 0, ctx.now)
       tower.damageDealt += result.dealt
       tower.attacks += 1
-      events.push({ targetId: target.id, damage, kind: 'physical', result, effect: 'mercenary' })
+      events.push({ targetId: target.id, damage, kind: 'physical', result, effect: 'mercenary', unitIndex })
       merc.cooldown += combat.cooldown
     }
   })

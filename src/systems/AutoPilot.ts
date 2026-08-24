@@ -50,12 +50,17 @@ export interface EnemyMixEstimate {
   ninja: number
   aerostat: number
   devourer: number
+  faraday: number
+  hijacker: number
+  neurohound: number
+  matriarch: number
+  bonebreaker: number
   boss: number
 }
 
 /** 预估未来 N 波的敌情构成(按数量占比归一化),原 `_0x1593f2` */
 export function estimateUpcomingEnemyMix(fromWave: number, mapIndex: number, windowSize = 4): EnemyMixEstimate {
-  const mix: EnemyMixEstimate = { gang: 0, riot: 0, ninja: 0, aerostat: 0, devourer: 0, boss: 0 }
+  const mix: EnemyMixEstimate = { gang: 0, riot: 0, ninja: 0, aerostat: 0, devourer: 0, faraday: 0, hijacker: 0, neurohound: 0, matriarch: 0, bonebreaker: 0, boss: 0 }
   for (let wave = fromWave; wave < fromWave + windowSize; wave += 1) {
     buildWavePlan(wave, mapIndex).forEach((entry) => {
       if (entry.boss) mix.boss += 1
@@ -73,11 +78,11 @@ export function estimateUpcomingEnemyMix(fromWave: number, mapIndex: number, win
 /** 某塔型对当前敌情构成的克制权重 × 策略偏好,原 `_0x5b258a` */
 export function towerPressureWeight(typeId: TowerId, mix: EnemyMixEstimate, strategy: Strategy): number {
   const base: Record<TowerId, number> = {
-    'arc-neon': 1 + mix.gang * 2.2 + mix.ninja * 0.6,
-    'drone-hive': 1 + mix.aerostat * 4 + mix.ninja * 0.5,
-    'hacker-relay': 0.8 + mix.ninja * 3.2 + mix.devourer * 3.2 + mix.boss * 0.8,
-    'mag-rail-sniper': 1 + mix.riot * 3.4 + mix.boss * 5 + mix.devourer * 0.7,
-    'street-mercenary': 1 + (mix.gang + mix.riot + mix.ninja + mix.devourer) * 1.15 - mix.aerostat * 1.2,
+    'arc-neon': 1 + mix.gang * 2.2 + mix.ninja * 0.6 + mix.neurohound * 1.5 + mix.bonebreaker * 3.1 - mix.faraday * 1.4,
+    'drone-hive': 1 + mix.aerostat * 4 + mix.ninja * 0.5 + mix.neurohound * 0.8 - mix.hijacker * 1.5,
+    'hacker-relay': 0.8 + mix.ninja * 3.2 + mix.devourer * 3.2 + mix.hijacker * 4.2 + mix.neurohound * 1.2 + mix.boss * 0.8,
+    'mag-rail-sniper': 1 + mix.riot * 3.4 + mix.faraday * 4.2 + mix.matriarch * 3.6 + mix.boss * 5 + mix.devourer * 0.7,
+    'street-mercenary': 1 + (mix.gang + mix.riot + mix.ninja + mix.devourer + mix.faraday + mix.neurohound + mix.matriarch + mix.bonebreaker) * 1.15 - mix.aerostat * 1.2,
   }
   return Math.max(0.2, base[typeId]) * STRATEGY_TOWER_WEIGHTS[strategy][typeId]
 }
@@ -199,7 +204,7 @@ export function autoInvest(params: {
         const coverage = towerCoverageScore(typeId, source, 1, geometry, growthBonuses, rangeScale)
         let priorityBoost = missingTowerIds.includes(typeId) && towers.length < 5 ? 5 : 1
         if (missingTowerIds.includes(typeId) && typeId === 'drone-hive' && mix.aerostat > 0) priorityBoost *= 2.2
-        if (missingTowerIds.includes(typeId) && typeId === 'hacker-relay' && mix.ninja + mix.devourer > 0) priorityBoost *= 1.35
+        if (missingTowerIds.includes(typeId) && typeId === 'hacker-relay' && mix.ninja + mix.devourer + mix.hijacker > 0) priorityBoost *= 1.35
         const score =
           (towerPressureWeight(typeId, mix, strategy) * (0.18 + coverage) * priorityBoost) / def.cost * (0.96 + rng() * 0.08)
         candidates.push({ kind: 'build', typeId, slotIndex, cost: def.cost, score })

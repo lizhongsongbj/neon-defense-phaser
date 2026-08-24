@@ -26,7 +26,7 @@ export interface TowerVisualDefinition {
   accent: string
   role: string
   image: string
-  attackAnimation: string
+  attackAnimation?: string
 }
 
 /** 建造顺序与原 index.html 中 towerTypes 数组顺序一致 */
@@ -47,7 +47,6 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     accent: '#e8ffff',
     role: '空中拦截 / 远程追击',
     image: 'assets/towers/generated-raw-selected/tower-05-drone-hive-base-new-drones.png',
-    attackAnimation: 'assets/animations/towers/tower-05-drone-hive-attack.webp',
   },
   {
     id: 'hacker-relay',
@@ -74,7 +73,6 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     accent: '#c99245',
     role: '地面拦截 / 阵线维持',
     image: 'assets/towers/generated-raw-selected/tower-03-mercenary-outpost-base-cutout.png',
-    attackAnimation: 'assets/animations/towers/tower-03-mercenary-outpost-attack.webp',
   },
 ]
 

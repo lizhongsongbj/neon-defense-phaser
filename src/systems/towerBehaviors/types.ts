@@ -22,4 +22,5 @@ export interface AttackEvent {
   effect: string
   chainIndex?: number
   droneIndex?: number
+  unitIndex?: number
 }

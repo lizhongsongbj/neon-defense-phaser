@@ -34,6 +34,13 @@ export interface EnemyState {
   mechanical: boolean
   network: boolean
   phaseCapable: boolean
+  energyResistance: number
+  railVulnerability: number
+  droneEvasion: number
+  enrageThreshold: number
+  enrageSpeedBonus: number
+  healingAura: number
+  healingRadius: number
   spawnTime: number
   lastHit: number
   revealedUntil: number

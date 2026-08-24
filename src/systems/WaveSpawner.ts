@@ -24,6 +24,11 @@ export function buildWavePlan(wave: number, mapIndex: number): WaveRosterEntry[]
     if (wave >= 3 && i % 5 === 2) planned = 'ninja'
     if (wave >= 3 && i % 7 === 5) planned = 'devourer'
     if (wave >= 4 && i % 8 === 6) planned = 'aerostat'
+    if (wave >= 5 && i % 9 === 4) planned = 'faraday'
+    if (wave >= 6 && i % 10 === 8) planned = 'hijacker'
+    if (wave >= 3 && i % 11 === 7) planned = 'neurohound'
+    if (wave >= 5 && i % 13 === 9) planned = 'matriarch'
+    if (wave >= 6 && i % 12 === 10) planned = 'bonebreaker'
 
     const actual: EnemyId = unlocked.has(planned) ? planned : 'gang'
     const plannedDef = ENEMY_TYPES[planned]
@@ -40,7 +45,11 @@ export function buildWavePlan(wave: number, mapIndex: number): WaveRosterEntry[]
       attack: actualDef.attack,
       reward: actualDef.reward,
       lane: (i % 2 === 0 ? 'left' : 'right') as Lane,
-      delay: planned === 'riot' ? 1.15 : 0.72,
+      delay: planned === 'bonebreaker' ? 1.25
+        : planned === 'riot' || planned === 'faraday' ? 1.15
+          : planned === 'matriarch' ? 1.05
+            : planned === 'hijacker' ? 0.9
+              : planned === 'neurohound' ? 0.48 : 0.72,
     })
   }
 

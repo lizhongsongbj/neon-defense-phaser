@@ -39,8 +39,8 @@
         <nav class="command-tabs" role="tablist" aria-label="主界面分类">
           <button class="command-tab" type="button" role="tab" data-command-tab="missions" aria-selected="true">关卡选择</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="growth" aria-selected="false">塔楼成长</button>
-          <button class="command-tab" type="button" role="tab" data-command-tab="monsters" aria-selected="false">怪物图鉴</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="balance" aria-selected="false">数值测试</button>
+          <button class="command-tab" type="button" role="tab" data-command-tab="animations" aria-selected="false">动画面板</button>
         </nav>
 
         <div class="command-profile">
@@ -80,14 +80,6 @@
           <p>强化对所有关卡永久生效。每级提升 6% 伤害与 3% 射程,完成波次可获得研发点。</p>
         </div>
         <div class="growth-grid" id="growth-grid"></div>
-      </section>
-
-      <section class="command-panel monster-panel" data-command-panel="monsters" aria-label="怪物图鉴" hidden>
-        <div class="monster-heading">
-          <div><span>HOSTILE DATABASE // VERIFIED TARGETS</span><h2>已有怪物数值与图像</h2></div>
-          <p>展示当前已接入战斗系统的普通敌人与首领单位。数值直接读取游戏数据，修改配置后会自动同步。</p>
-        </div>
-        <div class="monster-grid" id="monster-grid"></div>
       </section>
       <section class="command-panel balance-panel" data-command-panel="balance" aria-label="数值测试" hidden>
         <div class="balance-heading">
@@ -129,6 +121,24 @@
         <div class="balance-results" id="balance-results" aria-live="polite">
           <div class="balance-empty">NO REPORT // 尚无测试报告</div>
         </div>
+      </section>
+      <section class="command-panel animation-panel" data-command-panel="animations" aria-label="游戏动画面板" hidden>
+        <header class="animation-panel__header">
+          <div><span>ANIMATION MATRIX // COMPLETE MOTION LIBRARY</span><h2>全单位动画面板</h2><p>收录保留攻击表现的防御塔动画、全部怪物行走/攻击/死亡，以及佣兵和无人机单位动作。</p></div>
+          <output id="animation-count">正在建立动画索引…</output>
+        </header>
+        <div class="animation-toolbar">
+          <div class="animation-filters" role="group" aria-label="动画分类">
+            <button type="button" data-animation-filter="all" aria-pressed="true">全部</button><button type="button" data-animation-filter="tower" aria-pressed="false">防御塔攻击</button><button type="button" data-animation-filter="enemy" aria-pressed="false">怪物</button><button type="button" data-animation-filter="mercenary" aria-pressed="false">佣兵</button><button type="button" data-animation-filter="drone" aria-pressed="false">无人机</button>
+          </div>
+          <label class="animation-search"><span>SEARCH</span><input id="animation-search" type="search" placeholder="搜索名称、等级或动作…" autocomplete="off" /></label>
+        </div>
+        <div class="animation-grid" id="animation-grid"></div>
+        <aside class="animation-detail" id="animation-detail" hidden><div class="animation-detail__panel">
+          <button class="picker-close animation-detail__close" id="animation-detail-close" type="button" aria-label="关闭动画详情">×</button>
+          <div class="animation-detail__preview" id="animation-detail-preview"></div>
+          <div class="animation-detail__copy"><span id="animation-detail-code"></span><h3 id="animation-detail-name"></h3><p id="animation-detail-description"></p><dl><div><dt>动作时间线</dt><dd id="animation-detail-timeline"></dd></div><div><dt>素材状态</dt><dd id="animation-detail-status"></dd></div></dl><button class="animation-replay" id="animation-replay" type="button">REPLAY // 重新播放</button></div>
+        </div></aside>
       </section>
     </section>
 

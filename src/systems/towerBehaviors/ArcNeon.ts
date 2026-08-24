@@ -38,7 +38,7 @@ export function resolveArcNeon(tower: TowerState, ctx: TowerAttackContext): Atta
     const isWet = enemy.distance >= 390 && enemy.distance <= 520
     const rawDamage = combat.chainDamage[index] * combat.damageScale[tower.level - 1] * (isWet ? 1 + combat.wetBonus : 1)
     const damage = effectiveDamage(rawDamage, ctx.growth.damage)
-    const result = applyDamage(ctx.geometry, enemy, damage, 'energy', { position: tower.source }, 0, ctx.now)
+    const result = applyDamage(ctx.geometry, enemy, damage, 'energy', { position: tower.source, typeId: 'arc-neon' }, 0, ctx.now)
     tower.damageDealt += result.dealt
     events.push({ targetId: enemy.id, damage, kind: 'energy', result, effect: 'arc', chainIndex: index })
   })

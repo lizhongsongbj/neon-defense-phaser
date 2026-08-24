@@ -36,6 +36,13 @@ interface NormalizedDefinition {
   mechanical: boolean
   network: boolean
   phase: boolean
+  energyResistance: number
+  railVulnerability: number
+  droneEvasion: number
+  enrageThreshold: number
+  enrageSpeedBonus: number
+  healingAura: number
+  healingRadius: number
   components: string[]
   componentHp: number
 }
@@ -54,6 +61,13 @@ function normalizeDefinition(typeId: EnemyTypeId): NormalizedDefinition {
       mechanical: true,
       network: false,
       phase: false,
+      energyResistance: 0,
+      railVulnerability: 0,
+      droneEvasion: 0,
+      enrageThreshold: 0,
+      enrageSpeedBonus: 0,
+      healingAura: 0,
+      healingRadius: 0,
       components: def.components ?? [],
       componentHp: def.componentHp ?? 0,
     }
@@ -70,6 +84,13 @@ function normalizeDefinition(typeId: EnemyTypeId): NormalizedDefinition {
     mechanical: Boolean(def.mechanical),
     network: Boolean(def.network),
     phase: Boolean(def.phase),
+    energyResistance: def.energyResistance ?? 0,
+    railVulnerability: def.railVulnerability ?? 0,
+    droneEvasion: def.droneEvasion ?? 0,
+    enrageThreshold: def.enrageThreshold ?? 0,
+    enrageSpeedBonus: def.enrageSpeedBonus ?? 0,
+    healingAura: def.healingAura ?? 0,
+    healingRadius: def.healingRadius ?? 0,
     components: [],
     componentHp: 0,
   }
@@ -81,6 +102,7 @@ export function spawnEnemy({ id, mapIndex, wave, difficulty, now, entry }: Spawn
   const multiplier = enemyStatMultiplier(mapIndex, wave, difficulty)
   const power = Math.max(0.1, Number(entry.power) || 1)
   const speedBonus = mapSpeedBonus(mapIndex)
+  const movementSpeed = (Number.isFinite(entry.speed) ? (entry.speed as number) : def.speed) * speedBonus
 
   return {
     id,
@@ -93,8 +115,8 @@ export function spawnEnemy({ id, mapIndex, wave, difficulty, now, entry }: Spawn
     shield: def.shield * multiplier * power,
     maxShield: def.shield * multiplier * power,
     armor: def.armor,
-    speed: (Number.isFinite(entry.speed) ? (entry.speed as number) : def.speed) * speedBonus,
-    baseSpeed: def.speed,
+    speed: movementSpeed,
+    baseSpeed: movementSpeed,
     attack: Number.isFinite(entry.attack) ? (entry.attack as number) : def.attack,
     reward: Number.isFinite(entry.reward) ? (entry.reward as number) : def.reward,
     elite: Boolean(entry.elite),
@@ -102,6 +124,13 @@ export function spawnEnemy({ id, mapIndex, wave, difficulty, now, entry }: Spawn
     mechanical: def.mechanical,
     network: def.network,
     phaseCapable: def.phase,
+    energyResistance: def.energyResistance,
+    railVulnerability: def.railVulnerability,
+    droneEvasion: def.droneEvasion,
+    enrageThreshold: def.enrageThreshold,
+    enrageSpeedBonus: def.enrageSpeedBonus,
+    healingAura: def.healingAura,
+    healingRadius: def.healingRadius,
     spawnTime: now,
     lastHit: -Infinity,
     revealedUntil: 0,
@@ -166,8 +195,17 @@ export function applyDamage(
   if (now < enemy.vulnerableUntil) {
     damage *= 1 + enemy.vulnerability
   }
+  if (kind === 'energy') {
+    damage *= 1 - enemy.energyResistance
+  }
   if (kind === 'physical') {
     damage *= 1 - enemy.armor * (1 - armorPenetration)
+  }
+  if (source?.typeId === 'mag-rail-sniper') {
+    damage *= 1 + enemy.railVulnerability
+  }
+  if (source?.typeId === 'drone-hive' && now >= enemy.revealedUntil) {
+    damage *= 1 - enemy.droneEvasion
   }
   if (enemy.typeId === 'riot' && source && isBackstab(geometry, enemy, source)) {
     damage *= 1.25
@@ -202,6 +240,31 @@ export function applyDamage(
   }
 
   return { dealt: Math.max(0, rawDamage <= 0 ? 0 : damage), killed, destroyedComponent, shieldDepletedThisHit }
+}
+
+/** 更新普通敌人的速度状态与生物修复光环。 */
+export function tickEnemyTraits(geometry: MapGeometry, enemies: EnemyState[], now: number, dtSeconds: number): void {
+  for (const enemy of enemies) {
+    if (enemy.dead || enemy.isBoss) continue
+    const slowed = now < enemy.slowUntil ? Math.max(0.2, 1 - enemy.slowAmount) : 1
+    const enraged = enemy.enrageThreshold > 0 && enemy.hp / Math.max(1, enemy.maxHp) <= enemy.enrageThreshold
+      ? 1 + enemy.enrageSpeedBonus
+      : 1
+    enemy.speed = enemy.baseSpeed * slowed * enraged
+  }
+
+  const healers = enemies.filter((enemy) => !enemy.dead && enemy.healingAura > 0 && enemy.healingRadius > 0)
+  if (!healers.length) return
+  for (const target of enemies) {
+    if (target.dead || target.mechanical || target.hp >= target.maxHp) continue
+    let strongestAura = 0
+    for (const healer of healers) {
+      if (projectedDistance(enemyPosition(geometry, healer), enemyPosition(geometry, target)) <= healer.healingRadius) {
+        strongestAura = Math.max(strongestAura, healer.healingAura)
+      }
+    }
+    if (strongestAura > 0) target.hp = Math.min(target.maxHp, target.hp + strongestAura * dtSeconds)
+  }
 }
 
 /** 语音事件 id,用于部件被摧毁时触发,原 `_0x2ce699` 映射表(重导出自 data/bosses) */

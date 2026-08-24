@@ -24,7 +24,7 @@ export function resolveMagRailSniper(tower: TowerState, ctx: TowerAttackContext)
   if (!target) return []
 
   const damage = effectiveDamage(combat.damage * combat.damageScale[tower.level - 1], ctx.growth.damage)
-  const result = applyDamage(ctx.geometry, target, damage, 'physical', { position: tower.source }, combat.armorPenetration, ctx.now)
+  const result = applyDamage(ctx.geometry, target, damage, 'physical', { position: tower.source, typeId: 'mag-rail-sniper' }, combat.armorPenetration, ctx.now)
   tower.attacks += 1
   tower.damageDealt += result.dealt
 

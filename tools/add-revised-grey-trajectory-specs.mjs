@@ -3,7 +3,7 @@ const path='asset-generation-spec.json'
 const spec=JSON.parse((await readFile(path,'utf8')).replace(/^\uFEFF/,''))
 const designs=[
   {
-    prefix:'revised-grey-tide', category:'grey-tide', tower:'灰潮解构站 · 罐体重制版', folder:'simplified',
+    prefix:'revised-grey-tide', category:'grey-tide', tower:'灰潮解构站', folder:'simplified',
     names:['灰潮解构站','灰潮解构站','灰潮解构站','噬甲集群','清道夫协议'],
     suffixes:['level-1','level-2','level-3','level-4-armor-eater-swarm','level-4-scavenger-protocol'],
     prompts:[
@@ -15,7 +15,7 @@ const designs=[
     ]
   },
   {
-    prefix:'revised-trajectory-rewriter', category:'trajectory-rewriter', tower:'轨迹回写器 · 门环重制版', folder:'simplified',
+    prefix:'revised-trajectory-rewriter', category:'trajectory-rewriter', tower:'轨迹回写器', folder:'simplified',
     names:['轨迹回写器','轨迹回写器','轨迹回写器','回滚节点','断点处决'],
     suffixes:['level-1','level-2','level-3','level-4-rollback-node','level-4-breakpoint-execution'],
     prompts:[
