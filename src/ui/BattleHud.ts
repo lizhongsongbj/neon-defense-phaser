@@ -252,7 +252,7 @@ export class BattleHud {
     // HUD ??????????????????/????????
     this.towerPicker.replaceChildren()
     const campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState | undefined
-    const selected = new Set(campaign?.selectedTowerIds ?? ALL_ALL_TOWER_TYPES.map((tower) => tower.id))
+    const selected = new Set(campaign?.selectedTowerIds ?? ALL_TOWER_TYPES.map((tower) => tower.id))
     ALL_TOWER_TYPES.filter((def) => selected.has(def.id)).forEach((def) => {
       const card = document.createElement('button')
       card.type = 'button'

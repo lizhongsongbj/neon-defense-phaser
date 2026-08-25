@@ -98,10 +98,6 @@ export const EXPANSION_TOWERS: readonly ExpansionTowerDefinition[] = [
   },
 ] as const
 
-export const EXPANSION_TOWER_BY_ID: Record<ExpansionTowerId, ExpansionTowerDefinition> = Object.fromEntries(
-  EXPANSION_TOWERS.map((tower) => [tower.id, tower]),
-) as Record<ExpansionTowerId, ExpansionTowerDefinition>
-
 export const ALL_TOWER_TYPES = [
   ...TOWER_TYPES,
   ...EXPANSION_TOWERS.map((tower) => ({

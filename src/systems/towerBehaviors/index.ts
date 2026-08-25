@@ -1,4 +1,3 @@
-import type { TowerId } from '../../data/towers'
 import { EXPANSION_TOWER_IDS, type AllTowerId } from '../../data/towerExpansion'
 import type { TowerState } from '../types'
 import { resolveArcNeon } from './ArcNeon'

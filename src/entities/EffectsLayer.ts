@@ -12,6 +12,9 @@ const EFFECT_COLORS: Record<string, number> = {
   mercenary: 0xc99245,
   hacker: 0x79ff9e,
   drone: 0xe8ffff,
+  gravity: 0xa978ff,
+  'grey-tide': 0x74e69a,
+  trajectory: 0x58cfff,
 }
 
 /**
