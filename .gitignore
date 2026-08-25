@@ -30,3 +30,7 @@ public/assets/generated/cutout/*
 /public/assets/animations/towers/*.visible-white-temp
 /grey-tide-level-2-regenerated.png
 /tools/asset-alpha-audit.json
+
+# GitHub auto-sync runtime log
+.github-auto-sync.log
+.github-auto-sync.pid
