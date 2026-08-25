@@ -19,6 +19,8 @@ export interface EnemyState {
   typeId: EnemyTypeId
   isBoss: boolean
   lane: Lane
+  /** 0-based entrance route index; lane remains for legacy tower logic. */
+  routeIndex?: number
   distance: number
   hp: number
   maxHp: number
@@ -93,6 +95,7 @@ export interface WaveRosterEntry {
   attack?: number
   reward?: number
   lane: Lane
+  routeIndex?: number
   delay: number
 }
 

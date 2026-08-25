@@ -5,13 +5,13 @@
 import { ENEMY_TYPES, type EnemyId } from '../data/enemies'
 import { CAMPAIGN_ENEMY_ROSTERS } from '../data/waveComposition'
 import { LATE_MAP_BONUSES } from '../data/balance'
-import type { Lane } from '../data/maps'
+import { MAP_LEVELS, type Lane } from '../data/maps'
 import type { BossId } from '../data/bosses'
 import type { WaveRosterEntry } from './types'
 
 /**
  * 生成第 `wave` 波、第 `mapIndex` 张地图的敌人出场清单。
- * 精英怪替换规则、双 Boss 轮换周期与原版完全一致。
+ * 精英怪替换规则保留原逻辑；普通敌人会轮流分配到本关所有入口。
  */
 export function buildWavePlan(wave: number, mapIndex: number): WaveRosterEntry[] {
   const roster: WaveRosterEntry[] = []
@@ -45,6 +45,7 @@ export function buildWavePlan(wave: number, mapIndex: number): WaveRosterEntry[]
       attack: actualDef.attack,
       reward: actualDef.reward,
       lane: (i % 2 === 0 ? 'left' : 'right') as Lane,
+      routeIndex: i % Math.max(1, MAP_LEVELS[mapIndex]?.entranceRoutes.length ?? 2),
       delay: planned === 'bonebreaker' ? 1.25
         : planned === 'riot' || planned === 'faraday' ? 1.15
           : planned === 'matriarch' ? 1.05
@@ -60,6 +61,7 @@ export function buildWavePlan(wave: number, mapIndex: number): WaveRosterEntry[]
       type: bossId,
       boss: true,
       lane: (wave % 2 === 0 ? 'right' : 'left') as Lane,
+      routeIndex: (wave + 1) % Math.max(1, MAP_LEVELS[mapIndex]?.entranceRoutes.length ?? 2),
       delay: 2.2,
     })
   }

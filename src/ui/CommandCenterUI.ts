@@ -236,6 +236,7 @@ export class CommandCenterUI {
         <span>关卡波次 <b>${CAMPAIGN_WAVE_COUNTS[this.selectedMapIndex]}</b></span>
         <span>敌军种类 <b>${CAMPAIGN_ENEMY_COUNTS[this.selectedMapIndex]}</b></span>
         <span>防御节点 <b>${map.slots.length}</b></span>
+        <span>入口 / 路径 <b>${map.entranceRoutes.length} / ${map.entranceRoutes.length}</b></span>
         <span>初始金币 <b>${CAMPAIGN_STARTING_COINS[this.selectedMapIndex]}</b></span>
         <span class="menu-save-status">网页版战区已就绪</span>
       `

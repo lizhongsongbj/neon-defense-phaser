@@ -9,7 +9,7 @@ import { ENEMY_TYPES, type EnemyId } from '../data/enemies'
 import { BOSS_TYPES, ENFORCER_COMPONENT_VOICE_EVENT, type BossId } from '../data/bosses'
 import { enemyStatMultiplier, mapSpeedBonus, type Difficulty } from '../data/balance'
 import type { MapGeometry } from './PathSystem'
-import { projectedDistance, routePoint } from './PathSystem'
+import { projectedDistance, routePointByIndex } from './PathSystem'
 import type { EnemyState, EnemyTypeId, TowerState, WaveRosterEntry } from './types'
 
 export interface SpawnEnemyOptions {
@@ -162,14 +162,14 @@ export interface DamageResult {
   shieldDepletedThisHit: boolean
 }
 
-/** 敌人当前位置(board units),原 `_0xc7fa30` */
+/** 敌人当前位置(board units)，使用敌人实际进入的入口路线。 */
 export function enemyPosition(geometry: MapGeometry, enemy: EnemyState): { x: number; y: number } {
-  const p = routePoint(geometry, enemy.distance, enemy.lane)
+  const p = routePointByIndex(geometry, enemy.distance, enemy.routeIndex ?? (enemy.lane === 'left' ? 0 : 1))
   return { x: p.x, y: p.y }
 }
 
 function isBackstab(geometry: MapGeometry, enemy: EnemyState, source: DamageSource): boolean {
-  const dir = routePoint(geometry, enemy.distance, enemy.lane)
+  const dir = routePointByIndex(geometry, enemy.distance, enemy.routeIndex ?? (enemy.lane === 'left' ? 0 : 1))
   const enemyPos = { x: dir.x, y: dir.y }
   return dir.dx * (source.position.x - enemyPos.x) + dir.dy * (source.position.y - enemyPos.y) < 0
 }

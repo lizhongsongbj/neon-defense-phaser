@@ -50,3 +50,14 @@ test('八张地图的标定路线连续且始终位于画面内', () => {
     }
   }
 })
+
+
+test('每张地图的每个入口都会获得独立的刷怪路线', async () => {
+  const { buildWavePlan } = await import('../src/systems/WaveSpawner')
+  const expected = [2, 3, 2, 3, 2, 3, 3, 3]
+  MAP_LEVELS.forEach((map, mapIndex) => {
+    assert.equal(map.entranceRoutes.length, expected[mapIndex], map.name + ' 入口数不匹配')
+    const routeIndexes = new Set(buildWavePlan(1, mapIndex).map((entry) => entry.routeIndex))
+    assert.equal(routeIndexes.size, map.entranceRoutes.length, map.name + ' 第一波未覆盖所有入口')
+  })
+})

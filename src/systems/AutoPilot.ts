@@ -13,7 +13,7 @@
 import { TOWER_COMBAT, TOWER_IDS, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
 import { towerUpgradeCost } from './Economy'
 import { buildWavePlan } from './WaveSpawner'
-import { findNearestRoutePoint, projectedDistance, routePoint, toBoardUnits, type MapGeometry } from './PathSystem'
+import { findNearestRoutePoint, projectedDistance, routePointByIndex, toBoardUnits, type MapGeometry } from './PathSystem'
 import type { MapLevel } from '../data/maps'
 import type { Rng } from '../utils/rng'
 import type { TowerState } from './types'
@@ -109,9 +109,9 @@ export function towerCoverageScore(
 
   let coverageSum = 0
   let sampleCount = 0
-  for (const lane of ['left', 'right'] as const) {
+  for (let routeIndex = 0; routeIndex < geometry.routes.length; routeIndex += 1) {
     for (let distance = 20; distance <= 980; distance += 20) {
-      const separation = projectedDistance(source, routePoint(geometry, distance, lane))
+      const separation = projectedDistance(source, routePointByIndex(geometry, distance, routeIndex))
       sampleCount += 1
       if (separation <= range && (!blindSpot || separation >= blindSpot)) {
         coverageSum += (distance >= 300 && distance <= 760 ? 1.18 : 1) * (1 - (separation / Math.max(range, 1)) * 0.22)

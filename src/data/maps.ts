@@ -2,7 +2,7 @@
  * 新版塔防关卡地图数据。
  *
  * 坐标统一使用 0-100 的图片百分比坐标；运行时映射到 1280×800 战场。
- * `routes` 是从地图道路中心线逐点标定的两条实际行军路线，`slots` 则对应
+ * `routes` 保存左右主路线，`entranceRoutes` 保存每一个入口的道路中心线，`slots` 则对应
  * 美术图中所有圆形塔基的中心。保留 entries/shared/exits 字段用于旧存档兼容。
  */
 
@@ -24,6 +24,8 @@ export interface MapLevel {
   available: boolean
   slots: TowerSlot[]
   routes: Record<Lane, Point2[]>
+  /** 每一个可见入口对应一条完整道路中心线，顺序就是入口编号。 */
+  entranceRoutes: Point2[][]
   entries: Record<Lane, Point2[]>
   shared: Point2[]
   exits: Record<Lane, Point2[]>
@@ -37,9 +39,10 @@ interface MapDefinition {
   image: string
   slots: Array<[number, number, number?]>
   routes: Record<Lane, Point2[]>
+  entranceRoutes?: Point2[][]
 }
 
-function createMap({ name, image, slots, routes }: MapDefinition): MapLevel {
+function createMap({ name, image, slots, routes, entranceRoutes }: MapDefinition): MapLevel {
   const leftEnd = routes.left[routes.left.length - 1]
   const rightEnd = routes.right[routes.right.length - 1]
   return {
@@ -48,6 +51,7 @@ function createMap({ name, image, slots, routes }: MapDefinition): MapLevel {
     available: true,
     slots: slots.map(([x, y, rangeScale]) => ({ x, y, scale: 0.056, ...(rangeScale ? { rangeScale } : {}) })),
     routes,
+    entranceRoutes: [routes.left, routes.right, ...(entranceRoutes ?? [])],
     // 兼容旧版地图结构；新版 PathSystem 会优先使用 routes。
     entries: routes,
     shared: [{ ...leftEnd }],
@@ -101,6 +105,13 @@ export const MAP_LEVELS: MapLevel[] = [
         { x: 91, y: 54 },
       ],
     },
+      entranceRoutes: [
+        [
+          { x: 11, y: 52 }, { x: 20, y: 52 }, { x: 30, y: 52 }, { x: 40, y: 52 },
+          { x: 50, y: 52 }, { x: 60, y: 54 }, { x: 68, y: 56 }, { x: 74, y: 53 },
+          { x: 82, y: 54 }, { x: 91, y: 54 },
+        ],
+      ],
   }),
   createMap({
     name: '白金水庭',
@@ -147,6 +158,13 @@ export const MAP_LEVELS: MapLevel[] = [
         { x: 81, y: 61 }, { x: 89, y: 56 }, { x: 94, y: 51 },
       ],
     },
+      entranceRoutes: [
+        [
+          { x: 9, y: 47 }, { x: 16, y: 49 }, { x: 24, y: 48 }, { x: 32, y: 51 },
+          { x: 40, y: 50 }, { x: 48, y: 52 }, { x: 56, y: 54 }, { x: 62, y: 57 },
+          { x: 66, y: 57 }, { x: 73, y: 61 }, { x: 81, y: 61 }, { x: 89, y: 56 }, { x: 94, y: 51 },
+        ],
+      ],
   }),
   createMap({
     name: '星河交汇站',
@@ -191,6 +209,13 @@ export const MAP_LEVELS: MapLevel[] = [
         { x: 77, y: 50 }, { x: 80, y: 46 },
       ],
     },
+      entranceRoutes: [
+        [
+          { x: 24, y: 42 }, { x: 28, y: 47 }, { x: 35, y: 49 }, { x: 42, y: 47 },
+          { x: 49, y: 48 }, { x: 56, y: 52 }, { x: 62, y: 50 }, { x: 68, y: 43 },
+          { x: 72, y: 49 }, { x: 77, y: 50 }, { x: 80, y: 46 },
+        ],
+      ],
   }),
   createMap({
     name: '环城汇流区',
@@ -213,6 +238,13 @@ export const MAP_LEVELS: MapLevel[] = [
         { x: 76, y: 60 }, { x: 84, y: 58 }, { x: 91, y: 54 },
       ],
     },
+      entranceRoutes: [
+        [
+          { x: 9, y: 49 }, { x: 15, y: 54 }, { x: 23, y: 56 }, { x: 31, y: 53 },
+          { x: 39, y: 50 }, { x: 47, y: 52 }, { x: 55, y: 55 }, { x: 63, y: 51 },
+          { x: 70, y: 48 }, { x: 78, y: 51 }, { x: 85, y: 55 }, { x: 91, y: 54 },
+        ],
+      ],
   }),
   createMap({
     name: '暗夜三岔防线',
@@ -236,6 +268,14 @@ export const MAP_LEVELS: MapLevel[] = [
         { x: 82, y: 51 }, { x: 90, y: 53 }, { x: 95, y: 50 },
       ],
     },
+      entranceRoutes: [
+        [
+          { x: 8, y: 45 }, { x: 14, y: 50 }, { x: 21, y: 53 }, { x: 28, y: 50 },
+          { x: 35, y: 43 }, { x: 41, y: 45 }, { x: 45, y: 54 }, { x: 51, y: 58 },
+          { x: 58, y: 54 }, { x: 65, y: 52 }, { x: 72, y: 48 }, { x: 82, y: 51 },
+          { x: 90, y: 53 }, { x: 95, y: 50 },
+        ],
+      ],
   }),
 ]
 

@@ -160,19 +160,18 @@ export class BattleScene extends Phaser.Scene {
 
   private drawPaths() {
     const g = this.add.graphics()
-    g.lineStyle(3, 0x2ee8ff, 0.25)
-    for (const lane of ['left', 'right'] as const) {
-      const segs = this.geometry[lane].segments
-      if (!segs.length) continue
-      const start = boardToScreen(segs[0].from)
+    g.lineStyle(3, 0x2ee8ff, 0.22)
+    this.geometry.routes.forEach((route) => {
+      if (!route.segments.length) return
+      const startPoint = boardToScreen(route.segments[0].from)
       g.beginPath()
-      g.moveTo(start.x, start.y)
-      for (const seg of segs) {
-        const p = boardToScreen(seg.to)
-        g.lineTo(p.x, p.y)
+      g.moveTo(startPoint.x, startPoint.y)
+      for (const seg of route.segments) {
+        const point = boardToScreen(seg.to)
+        g.lineTo(point.x, point.y)
       }
       g.strokePath()
-    }
+    })
   }
 
   private drawSlots() {
