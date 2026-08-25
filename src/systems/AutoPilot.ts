@@ -213,8 +213,9 @@ export function autoInvest(params: {
 
     if (!missingTowerIds.length || towers.length >= 5) {
       towers.forEach((tower) => {
-        if (tower.level >= 3) return
-        const cost = towerUpgradeCost(tower.typeId, tower.level)
+        if (tower.level >= 3 || !(tower.typeId in TOWER_TYPE_BY_ID)) return
+        const typeId = tower.typeId as TowerId
+        const cost = towerUpgradeCost(typeId, tower.level)
         if (cost > coins - reserve) return
         const multipliers: number[] = TOWER_LEVEL_MULTIPLIER
         const before = multipliers[tower.level - 1]
