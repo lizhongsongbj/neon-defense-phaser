@@ -1,6 +1,6 @@
 import type Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
-import { TOWER_TYPES, type TowerId } from '../data/towers'
+import { ALL_TOWER_TYPES, type AllTowerId } from '../data/towerExpansion'
 import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
 import { BOSS_TYPES, type BossDefinition } from '../data/bosses'
 import { SPECIAL_EVENTS } from '../data/specialEvents'
@@ -10,7 +10,7 @@ import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type Voic
 
 interface TowerInfoPayload {
   towerId: string
-  typeId: TowerId
+  typeId: AllTowerId
   name: string
   role: string
   level: number
@@ -252,8 +252,8 @@ export class BattleHud {
     // HUD ??????????????????/????????
     this.towerPicker.replaceChildren()
     const campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState | undefined
-    const selected = new Set(campaign?.selectedTowerIds ?? TOWER_TYPES.map((tower) => tower.id))
-    TOWER_TYPES.filter((def) => selected.has(def.id)).forEach((def) => {
+    const selected = new Set(campaign?.selectedTowerIds ?? ALL_TOWER_TYPES.map((tower) => tower.id))
+    ALL_TOWER_TYPES.filter((def) => selected.has(def.id)).forEach((def) => {
       const card = document.createElement('button')
       card.type = 'button'
       card.className = 'tower-option'
@@ -357,9 +357,9 @@ export class BattleHud {
       </section>
     `
   }
-  private confirmBuild(typeId: TowerId) {
+  private confirmBuild(typeId: AllTowerId) {
     if (!this.pendingSlot) return
-    const cost = TOWER_TYPES.find((t) => t.id === typeId)!.cost
+    const cost = ALL_TOWER_TYPES.find((t) => t.id === typeId)!.cost
     if (this.pendingSlot.coins < cost) return
     EventBus.emit(GameEvents.BuildTower, { slotIndex: this.pendingSlot.slotIndex, typeId })
     this.hideTowerPicker()
