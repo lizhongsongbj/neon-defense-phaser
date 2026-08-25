@@ -64,7 +64,7 @@ function createMap({ name, image, slots, routes, entranceRoutes }: MapDefinition
 
 export const MAP_LEVELS: MapLevel[] = [
   createMap({
-    name: '熔炉双廊',
+    name: '超级建筑4号',
     image: 'assets/maps/map-01.png',
     slots: [
       [35, 16], [56.5, 17], [34.5, 35], [57.8, 38], [76.8, 34],
@@ -86,7 +86,7 @@ export const MAP_LEVELS: MapLevel[] = [
     },
   }),
   createMap({
-    name: '霓虹庭园',
+    name: 'H8',
     image: 'assets/maps/map-02.jpg',
     slots: [
       [29.5, 23], [45, 23], [58, 23], [33, 43], [45, 43],
@@ -114,7 +114,7 @@ export const MAP_LEVELS: MapLevel[] = [
       ],
   }),
   createMap({
-    name: '白金水庭',
+    name: '绀碧大厦',
     image: 'assets/maps/map-03.png',
     slots: [
       [32, 22], [40, 24], [48, 24], [67.5, 36], [76, 36], [25, 59],
@@ -136,7 +136,7 @@ export const MAP_LEVELS: MapLevel[] = [
     },
   }),
   createMap({
-    name: '紫渊环道',
+    name: '余烬',
     image: 'assets/maps/map-04.png',
     slots: [
       [33, 13], [51, 13], [27.5, 20], [55.5, 22], [67, 36], [28, 44],
@@ -167,7 +167,7 @@ export const MAP_LEVELS: MapLevel[] = [
       ],
   }),
   createMap({
-    name: '星河交汇站',
+    name: '来生酒吧',
     image: 'assets/maps/map-05.png',
     slots: [
       [23, 16], [39, 24], [25.5, 34], [75, 28], [70, 35], [19, 47],
@@ -189,7 +189,7 @@ export const MAP_LEVELS: MapLevel[] = [
     },
   }),
   createMap({
-    name: '幽晶峡谷',
+    name: '夜之城警察局总部',
     image: 'assets/maps/map-06.png',
     slots: [
       [30, 24], [39, 23], [45, 26], [52, 35], [67, 37], [60, 42], [28, 44],
@@ -218,7 +218,7 @@ export const MAP_LEVELS: MapLevel[] = [
       ],
   }),
   createMap({
-    name: '环城汇流区',
+    name: '神舆',
     image: 'assets/maps/map-07.png',
     slots: [
       [52, 15], [65, 12], [76, 15], [24, 28], [68, 27], [40, 34], [45, 46],
@@ -247,7 +247,7 @@ export const MAP_LEVELS: MapLevel[] = [
       ],
   }),
   createMap({
-    name: '暗夜三岔防线',
+    name: '荒坂塔',
     image: 'assets/maps/map-08.png',
     slots: [
       [30, 17], [40, 17], [47.5, 20], [68.5, 30], [23.5, 37.5], [73, 38],

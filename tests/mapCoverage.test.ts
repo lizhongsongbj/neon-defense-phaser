@@ -61,3 +61,8 @@ test('每张地图的每个入口都会获得独立的刷怪路线', async () =>
     assert.equal(routeIndexes.size, map.entranceRoutes.length, map.name + ' 第一波未覆盖所有入口')
   })
 })
+
+
+test('地图名称与风格化提示词文档一致', () => {
+  assert.deepEqual(MAP_LEVELS.map((map) => map.name), ['超级建筑4号', 'H8', '绀碧大厦', '余烬', '来生酒吧', '夜之城警察局总部', '神舆', '荒坂塔'])
+})
