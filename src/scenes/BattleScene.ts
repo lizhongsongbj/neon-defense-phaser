@@ -45,7 +45,7 @@ export class BattleScene extends Phaser.Scene {
   private enemyActors = new Map<number, EnemyActor>()
   private mercActors = new Map<string, MercenaryActor>()
   private droneActors = new Map<string, DroneSquadActor>()
-  private slotMarkers: Phaser.GameObjects.Graphics[] = []
+  private slotMarkers: Phaser.GameObjects.Zone[] = []
   private effects!: EffectsLayer
 
   private selectedTowerId: string | null = null
@@ -169,9 +169,12 @@ export class BattleScene extends Phaser.Scene {
     this.mapLevel.slots.forEach((slot, index) => {
       const screen = boardToScreen(toBoardUnits(slot))
       const radius = Math.max(18, spriteSize(slot.scale) * 0.34)
-      // 保留不可见的点击区域，不再显示塔位网格、圆环或脉冲标识。
-      const marker = this.add.graphics().setPosition(screen.x, screen.y).setDepth(2).setAlpha(0)
-      marker.setInteractive(new Phaser.Geom.Circle(0, 0, radius + 8), Phaser.Geom.Circle.Contains)
+      // Zone 本身不绘制任何内容，但提供稳定的不可见点击区域。
+      const marker = this.add
+        .zone(screen.x, screen.y, (radius + 8) * 2, (radius + 8) * 2)
+        .setOrigin(0.5)
+        .setDepth(2)
+      marker.setInteractive()
       marker.input!.cursor = 'pointer'
       marker.on('pointerdown', (_pointer: Phaser.Input.Pointer, _x: number, _y: number, event: Phaser.Types.Input.EventData) => {
         event.stopPropagation()
@@ -703,7 +706,9 @@ export class BattleScene extends Phaser.Scene {
     this.ended = true
     this.persistProgress()
     this.voice?.play('lan', 'victory', { priority: 5 })
-    const result = this.campaign.completeMission(this.battle.mapIndex)
+    const result = this.campaign.demoActive
+      ? { unlocked: this.campaign.unlockedMapIndex, newlyUnlocked: false }
+      : this.campaign.completeMission(this.battle.mapIndex)
     EventBus.emit(GameEvents.AchievementSignal, {
       type: 'mission-victory',
       mapIndex: this.battle.mapIndex,
@@ -711,7 +716,7 @@ export class BattleScene extends Phaser.Scene {
       health: this.battle.health,
       maxHealth: MAX_HEALTH,
     })
-    EventBus.emit(GameEvents.Victory, { unlockedMapIndex: result.unlocked, newlyUnlocked: result.newlyUnlocked, reward })
+    EventBus.emit(GameEvents.Victory, { unlockedMapIndex: result.unlocked, newlyUnlocked: result.newlyUnlocked, reward, demoActive: this.campaign.demoActive })
   }
 
   private onDefeat() {
