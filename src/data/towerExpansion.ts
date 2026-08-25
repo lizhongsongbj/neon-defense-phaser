@@ -1,4 +1,4 @@
-﻿import { TOWER_IDS, type TowerId } from './towers'
+﻿import { TOWER_IDS, TOWER_TYPES, type TowerId } from './towers'
 
 /** 尚未接入战斗循环的三种扩展塔。 */
 export type ExpansionTowerId = 'gravity-nail' | 'grey-tide' | 'trajectory-rewriter'
@@ -97,6 +97,34 @@ export const EXPANSION_TOWERS: readonly ExpansionTowerDefinition[] = [
     ],
   },
 ] as const
+
+export const EXPANSION_TOWER_BY_ID: Record<ExpansionTowerId, ExpansionTowerDefinition> = Object.fromEntries(
+  EXPANSION_TOWERS.map((tower) => [tower.id, tower]),
+) as Record<ExpansionTowerId, ExpansionTowerDefinition>
+
+export const ALL_TOWER_TYPES = [
+  ...TOWER_TYPES,
+  ...EXPANSION_TOWERS.map((tower) => ({
+    id: tower.id,
+    name: tower.name,
+    cost: tower.buildCost,
+    accent: tower.accent,
+    role: tower.role,
+    image: tower.image,
+  })),
+] as const
+
+export const ALL_TOWER_TYPE_BY_ID: Record<AllTowerId, (typeof ALL_TOWER_TYPES)[number]> = Object.fromEntries(
+  ALL_TOWER_TYPES.map((tower) => [tower.id, tower]),
+) as Record<AllTowerId, (typeof ALL_TOWER_TYPES)[number]>
+
+export const ALL_TOWER_ACCENT_COLOR: Record<AllTowerId, string> = Object.fromEntries(
+  ALL_TOWER_TYPES.map((tower) => [tower.id, tower.accent]),
+) as Record<AllTowerId, string>
+
+export function isExpansionTowerId(id: AllTowerId): id is ExpansionTowerId {
+  return EXPANSION_TOWER_IDS.includes(id as ExpansionTowerId)
+}
 
 export interface Tier4BranchStats {
   range: number
