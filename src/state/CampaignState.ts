@@ -6,7 +6,7 @@
 
 import { MAP_LEVELS, CAMPAIGN_STARTING_COINS } from '../data/maps'
 import { INITIAL_RESEARCH_POINTS, MAX_HEALTH } from '../data/balance'
-import { TOWER_IDS, type TowerId } from '../data/towers'
+import { GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
 import { loadGame, saveGame, type SavedTower } from '../systems/SaveGame'
 import type { Difficulty } from '../data/balance'
 
@@ -16,7 +16,7 @@ export class CampaignState {
   unlockedMapIndex = 0
   completedMaps: boolean[] = MAP_LEVELS.map(() => false)
   researchPoints = INITIAL_RESEARCH_POINTS
-  towerGrowth: Record<TowerId, number> = Object.fromEntries(TOWER_IDS.map((id) => [id, 0])) as Record<TowerId, number>
+  towerGrowth: Record<AllTowerId, number> = Object.fromEntries(GROWTH_TOWER_IDS.map((id) => [id, 0])) as Record<AllTowerId, number>
 
   /**
    * AUTO 演示代理运行期间置为 true,期间所有 `persist()` 调用直接跳过(不写 localStorage),
@@ -94,7 +94,7 @@ export class CampaignState {
     return { unlocked: this.unlockedMapIndex, newlyUnlocked: this.unlockedMapIndex > before }
   }
 
-  towerGrowthBonus(id: TowerId) {
+  towerGrowthBonus(id: AllTowerId) {
     return this.towerGrowth[id] ?? 0
   }
 

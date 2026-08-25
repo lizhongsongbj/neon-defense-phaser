@@ -3,11 +3,22 @@ import assert from 'node:assert/strict'
 import {
   EXPANSION_BALANCE_RULES,
   EXPANSION_TOWERS,
+  GROWTH_TOWER_IDS,
   SYNERGY_ATTACKS,
   TIER4_BRANCHES,
   type AllTowerId,
 } from '../src/data/towerExpansion'
 import { TOWER_IDS } from '../src/data/towers'
+
+test('塔楼成长矩阵包含全部八种防御塔', () => {
+  assert.equal(GROWTH_TOWER_IDS.length, 8)
+  assert.equal(new Set(GROWTH_TOWER_IDS).size, 8)
+  for (const tower of EXPANSION_TOWERS) {
+    assert.ok(GROWTH_TOWER_IDS.includes(tower.id))
+    assert.ok(tower.accent.startsWith('#'))
+    assert.ok(tower.image.endsWith('-level-1.png'))
+  }
+})
 
 test('三种扩展塔均包含完整的1-3级正数数值', () => {
   assert.equal(EXPANSION_TOWERS.length, 3)

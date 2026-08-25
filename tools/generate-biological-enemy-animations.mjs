@@ -33,6 +33,7 @@ async function actorLayer(source, base, options = {}) {
 }
 
 function effectsSvg(kind, enemy, frame) {
+  if (enemy.id.includes('bonebreaker')) return `<svg width="512" height="512"></svg>`
   const t = frame / (frameCount - 1)
   const pulse = (wave(frame) + 1) / 2
   if (kind === 'move') {
@@ -98,7 +99,9 @@ async function makeAnimation(enemy, kind) {
 }
 
 await fs.mkdir(outputRoot, { recursive: true })
+const targetIds = new Set(process.argv.slice(2))
 for (const enemy of enemies) {
+  if (targetIds.size && !targetIds.has(enemy.id)) continue
   for (const kind of ['move', 'attack', 'death']) {
     const output = await makeAnimation(enemy, kind)
     const meta = await sharp(output, { animated: true }).metadata()

@@ -70,8 +70,71 @@ export class EffectPanel {
   }
 
   private previewMarkup(entry: EffectCatalogEntry) {
-    const particles = Array.from({ length: 12 }, (_, index) => `<i class="effect-particle" style="--i:${index}"></i>`).join('')
-    const remnant = entry.remnantAsset ? `<img class="effect-remnant" src="${entry.remnantAsset}" alt="" />` : ''
+    // 每个特效由自身 ID 生成独一份火花轨迹：方向、数量、起点、速度和赤焰色阶都不重复。
+    const seed = [...entry.id].reduce((value, char) => Math.imul(value ^ char.charCodeAt(0), 16777619) >>> 0, 2166136261)
+    const random = (index: number, salt: number) => {
+      let value = seed ^ Math.imul(index + 1, 0x45d9f3b) ^ Math.imul(salt + 1, 0x27d4eb2d)
+      value ^= value >>> 16
+      value = Math.imul(value, 0x7feb352d)
+      value ^= value >>> 15
+      value = Math.imul(value, 0x846ca68b)
+      value ^= value >>> 16
+      return (value >>> 0) / 0xffffffff
+    }
+    const remnantKind = entry.remnantAsset?.includes('mechanical-parts') ? 'mechanical' : 'biological'
+    const isMechanicalEnemyDeath = entry.category === 'enemy-death' && remnantKind === 'mechanical'
+    const isBiologicalEnemyDeath = entry.category === 'enemy-death' && remnantKind === 'biological'
+    const flamePalettes = [
+      ['#fff3c4', '#ffad24', '#db2b16'],
+      ['#fff0a6', '#ff7b19', '#a90f0b'],
+      ['#ffe5b0', '#ff9630', '#c51d12'],
+      ['#fff7d8', '#ff651c', '#8f120c'],
+    ] as const
+    const sparkText = [entry.name, entry.description, entry.timeline, ...entry.layers].join('')
+    const isSparkEffect = isMechanicalEnemyDeath || (!isBiologicalEnemyDeath && /火花|爆破|爆裂|燃烧|熔融|余烬/.test(sparkText))
+    const palette: readonly [string, string, string] = isSparkEffect
+      ? flamePalettes[seed % flamePalettes.length]
+      : ['#ffffff', entry.accent, entry.secondary]
+    const baseAngles = [-18, 32, -72, 118, 168, -132]
+    const baseAngle = baseAngles[seed % baseAngles.length]
+    const spread = 34 + random(0, 3) * 58
+    const sparkCount = 9 + (seed % 7)
+    const particles = Array.from({ length: sparkCount }, (_, index) => {
+      const angle = (baseAngle + (random(index, 1) - .5) * spread + (random(index, 2) - .5) * 17) * Math.PI / 180
+      const distance = 24 + random(index, 3) * 72
+      const originX = entry.motion === 'beam' ? 70 + random(index, 4) * 7 : entry.motion === 'scan' ? 16 + random(index, 4) * 68 : 46 + random(index, 4) * 8
+      const originY = entry.motion === 'beam' ? 43 + random(index, 5) * 14 : entry.motion === 'scan' ? 20 + random(index, 5) * 60 : 46 + random(index, 5) * 8
+      const dx = Math.cos(angle) * distance
+      const dy = Math.sin(angle) * distance
+      const lift = 5 + random(index, 6) * 18
+      const gravity = 8 + random(index, 7) * 28
+      const midX = dx * (.43 + random(index, 8) * .2)
+      const midY = dy * .5 - lift
+      const finalY = dy + gravity
+      const rotation = Math.atan2(finalY, dx) * 180 / Math.PI
+      const delay = Math.round(random(index, 9) * 230)
+      const duration = Math.round(1080 + random(index, 10) * 920)
+      const scale = (.42 + random(index, 11) * .88).toFixed(2)
+      const width = Math.round(3 + random(index, 12) * 7)
+      const particleClass = isBiologicalEnemyDeath ? ' effect-particle--biological' : isSparkEffect ? ' effect-particle--spark' : ''
+      return `<i class="effect-particle${particleClass}" style="--i:${index};--spark-origin-x:${originX.toFixed(1)}%;--spark-origin-y:${originY.toFixed(1)}%;--spark-mid-x:${midX.toFixed(1)}px;--spark-mid-y:${midY.toFixed(1)}px;--spark-x:${dx.toFixed(1)}px;--spark-y:${finalY.toFixed(1)}px;--spark-rotate:${rotation.toFixed(1)}deg;--spark-delay:${delay}ms;--spark-duration:${duration}ms;--spark-scale:${scale};--spark-width:${width}px;--spark-hot:${palette[0]};--spark-mid:${palette[1]};--spark-tail:${palette[2]}"></i>`
+    }).join('')
+    const remnant = entry.remnantAsset ? `<img class="effect-remnant effect-remnant--${remnantKind}" src="${entry.remnantAsset}" alt="" />` : ''
+    const bloodMist = isBiologicalEnemyDeath
+      ? `<span class="effect-biological-blood-mist">${Array.from({ length: 15 + (seed % 5) }, (_, index) => {
+          const originX = 43 + random(index, 31) * 14
+          const originY = 43 + random(index, 32) * 14
+          const dx = (random(index, 33) - .5) * 94
+          const dy = -18 - random(index, 34) * 62
+          const rotation = -35 + random(index, 35) * 70
+          const delay = Math.round(random(index, 36) * 260)
+          const duration = Math.round(1450 + random(index, 37) * 1050)
+          const size = Math.round(18 + random(index, 38) * 34)
+          const stretch = (.72 + random(index, 39) * .9).toFixed(2)
+          const density = (.48 + random(index, 40) * .42).toFixed(2)
+          return `<i class="effect-blood-mist-puff" style="--mist-origin-x:${originX.toFixed(1)}%;--mist-origin-y:${originY.toFixed(1)}%;--mist-x:${dx.toFixed(1)}px;--mist-y:${dy.toFixed(1)}px;--mist-rotate:${rotation.toFixed(1)}deg;--mist-delay:${delay}ms;--mist-duration:${duration}ms;--mist-size:${size}px;--mist-stretch:${stretch};--mist-density:${density}"></i>`
+        }).join('')}<b class="effect-blood-mist-core"></b></span>`
+      : ''
     if (entry.category === 'mercenary-death') {
       const image = entry.id.includes('shield')
         ? '/assets/units/mercenary-shield.png'
@@ -90,10 +153,26 @@ export class EffectPanel {
         <img class="effect-drone-flame" src="/assets/effects/drone-crash-flame.png" alt="" />
       </span>`
     }
-    return `<span class="effect-stage" aria-hidden="true">${remnant}
-      <i class="effect-core"></i><i class="effect-beam"></i><i class="effect-ring effect-ring--a"></i><i class="effect-ring effect-ring--b"></i>
-      <i class="effect-scanline"></i><i class="effect-shard effect-shard--a"></i><i class="effect-shard effect-shard--b"></i>
-      <span class="effect-particles">${particles}</span>
+    const fragmentCount = 8 + (seed % 6)
+    const fragments = Array.from({ length: fragmentCount }, (_, index) => {
+      const angle = (baseAngle + (random(index, 21) - .5) * (spread * 1.3)) * Math.PI / 180
+      const distance = 18 + random(index, 22) * 68
+      const dx = Math.cos(angle) * distance
+      const dy = Math.sin(angle) * distance + random(index, 23) * 16
+      const rotation = -75 + random(index, 24) * 150
+      const delay = Math.round(random(index, 25) * 190)
+      return `<i class="effect-material-fragment" style="--i:${index};--dx:${dx.toFixed(1)}px;--dy:${dy.toFixed(1)}px;--fragment-rotate:${rotation.toFixed(1)}deg;--fragment-delay:${delay}ms"></i>`
+    }).join('')
+    const arcSegments = [[8,46,-12],[23,42,8],[38,49,-10],[53,43,13],[68,48,-8],[83,44,7]].map(([left,width,rotation], index) => `<i class="effect-arc-segment" style="--i:${index};left:${left}%;width:${width}px;--segment-rotate:${rotation}deg"></i>`).join('')
+    const smoke = Array.from({ length: 4 }, (_, index) => `<i class="effect-industrial-smoke" style="--i:${index}"></i>`).join('')
+    const categoryClass = entry.category === 'enemy-death'
+      ? ` effect-stage--enemy-death effect-stage--enemy-${remnantKind}`
+      : ''
+    return `<span class="effect-stage effect-stage--industrial effect-stage--${entry.motion}${categoryClass}" aria-hidden="true">${remnant}${bloodMist}
+      <span class="effect-industrial-tracer"><i class="effect-tracer-sheath"></i><i class="effect-tracer-heat"></i><i class="effect-tracer-core"></i></span>
+      <span class="effect-industrial-arc">${arcSegments}</span>
+      <i class="effect-industrial-flash"></i><span class="effect-material-fragments">${fragments}</span><span class="effect-industrial-smokes">${smoke}</span>
+      <span class="effect-particles effect-particles--material">${particles}</span>
     </span>`
   }
 

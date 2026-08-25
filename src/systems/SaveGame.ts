@@ -5,7 +5,8 @@
 
 import { MAP_LEVELS } from '../data/maps'
 import { SAVE_KEY, SAVE_VERSION, type Difficulty } from '../data/balance'
-import { TOWER_IDS, type TowerId } from '../data/towers'
+import { type TowerId } from '../data/towers'
+import { GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
 
 export interface SavedTower {
   slot: number
@@ -22,7 +23,7 @@ export interface SaveData {
   health: number
   towers: SavedTower[]
   researchPoints: number
-  towerGrowth: Record<TowerId, number>
+  towerGrowth: Record<AllTowerId, number>
   unlockedMapIndex: number
   completedMaps: boolean[]
   mapIndex: number
@@ -60,8 +61,8 @@ export function loadGame(): SaveData | null {
     (_, i) => Boolean(parsed.completedMaps?.[i]) || i < unlockedMapIndex,
   )
   const towerGrowth = Object.fromEntries(
-    TOWER_IDS.map((id) => [id, Math.max(0, Math.min(3, Math.round(Number(parsed.towerGrowth?.[id]) || 0)))]),
-  ) as Record<TowerId, number>
+    GROWTH_TOWER_IDS.map((id) => [id, Math.max(0, Math.min(3, Math.round(Number(parsed.towerGrowth?.[id]) || 0)))]),
+  ) as Record<AllTowerId, number>
 
   return {
     version: SAVE_VERSION,

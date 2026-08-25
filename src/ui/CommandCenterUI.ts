@@ -1,6 +1,7 @@
 import type Phaser from 'phaser'
 import { MAP_LEVELS, CAMPAIGN_THREAT_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_ENEMY_COUNTS, CAMPAIGN_STARTING_COINS } from '../data/maps'
-import { TOWER_TYPES, TOWER_IDS, type TowerId } from '../data/towers'
+import { TOWER_TYPES } from '../data/towers'
+import { EXPANSION_TOWERS, GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
 import type { Difficulty } from '../data/balance'
 import { growthUpgradeCost } from '../systems/Economy'
 import { CampaignState } from '../state/CampaignState'
@@ -8,10 +9,22 @@ import { MUSIC_REGISTRY_KEY, type MusicController } from '../audio'
 import { BalancePanel } from './BalancePanel'
 import { AnimationPanel } from './AnimationPanel'
 import { EffectPanel } from './EffectPanel'
+import { AudioStudio } from './AudioStudio'
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = { easy: '简单', normal: '标准', hard: '困难' }
 const STATUS_LABEL: Record<'cleared' | 'online' | 'locked', string> = { cleared: 'CLEARED', online: 'ONLINE', locked: 'LOCKED' }
 const MAX_GROWTH_LEVEL = 3
+const GROWTH_TOWER_TYPES = [
+  ...TOWER_TYPES,
+  ...EXPANSION_TOWERS.map((tower) => ({
+    id: tower.id,
+    name: tower.name,
+    cost: tower.buildCost,
+    accent: tower.accent,
+    role: tower.role,
+    image: tower.image,
+  })),
+] as const
 
 /**
  * 指挥中心 UI(HTML+CSS),对应原版 #command-center。
@@ -33,9 +46,13 @@ export class CommandCenterUI {
   private readonly closeButton: HTMLButtonElement
   private readonly tabs: HTMLButtonElement[]
   private readonly panels: Record<string, HTMLElement>
+  private readonly assetTabs: HTMLButtonElement[]
+  private readonly assetPanels: Record<string, HTMLElement>
   private readonly balancePanel: BalancePanel
   private readonly animationPanel: AnimationPanel
   private readonly effectPanel: EffectPanel
+  private readonly audioStudio: AudioStudio
+  private previousAssetTab = 'animations'
 
   private selectedMapIndex = 0
   private selectedDifficulty: Difficulty = 'normal'
@@ -64,8 +81,14 @@ export class CommandCenterUI {
       missions: this.el.querySelector('[data-command-panel="missions"]') as HTMLElement,
       growth: this.el.querySelector('[data-command-panel="growth"]') as HTMLElement,
       balance: this.el.querySelector('[data-command-panel="balance"]') as HTMLElement,
-      animations: this.el.querySelector('[data-command-panel="animations"]') as HTMLElement,
-      effects: this.el.querySelector('[data-command-panel="effects"]') as HTMLElement,
+      assets: this.el.querySelector('[data-command-panel="assets"]') as HTMLElement,
+    }
+    this.assetTabs = Array.from(this.el.querySelectorAll('[data-asset-tab]'))
+    this.assetPanels = {
+      animations: this.el.querySelector('[data-asset-panel="animations"]') as HTMLElement,
+      effects: this.el.querySelector('[data-asset-panel="effects"]') as HTMLElement,
+      studio: this.el.querySelector('[data-asset-panel="studio"]') as HTMLElement,
+      audio: this.el.querySelector('[data-asset-panel="audio"]') as HTMLElement,
     }
 
     this.selectedMapIndex = campaign.isMapUnlocked(campaign.mapIndex) ? campaign.mapIndex : campaign.unlockedMapIndex
@@ -73,11 +96,14 @@ export class CommandCenterUI {
     this.balancePanel = new BalancePanel(campaign, () => this.selectedMapIndex)
     this.animationPanel = new AnimationPanel()
     this.effectPanel = new EffectPanel()
+    this.audioStudio = new AudioStudio()
 
     this.buildMissionList()
     this.buildDifficultyButtons()
     this.buildGrowthGrid()
     this.bindTabs()
+    this.bindAssetTabs()
+    this.bindImageStudioReturn()
     this.bindDeploy()
     this.bindClose()
   }
@@ -110,10 +136,44 @@ export class CommandCenterUI {
           panel.hidden = key !== target
         })
         if (target === 'balance') this.balancePanel.onTabActivated()
-        if (target === 'animations') this.animationPanel.activate()
-        if (target === 'effects') this.effectPanel.activate()
+        if (target === 'assets') this.activateAssetPanel(this.activeAssetTab())
       })
     })
+  }
+
+  private bindImageStudioReturn() {
+    window.addEventListener('message', (event) => {
+      if (event.origin !== window.location.origin) return
+      if (event.data?.type !== 'neon-defense:return-from-image-studio') return
+      this.activateAssetPanel(this.previousAssetTab)
+    })
+  }
+
+  private bindAssetTabs() {
+    this.assetTabs.forEach((tab) => {
+      tab.addEventListener('click', () => this.activateAssetPanel(tab.dataset.assetTab as string))
+    })
+  }
+
+  private activeAssetTab() {
+    return this.assetTabs.find((tab) => tab.getAttribute('aria-selected') === 'true')?.dataset.assetTab ?? 'animations'
+  }
+
+  private activateAssetPanel(target: string) {
+    const current = this.activeAssetTab()
+    if (target === 'studio' && current !== 'studio') this.previousAssetTab = current
+    if (target !== 'studio') this.previousAssetTab = target
+    this.assetTabs.forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.assetTab === target)))
+    Object.entries(this.assetPanels).forEach(([key, panel]) => {
+      panel.hidden = key !== target
+    })
+    if (target === 'animations') this.animationPanel.activate()
+    if (target === 'effects') this.effectPanel.activate()
+    if (target === 'audio') this.audioStudio.activate()
+    if (target === 'studio') {
+      const frame = this.assetPanels.studio.querySelector<HTMLIFrameElement>('.image-studio-frame')
+      if (frame && !frame.src) frame.src = frame.dataset.src ?? '/image-studio.html'
+    }
   }
 
   private bindClose() {
@@ -161,7 +221,7 @@ export class CommandCenterUI {
   }
 
   private buildGrowthGrid() {
-    TOWER_TYPES.forEach((def) => {
+    GROWTH_TOWER_TYPES.forEach((def) => {
       const card = document.createElement('div')
       card.className = 'growth-card'
       card.style.setProperty('--growth-accent', def.accent)
@@ -185,7 +245,7 @@ export class CommandCenterUI {
     })
   }
 
-  private tryUpgradeGrowth(id: TowerId) {
+  private tryUpgradeGrowth(id: AllTowerId) {
     const level = this.campaign.towerGrowthBonus(id)
     if (level >= MAX_GROWTH_LEVEL) return
     const cost = growthUpgradeCost(level)
@@ -253,11 +313,11 @@ export class CommandCenterUI {
     this.deployButton.textContent = !map.available ? '地图翻修中 // 暂停部署' : !this.assetsReady ? '资源加载中…' : !unlocked ? '未解锁' : 'DEPLOY // 进入战区'
 
     this.researchPointsEl.textContent = String(this.campaign.researchPoints)
-    const growthTotal = TOWER_IDS.reduce((sum, id) => sum + this.campaign.towerGrowthBonus(id), 0)
+    const growthTotal = GROWTH_TOWER_IDS.reduce((sum, id) => sum + this.campaign.towerGrowthBonus(id), 0)
     this.growthTotalEl.textContent = String(growthTotal).padStart(2, '0')
 
     const cards = Array.from(this.growthGrid.querySelectorAll<HTMLElement>('.growth-card'))
-    TOWER_TYPES.forEach((def, i) => {
+    GROWTH_TOWER_TYPES.forEach((def, i) => {
       const card = cards[i]
       const level = this.campaign.towerGrowthBonus(def.id)
       const bars = Array.from(card.querySelectorAll('.growth-level i'))

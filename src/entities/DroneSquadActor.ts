@@ -46,7 +46,7 @@ export class DroneSquadActor extends Phaser.GameObjects.Container {
       y: crashY,
       rotation: drone.rotation + Phaser.Math.FloatBetween(4.5, 7.5),
       alpha: 0.18,
-      duration: 420,
+      duration: 380,
       ease: 'Quad.easeIn',
       onComplete: () => {
         // 落地时火苗立即出现，无人机本体再用数帧淡出，让二者短暂重叠。
@@ -55,7 +55,7 @@ export class DroneSquadActor extends Phaser.GameObjects.Container {
         this.scene.tweens.add({
           targets: drone,
           alpha: 0,
-          duration: 360,
+          duration: 320,
           ease: 'Sine.easeOut',
           onComplete: () => drone.setVisible(false),
         })

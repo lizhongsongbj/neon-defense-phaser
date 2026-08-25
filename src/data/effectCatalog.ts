@@ -30,21 +30,21 @@ const effect = (
 ): EffectCatalogEntry => ({ id, category, family, name, motion, accent, secondary, description, timeline, layers, tags: [category, family, name, motion, ...layers] })
 
 const coreEffects: EffectCatalogEntry[] = [
-  effect('fx-hacker-head-pulse','core','黑客中继','塔头电磁脉冲','shockwave','#79ff9e','#c9ffe0','从中继塔头发射的写实电磁脉冲，使用高亮能量核、双层扫描环和少量电离火花。','塔头蓄能 → 青绿核闪光 → 双层脉冲环扩散 → 电离余光消退',['塔头能量核','双层体积脉冲环','电离火花','轻微空气扰动']),
+  effect('fx-hacker-head-pulse','core','黑客中继','塔头电磁脉冲','shockwave','#79ff9e','#c9ffe0','从中继塔天线释放定向电磁脉冲，以电离空气、局部电弧和设备表面放电表现，不使用纯色光环。','塔头蓄能 → 青绿核闪光 → 双层脉冲环扩散 → 电离余光消退',['塔头能量核','双层体积脉冲环','电离火花','轻微空气扰动']),
   effect('fx-hit-kinetic','core','通用命中','动能火花','particles','#ffd36a','#ff7347','用于子弹、弹片和近战命中的短促金属火花。','接触闪点 → 锥形火花散射 → 暗红余烬熄灭',['命中闪光','火花粒子','余烬']),
   effect('fx-hit-energy','core','通用命中','能量灼点','burst','#66f7ff','#5a78ff','用于电弧、脉冲和能量弹命中的青白灼烧反馈。','核心过曝 → 能量环扩散 → 电离残光消退',['过曝核心','辉光环','电离雾']),
-  effect('fx-beam-cyan','core','通用光束','青白贯穿束','beam','#7cffff','#20a8ff','适用于磁轨、激光与校准射线的高速直线光束。','前端聚焦 → 主束贯穿 → 细线残影衰减',['主光束','内核高光','尾迹']),
-  effect('fx-beam-amber','core','通用光束','琥珀切割束','beam','#ffd45c','#ff6c35','适用于工业切割、拆解和回收类装备。','定位线亮起 → 热切割束稳定 → 熔融粒子滴落',['定位线','热光束','熔融粒子']),
-  effect('fx-electric-chain','core','通用电弧','连锁电弧','arc','#63fff2','#9180ff','多目标之间跳跃的分叉电流，可作为电弧塔和系统过载效果。','主电弧命中 → 两次分叉跳跃 → 余电游走',['主电弧','分叉线','电火花']),
-  effect('fx-pulse-ring','core','通用场域','脉冲震荡环','shockwave','#55ecff','#ff4cab','适用于范围伤害、扫描、重力和状态释放。','中心压缩 → 双环扩散 → 边缘消隐',['中心闪点','双层环','空气扰动']),
-  effect('fx-particles-nano','core','纳米科技','灰潮纳米粒子','particles','#b7d1c5','#6d8f7f','灰绿色微粒群，用于解构、削甲和材料回收。','微粒喷出 → 表面附着 → 像素化剥离',['纳米点群','腐蚀网格','剥落碎片']),
-  effect('fx-particles-coins','core','资源反馈','资源回收粒子','particles','#ffe36e','#ff9c32','击杀奖励、清道夫协议和拆除返还的金色数据粒子。','资源标记亮起 → 金色粒子归拢 → 计量闪光',['金币粒子','吸附轨迹','计量闪光']),
-  effect('fx-shield-break','core','护盾系统','六边护盾破裂','shield','#7ceaff','#3968ff','护盾耗尽时的六边形裂纹与碎片爆散。','护盾过载 → 六边裂纹扩张 → 蓝色碎片消散',['护盾膜','裂纹','六边碎片']),
-  effect('fx-armor-shred','core','状态效果','护甲削弱','shards','#aaffc7','#64766e','用机械碎片和灰绿色扫描线表达护甲被拆解。','扫描锁定 → 装甲片剥落 → 削甲标记驻留',['扫描线','零件残留','状态标记']),
-  effect('fx-phase-reveal','core','状态效果','相位显形','scan','#82ffad','#39cfff','揭露隐身和相位目标的绿色扫描框。','轮廓扫描 → 残影归一 → 实体锁定',['扫描框','残影','锁定角标']),
-  effect('fx-execute','core','处决反馈','断点切断','glitch','#ff416f','#ffb14a','低生命处决时使用的红色阈值框和数据断裂。','阈值框收紧 → 一帧冻结 → 信号断裂',['阈值框','故障切片','断裂粒子']),
-  effect('fx-explosion-small','core','通用爆炸','紧凑爆破','burst','#ffb24b','#ff493d','无人机弹药、部件爆破与小型范围攻击使用。','白热核心 → 橙红冲击 → 黑烟碎屑',['白热核心','火焰瓣','烟尘']),
-  effect('fx-trail-flight','core','运动尾迹','高速飞行尾迹','trail','#82f7ff','#ff6eb5','适用于无人机、浮空敌人与高速投射物。','推进器点亮 → 双线尾迹拉长 → 转向弧线淡出',['推进光','双尾迹','转向弧']),
+  effect('fx-beam-cyan','core','通用光束','青白贯穿束','beam','#7cffff','#20a8ff','高速弹芯产生热白曳光、青色空气鞘和短促尾流，保持磁轨炮的金属工业质感。','前端聚焦 → 主束贯穿 → 细线残影衰减',['主光束','内核高光','尾迹']),
+  effect('fx-beam-amber','core','通用光束','琥珀切割束','beam','#ffd45c','#ff6c35','工业切割器形成窄幅热区、熔融金属飞屑和焦烟，不使用均匀发光色带。','定位线亮起 → 热切割束稳定 → 熔融粒子滴落',['定位线','热光束','熔融粒子']),
+  effect('fx-electric-chain','core','通用电弧','连锁电弧','arc','#63fff2','#9180ff','沿导电表面随机分叉的高压放电，包含热白电弧核心、青色电晕和绝缘烟雾。','主电弧命中 → 两次分叉跳跃 → 余电游走',['主电弧','分叉线','电火花']),
+  effect('fx-pulse-ring','core','通用场域','脉冲震荡环','shockwave','#55ecff','#ff4cab','由空气压缩、地表扬尘和机械碎屑外推表现范围冲击，避免规则发光圆环。','中心压缩 → 双环扩散 → 边缘消隐',['中心闪点','双层环','空气扰动']),
+  effect('fx-particles-nano','core','纳米科技','灰潮纳米粒子','particles','#b7d1c5','#6d8f7f','灰绿色纳米集群附着装甲接缝，剥落真实涂层、金属粉尘和微型零件。','微粒喷出 → 表面附着 → 像素化剥离',['纳米点群','腐蚀网格','剥落碎片']),
+  effect('fx-particles-coins','core','资源反馈','资源回收粒子','particles','#ffe36e','#ff9c32','回收装置吸入带金属反光的芯片、弹壳和微型零件，以琥珀计量灯确认资源。','资源标记亮起 → 金色粒子归拢 → 计量闪光',['金币粒子','吸附轨迹','计量闪光']),
+  effect('fx-shield-break','core','护盾系统','六边护盾破裂','shield','#7ceaff','#3968ff','护盾膜失稳时先产生局部电弧，随后崩落半透明复合材料碎片和电离烟雾。','护盾过载 → 六边裂纹扩张 → 蓝色碎片消散',['护盾膜','裂纹','六边碎片']),
+  effect('fx-armor-shred','core','状态效果','护甲削弱','shards','#aaffc7','#64766e','装甲表面出现切削痕、铆钉脱落和灰绿色纳米粉尘，呈现真实材料被拆解。','扫描锁定 → 装甲片剥落 → 削甲标记驻留',['扫描线','零件残留','状态标记']),
+  effect('fx-phase-reveal','core','状态效果','相位显形','scan','#82ffad','#39cfff','以投影噪声、表面反射恢复和定位灯扫过表现显形，避免纯几何扫描框。','轮廓扫描 → 残影归一 → 实体锁定',['扫描框','残影','锁定角标']),
+  effect('fx-execute','core','处决反馈','断点切断','glitch','#ff416f','#ffb14a','以目标义体警示灯转红、结构火花中断和部件失效表现处决。','阈值框收紧 → 一帧冻结 → 信号断裂',['阈值框','故障切片','断裂粒子']),
+  effect('fx-explosion-small','core','通用爆炸','紧凑爆破','burst','#ffb24b','#ff493d','白热燃烧点引燃红橙火苗，同时喷出不规则金属火花、壳体碎片与灰黑烟尘。','白热核心 → 橙红冲击 → 黑烟碎屑',['白热核心','火焰瓣','烟尘']),
+  effect('fx-trail-flight','core','运动尾迹','高速飞行尾迹','trail','#82f7ff','#ff6eb5','推进器喷出高温尾焰、稀薄热扰流和少量燃料烟，不使用简单发光拖线。','推进器点亮 → 双线尾迹拉长 → 转向弧线淡出',['推进光','双尾迹','转向弧']),
 ]
 
 const synergyEffects: EffectCatalogEntry[] = [
@@ -57,7 +57,7 @@ const synergyEffects: EffectCatalogEntry[] = [
 ]
 
 const enemyDeaths: Array<[string,string,EffectMotion,string,string,string]> = [
-  ['gang','帮派义体兵','particles','#ff665e','#ffc16a','义体火花与小型零件散落，轮廓快速故障淡出。'],
+  ['gang','帮派义体兵','particles','#ff665e','#ffc16a','身体失去支撑后倒下，义体接口熄灭并伴随少量血雾与组织碎屑，不喷射机械火花。'],
   ['riot','防暴镇压机','shards','#ff9658','#ffe07a','厚重装甲片崩落，核心熄灭并伴随低矮烟尘。'],
   ['ninja','相位忍者','glitch','#c67dff','#ff72d8','紫色残影错位后切片消散，不保留实体尸体。'],
   ['aerostat','企业浮空艇','smoke','#75ddff','#ff9b55','推进器失火、拖出金属火花并向下坠落爆裂。'],
@@ -71,9 +71,17 @@ const enemyDeaths: Array<[string,string,EffectMotion,string,string,string]> = [
   ['eve','夏娃-9','glitch','#ff67d5','#77eaff','城市节点逐层断线，白色核心转为透明数据碎片消散。'],
 ]
 
-const enemyDeathEffects = enemyDeaths.map(([id,name,motion,accent,secondary,description]) =>
-  effect(`fx-enemy-death-${id}`,'enemy-death','怪物死亡',`${name}死亡`,motion,accent,secondary,description,'致命伤反馈 → 身份化崩解 → 残留粒子清除',['轮廓闪烁','身份粒子','消散']),
-)
+const mechanicalEnemyDeathIds = new Set(['riot','aerostat','devourer','faraday','hijacker','enforcer','eve'])
+
+const enemyDeathEffects = enemyDeaths.map(([id,name,motion,accent,secondary,description]) => {
+  const mechanical = mechanicalEnemyDeathIds.has(id)
+  const remnantAsset = mechanical
+    ? '/assets/effects/death-remnants/mechanical-parts-pile.png'
+    : '/assets/effects/death-remnants/biological-blood-puddle.png'
+  const remnantLayer = mechanical ? '\u96f6\u4ef6\u6b8b\u7559' : '\u8840\u8ff9\u6b8b\u7559'
+  const entry = effect(`fx-enemy-death-${id}`,'enemy-death','\u602a\u7269\u6b7b\u4ea1',`${name}\u6b7b\u4ea1`,motion,accent,secondary,description,'\u81f4\u547d\u4f24\u53cd\u9988 \u2192 \u8eab\u4efd\u5316\u5d29\u89e3 \u2192 \u5730\u9762\u6b8b\u7559\u663e\u73b0',['\u8f6e\u5ed3\u95ea\u70c1','\u8eab\u4efd\u7c92\u5b50','\u6d88\u6563'])
+  return { ...entry, remnantAsset, layers: [...entry.layers, remnantLayer] }
+})
 
 const mercenaryDeathEffects: EffectCatalogEntry[] = [
   effect('fx-merc-shield-death','mercenary-death','佣兵死亡','铬钢盾兵倒地','shards','#d7aa5c','#6deaff','盾牌先砸地擦出火花，身体失去支撑后倒地，地面留下少量血迹。','盾牌脱手 → 重心下沉 → 信标熄灭',['盾牌擦地火花','倒地动作','血迹残留']),
@@ -96,7 +104,7 @@ export const EFFECT_CATALOG: readonly EffectCatalogEntry[] = [
 ]
 
 export const EFFECT_CATEGORY_LABEL: Record<EffectCategory,string> = {
-  core: '通用粒子/光束',
+  core: '写实战斗特效',
   synergy: '连携特效',
   'enemy-death': '怪物死亡',
   'mercenary-death': '佣兵死亡',

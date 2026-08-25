@@ -6,6 +6,7 @@ export * from './VoiceSystem'
 export * from './MusicController'
 export * from './voiceManifest'
 export * from './musicManifest'
+export * from './EnemySpawnSfx'
 
 export const VOICE_REGISTRY_KEY = 'voiceSystem'
 export const MUSIC_REGISTRY_KEY = 'musicController'

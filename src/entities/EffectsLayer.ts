@@ -1,4 +1,10 @@
-import Phaser from 'phaser'
+﻿import Phaser from 'phaser'
+interface EnemyRemnantGroup {
+  remnant: Phaser.GameObjects.Image
+  companions: Phaser.GameObjects.Shape[]
+  expiry?: Phaser.Time.TimerEvent
+}
+
 
 const EFFECT_COLORS: Record<string, number> = {
   rail: 0x34c9ff,
@@ -9,32 +15,202 @@ const EFFECT_COLORS: Record<string, number> = {
 }
 
 /**
- * 攻击特效层 —— 原版对应 `.combat-projectile` / `.combat-impact` / `.combat-flash` 元素,
- * 塔楼本体只为磁轨、电弧和黑客攻击提供发射点；佣兵与无人机由各自单位演员负责出动。
+ * 鏀诲嚮鐗规晥灞?鈥斺€?鍘熺増瀵瑰簲 `.combat-projectile` / `.combat-impact` / `.combat-flash` 鍏冪礌,
+ * 濉旀ゼ鏈綋鍙负纾佽建銆佺數寮у拰榛戝鏀诲嚮鎻愪緵鍙戝皠鐐癸紱浣ｅ叺涓庢棤浜烘満鐢卞悇鑷崟浣嶆紨鍛樿礋璐ｅ嚭鍔ㄣ€?
  */
 export class EffectsLayer {
   private readonly scene: Phaser.Scene
   private readonly remnants: Phaser.GameObjects.Image[] = []
+  private readonly enemyRemnants: EnemyRemnantGroup[] = []
+  private static readonly MAX_ENEMY_REMNANTS = 40
+  private static readonly ENEMY_REMNANT_HOLD_MS = 42000
+  private static readonly ENEMY_REMNANT_FADE_MS = 3000
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene
   }
 
   playShot(from: { x: number; y: number }, to: { x: number; y: number }, effect: string) {
-    const color = EFFECT_COLORS[effect] ?? 0xffffff
-
-    const line = this.scene.add.line(0, 0, from.x, from.y, to.x, to.y, color, 0.9).setLineWidth(2)
-    line.setOrigin(0, 0)
-    this.scene.tweens.add({
-      targets: line,
-      alpha: 0,
-      duration: 180,
-      onComplete: () => line.destroy(),
-    })
+    if (effect === 'arc') {
+      this.playArcDischarge(from, to)
+    } else if (effect === 'rail') {
+      this.playRailLaser(from, to)
+    } else if (effect === 'mercenary') {
+      this.playBallisticTracer(from, to)
+    } else {
+      this.playIndustrialTracer(from, to, EFFECT_COLORS[effect] ?? 0xffffff)
+    }
     this.playImpact(to, effect)
   }
 
-  /** 使用用户圈选的一级黑客中继脉冲序列；16帧保持原动画的生成、显现和消散节奏。 */
+  private fadeAndDestroy(target: Phaser.GameObjects.GameObject & { alpha: number }, duration: number, delay = 0) {
+    this.scene.tweens.add({ targets: target, alpha: 0, duration, delay, onComplete: () => target.destroy() })
+  }
+
+  private drawPath(points: Array<{ x: number; y: number }>, color: number, width: number, alpha: number, depth: number) {
+    const graphics = this.scene.add.graphics().setDepth(depth).setBlendMode(Phaser.BlendModes.ADD)
+    graphics.lineStyle(width, color, alpha).beginPath().moveTo(points[0].x, points[0].y)
+    points.slice(1).forEach((point) => graphics.lineTo(point.x, point.y))
+    graphics.strokePath()
+    return graphics
+  }
+
+  private playRailLaser(from: { x: number; y: number }, to: { x: number; y: number }) {
+    const angle = Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y)
+    const distance = Phaser.Math.Distance.Between(from.x, from.y, to.x, to.y)
+
+    const createLaserLayer = (height: number, color: number, alpha: number, depth: number, fadeDelay: number) => {
+      const beam = this.scene.add.rectangle(from.x, from.y, distance, height, color, alpha)
+        .setOrigin(0, 0.5)
+        .setRotation(angle)
+        .setDepth(depth)
+        .setBlendMode(Phaser.BlendModes.ADD)
+
+      this.scene.tweens.add({
+        targets: beam,
+        scaleY: { from: 0.72, to: 1.16 },
+        alpha: { from: alpha, to: Math.min(1, alpha * 1.18) },
+        duration: 70,
+        yoyo: true,
+        repeat: 1,
+        ease: 'Sine.easeInOut',
+      })
+      this.scene.tweens.add({
+        targets: beam,
+        alpha: 0,
+        scaleY: 0.12,
+        delay: fadeDelay,
+        duration: 120,
+        ease: 'Sine.easeIn',
+        onComplete: () => beam.destroy(),
+      })
+    }
+
+    // 鍏夋潫鐢熸垚鍚庣珛鍗宠疮閫氱偖鍙ｄ笌鐩爣锛屽苟鍋滅暀鏁板抚锛涗笉鍐嶄娇鐢ㄧЩ鍔ㄥ脊涓告垨鏇冲厜娈点€?    createLaserLayer(38, 0x007fca, 0.28, 87, 390)
+    createLaserLayer(18, 0x20cfff, 0.96, 88, 370)
+    createLaserLayer(7, 0xf8ffff, 1, 89, 345)
+
+    const muzzleGlow = this.scene.add.circle(from.x, from.y, 12, 0xe8ffff, 1)
+      .setDepth(90)
+      .setBlendMode(Phaser.BlendModes.ADD)
+    this.scene.tweens.add({
+      targets: muzzleGlow,
+      radius: 27,
+      alpha: 0,
+      duration: 430,
+      ease: 'Quad.easeOut',
+      onComplete: () => muzzleGlow.destroy(),
+    })
+  }
+  playArcLightning(from: { x: number; y: number }, to: { x: number; y: number }, chainIndex = 0) {
+    this.playArcDischarge(from, to, Phaser.Math.Clamp(1 - chainIndex * 0.12, 0.7, 1))
+    this.playImpact(to, 'arc')
+  }
+
+  private playArcDischarge(from: { x: number; y: number }, to: { x: number; y: number }, intensity = 1) {
+    const distance = Phaser.Math.Distance.Between(from.x, from.y, to.x, to.y)
+    const segments = Phaser.Math.Clamp(Math.round(distance / 13), 7, 19)
+    const angle = Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y)
+    const normal = { x: -Math.sin(angle), y: Math.cos(angle) }
+    const makeBolt = (jitterScale: number, phase: number) => Array.from({ length: segments + 1 }, (_, index) => {
+      const t = index / segments
+      const envelope = Math.sin(t * Math.PI)
+      const noise = index === 0 || index === segments
+        ? 0
+        : (Phaser.Math.Between(-8, 8) + Math.sin(index * 2.4 + phase) * 3) * jitterScale * envelope
+      return {
+        x: Phaser.Math.Linear(from.x, to.x, t) + normal.x * noise,
+        y: Phaser.Math.Linear(from.y, to.y, t) + normal.y * noise,
+      }
+    })
+
+    const main = makeBolt(1, 0)
+    const echo = makeBolt(.62, 1.7)
+    const corona = this.drawPath(main, 0x00a6bd, 14 * intensity, .3 * intensity, 87)
+    const body = this.drawPath(main, 0x24fff0, 5.5 * intensity, .98, 88)
+    const core = this.drawPath(main, 0xffffff, Math.max(1.7, 2.35 * intensity), 1, 90)
+    const flashCore = this.drawPath(main, 0xf7ffff, Math.max(2.1, 2.9 * intensity), .78, 91)
+    const echoBody = this.drawPath(echo, 0x39d9ff, 3.2 * intensity, .68 * intensity, 88)
+    const echoCore = this.drawPath(echo, 0xe6ffff, 1.35, .9 * intensity, 89)
+    this.fadeAndDestroy(corona, 260)
+    this.fadeAndDestroy(body, 195)
+    this.fadeAndDestroy(core, 145)
+    this.fadeAndDestroy(flashCore, 68)
+    this.fadeAndDestroy(echoBody, 175, 18)
+    this.fadeAndDestroy(echoCore, 112, 18)
+
+    const branchCount = Math.max(3, Math.round(5 * intensity))
+    for (let branch = 0; branch < branchCount; branch += 1) {
+      const rootIndex = Phaser.Math.Between(2, main.length - 3)
+      const root = main[rootIndex]
+      const direction = branch % 2 === 0 ? 1 : -1
+      const branchAngle = angle + direction * Phaser.Math.FloatBetween(.55, 1.22)
+      const length = Phaser.Math.Between(14, 36) * intensity
+      const fork = [
+        root,
+        { x: root.x + Math.cos(branchAngle) * length * .48 + Phaser.Math.Between(-3, 3), y: root.y + Math.sin(branchAngle) * length * .48 + Phaser.Math.Between(-3, 3) },
+        { x: root.x + Math.cos(branchAngle) * length, y: root.y + Math.sin(branchAngle) * length },
+      ]
+      const branchGlow = this.drawPath(fork, 0x13d9e9, 4.5, .34 * intensity, 87)
+      const branchCore = this.drawPath(fork, branch % 3 === 0 ? 0xffffff : 0x7dfff7, 1.4, .96 * intensity, 89)
+      this.fadeAndDestroy(branchGlow, Phaser.Math.Between(120, 185), Phaser.Math.Between(0, 38))
+      this.fadeAndDestroy(branchCore, Phaser.Math.Between(85, 145), Phaser.Math.Between(0, 38))
+    }
+
+    const sourceGlow = this.scene.add.circle(from.x, from.y, 7, 0xffffff, 1)
+      .setStrokeStyle(5, 0x20f4e6, .92)
+      .setDepth(90)
+      .setBlendMode(Phaser.BlendModes.ADD)
+    this.scene.tweens.add({
+      targets: sourceGlow,
+      radius: 18 + 5 * intensity,
+      alpha: 0,
+      duration: 230,
+      ease: 'Quad.easeOut',
+      onComplete: () => sourceGlow.destroy(),
+    })
+
+    for (let sparkIndex = 1; sparkIndex <= 4; sparkIndex += 1) {
+      const point = main[Math.round((sparkIndex / 5) * segments)]
+      const spark = this.scene.add.circle(point.x, point.y, Phaser.Math.FloatBetween(1.8, 3.2), sparkIndex % 2 ? 0xffffff : 0x32fff0, 1)
+        .setDepth(91)
+        .setBlendMode(Phaser.BlendModes.ADD)
+      const drift = Phaser.Math.FloatBetween(-12, 12)
+      this.scene.tweens.add({
+        targets: spark,
+        x: spark.x + normal.x * drift,
+        y: spark.y + normal.y * drift,
+        scale: .15,
+        alpha: 0,
+        duration: Phaser.Math.Between(120, 210),
+        onComplete: () => spark.destroy(),
+      })
+    }
+  }
+
+  private playBallisticTracer(from: { x: number; y: number }, to: { x: number; y: number }) {
+    const angle = Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y)
+    const distance = Phaser.Math.Distance.Between(from.x, from.y, to.x, to.y)
+    const tracerLength = Math.min(22, distance * .28)
+    const tracerFrom = { x: to.x - Math.cos(angle) * tracerLength, y: to.y - Math.sin(angle) * tracerLength }
+    const glow = this.drawPath([tracerFrom, to], 0xd87432, 4, .22, 87)
+    const core = this.drawPath([tracerFrom, to], 0xffd58a, 1, .95, 88)
+    this.fadeAndDestroy(glow, 95)
+    this.fadeAndDestroy(core, 65)
+    for (let i = 0; i < 4; i += 1) {
+      const sparkAngle = angle + Math.PI + Phaser.Math.FloatBetween(-.6, .6)
+      const spark = this.scene.add.rectangle(from.x, from.y, Phaser.Math.Between(4, 9), 1, i === 0 ? 0xfff0bd : 0xd88a38, .9).setRotation(sparkAngle).setDepth(88)
+      this.scene.tweens.add({ targets: spark, x: from.x + Math.cos(sparkAngle) * Phaser.Math.Between(8, 18), y: from.y + Math.sin(sparkAngle) * Phaser.Math.Between(8, 18), alpha: 0, duration: Phaser.Math.Between(90, 170), onComplete: () => spark.destroy() })
+    }
+  }
+
+  private playIndustrialTracer(from: { x: number; y: number }, to: { x: number; y: number }, color: number) {
+    const angle = Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y)
+    const projectile = this.scene.add.rectangle(from.x, from.y, 10, 3, color, .95).setRotation(angle).setDepth(88).setBlendMode(Phaser.BlendModes.ADD)
+    this.scene.tweens.add({ targets: projectile, x: to.x, y: to.y, duration: 110, ease: 'Linear', onComplete: () => projectile.destroy() })
+  }
+
+  /** 浣跨敤鐢ㄦ埛鍦堥€夌殑涓€绾ч粦瀹腑缁ц剦鍐插簭鍒楋紱16甯т繚鎸佸師鍔ㄧ敾鐨勭敓鎴愩€佹樉鐜板拰娑堟暎鑺傚銆?*/
   playHackerPulse(from: { x: number; y: number }, to: { x: number; y: number }, level: number) {
     const animationKey = 'fx-hacker-selected-pulse-fire'
     if (!this.scene.anims.exists(animationKey)) {
@@ -65,16 +241,59 @@ export class EffectsLayer {
     this.scene.time.delayedCall(11 * 55, () => this.playImpact(to, 'hacker'))
   }
   playImpact(at: { x: number; y: number }, effect: string) {
-    const color = EFFECT_COLORS[effect] ?? 0xffffff
-    const ring = this.scene.add.circle(at.x, at.y, 4, color, 0.7)
-    this.scene.tweens.add({
-      targets: ring,
-      radius: 14,
-      alpha: 0,
-      duration: 220,
-      onComplete: () => ring.destroy(),
-    })
+    if (effect === 'rail') {
+      const bloom = this.scene.add.circle(at.x, at.y, 9, 0xf2ffff, 1)
+        .setStrokeStyle(6, 0x25d8ff, 0.96)
+        .setDepth(90)
+        .setBlendMode(Phaser.BlendModes.ADD)
+      this.scene.tweens.add({
+        targets: bloom,
+        radius: 32,
+        alpha: 0,
+        duration: 390,
+        ease: 'Quad.easeOut',
+        onComplete: () => bloom.destroy(),
+      })
+      return
+    }
+    if (effect === 'arc') {
+      const electricBloom = this.scene.add.circle(at.x, at.y, 7, 0xffffff, 1)
+        .setStrokeStyle(5, 0x20f4e6, .96)
+        .setDepth(92)
+        .setBlendMode(Phaser.BlendModes.ADD)
+      const electricRing = this.scene.add.ellipse(at.x, at.y, 16, 7, 0x22f7eb, .35)
+        .setStrokeStyle(2, 0xbfffff, .95)
+        .setDepth(91)
+        .setBlendMode(Phaser.BlendModes.ADD)
+      this.scene.tweens.add({ targets: electricBloom, radius: 24, alpha: 0, duration: 270, ease: 'Quad.easeOut', onComplete: () => electricBloom.destroy() })
+      this.scene.tweens.add({ targets: electricRing, scaleX: 2.7, scaleY: 2.1, alpha: 0, duration: 310, ease: 'Quad.easeOut', onComplete: () => electricRing.destroy() })
+    }
+    const palette: Record<string, { hot: number; body: number; smoke: number }> = {
+      rail: { hot: 0xf1fdff, body: 0x43d7ff, smoke: 0x33464d },
+      arc: { hot: 0xe9ffff, body: 0x22e9dc, smoke: 0x294348 },
+      mercenary: { hot: 0xffe3a2, body: 0xd88336, smoke: 0x4a4038 },
+      hacker: { hot: 0xd8ffe3, body: 0x60e88d, smoke: 0x263e31 },
+      drone: { hot: 0xfff0bd, body: 0xe39a48, smoke: 0x3a4042 },
+    }
+    const colors = palette[effect] ?? { hot: 0xffffff, body: EFFECT_COLORS[effect] ?? 0xffffff, smoke: 0x3b4245 }
+    const fragmentCount = effect === 'rail' ? 9 : effect === 'drone' ? 11 : 7
+    for (let i = 0; i < fragmentCount; i += 1) {
+      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2)
+      const distance = Phaser.Math.Between(8, effect === 'drone' ? 30 : 23)
+      const fragment = this.scene.add.rectangle(at.x, at.y, Phaser.Math.Between(3, 8), Phaser.Math.FloatBetween(.8, 1.8), i % 4 === 0 ? colors.hot : colors.body, Phaser.Math.FloatBetween(.72, 1))
+        .setRotation(angle).setDepth(90).setBlendMode(Phaser.BlendModes.ADD)
+      this.scene.tweens.add({ targets: fragment, x: at.x + Math.cos(angle) * distance, y: at.y + Math.sin(angle) * distance + Phaser.Math.Between(2, 10), angle: fragment.angle + Phaser.Math.Between(-80, 80), alpha: 0, scaleX: .25, duration: Phaser.Math.Between(150, 330), ease: 'Cubic.easeOut', onComplete: () => fragment.destroy() })
+    }
+    const flash = this.scene.add.star(at.x, at.y, 5, 2, effect === 'rail' ? 9 : 6, colors.hot, .92).setDepth(89).setBlendMode(Phaser.BlendModes.ADD)
+    this.scene.tweens.add({ targets: flash, scaleX: 2.1, scaleY: .65, alpha: 0, rotation: Phaser.Math.FloatBetween(-.5, .5), duration: 130, onComplete: () => flash.destroy() })
+    if (effect === 'mercenary' || effect === 'drone' || effect === 'rail') {
+      for (let i = 0; i < 3; i += 1) {
+        const smoke = this.scene.add.circle(at.x + Phaser.Math.Between(-4, 4), at.y + Phaser.Math.Between(-2, 3), Phaser.Math.Between(3, 6), colors.smoke, .28).setDepth(87)
+        this.scene.tweens.add({ targets: smoke, x: smoke.x + Phaser.Math.Between(-8, 8), y: smoke.y - Phaser.Math.Between(8, 18), radius: smoke.radius * 1.7, alpha: 0, duration: Phaser.Math.Between(320, 560), ease: 'Sine.easeOut', onComplete: () => smoke.destroy() })
+      }
+    }
   }
+
 
   playMercenaryDeath(at: { x: number; y: number }) {
     for (let i = 0; i < 9; i += 1) {
@@ -87,16 +306,16 @@ export class EffectsLayer {
         y: at.y - Math.sin(angle) * distance + Phaser.Math.Between(10, 22),
         scale: 0.35,
         alpha: 0,
-        duration: Phaser.Math.Between(360, 620),
+        duration: Phaser.Math.Between(320, 550),
         ease: 'Quad.easeOut',
         onComplete: () => droplet.destroy(),
       })
     }
-    // 血滴仍在空中时血迹开始淡入，避免佣兵、血滴和残留之间出现生硬切换。
-    this.scene.time.delayedCall(260, () => this.playDeathRemnant(at, false, false, 380))
+    // 琛€婊翠粛鍦ㄧ┖涓椂琛€杩瑰紑濮嬫贰鍏ワ紝閬垮厤浣ｅ叺銆佽婊村拰娈嬬暀涔嬮棿鍑虹幇鐢熺‖鍒囨崲銆?
+    this.scene.time.delayedCall(230, () => this.playDeathRemnant(at, false, false, 340))
   }
 
-  /** 三段无缝坠毁：下坠由 DroneSquadActor 完成；撞地同帧出现火苗；火苗结束同帧换为残骸。 */
+  /** 涓夋鏃犵紳鍧犳瘉锛氫笅鍧犵敱 DroneSquadActor 瀹屾垚锛涙挒鍦板悓甯у嚭鐜扮伀鑻楋紱鐏嫍缁撴潫鍚屽抚鎹负娈嬮銆?*/
   playDroneCrash(at: { x: number; y: number }) {
     if (!this.scene.textures.exists('drone-crash-flame')) {
       this.playDeathRemnant(at, true)
@@ -112,14 +331,14 @@ export class EffectsLayer {
       scaleX: { from: 0.82, to: 1.08 },
       scaleY: { from: 0.9, to: 1.15 },
       angle: { from: -3, to: 3 },
-      duration: 135,
+      duration: 120,
       yoyo: true,
       repeat: 3,
       ease: 'Sine.easeInOut',
     })
-    // 火苗尚未完全熄灭时，残骸提前淡入约数帧，使两者自然交叠。
-    this.scene.time.delayedCall(650, () => {
-      this.playDeathRemnant(at, true, false, 460)
+    // 鐏嫍灏氭湭瀹屽叏鐔勭伃鏃讹紝娈嬮鎻愬墠娣″叆绾︽暟甯э紝浣夸袱鑰呰嚜鐒朵氦鍙犮€?
+    this.scene.time.delayedCall(580, () => {
+      this.playDeathRemnant(at, true, false, 410)
       if (!flame.active) return
       this.scene.tweens.killTweensOf(flame)
       this.scene.tweens.add({
@@ -127,21 +346,138 @@ export class EffectsLayer {
         alpha: 0,
         scaleX: 0.88,
         scaleY: 0.78,
-        duration: 560,
+        duration: 500,
         ease: 'Sine.easeInOut',
         onComplete: () => flame.destroy(),
       })
     })
   }
 
-  playDeathRemnant(at: { x: number; y: number }, mechanical: boolean, large = false, revealDuration = 0) {
+  private createDeathRemnant(at: { x: number; y: number }, mechanical: boolean, large: boolean, alpha: number) {
     const key = mechanical ? 'remnant-mechanical' : 'remnant-biological'
-    if (!this.scene.textures.exists(key)) return
-    const remnant = this.scene.add.image(at.x, at.y + 7, key)
+    if (!this.scene.textures.exists(key)) return null
+    return this.scene.add.image(at.x, at.y + 7, key)
       .setDisplaySize(large ? 92 : mechanical ? 62 : 55, large ? 70 : mechanical ? 48 : 38)
       .setRotation(Phaser.Math.FloatBetween(-0.35, 0.35))
-      .setAlpha(revealDuration > 0 ? 0 : mechanical ? 0.92 : 0.82)
+      .setAlpha(alpha)
       .setDepth(4)
+  }
+
+  private createEnemyRemnantCompanions(at: { x: number; y: number }, mechanical: boolean, large: boolean) {
+    const sizeScale = large ? 1.35 : 1
+    if (mechanical) {
+      return Array.from({ length: large ? 9 : 6 }, (_, index) => {
+        const angle = Phaser.Math.FloatBetween(0, Math.PI * 2)
+        const distance = Phaser.Math.Between(10, large ? 42 : 30)
+        const spark = this.scene.add.star(
+          at.x + Math.cos(angle) * distance,
+          at.y + 5 + Math.sin(angle) * distance * .45,
+          4,
+          1.2 * sizeScale,
+          3.1 * sizeScale,
+          index % 2 ? 0xffa53d : 0xffe18a,
+          Phaser.Math.FloatBetween(.18, .42),
+        ).setDepth(5).setBlendMode(Phaser.BlendModes.ADD)
+        this.scene.tweens.add({
+          targets: spark,
+          alpha: { from: .12, to: Phaser.Math.FloatBetween(.48, .78) },
+          x: spark.x + Phaser.Math.Between(-5, 5),
+          y: spark.y - Phaser.Math.Between(2, 9),
+          rotation: spark.rotation + Phaser.Math.FloatBetween(-1.1, 1.1),
+          duration: Phaser.Math.Between(900, 1550),
+          delay: index * 90,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        })
+        return spark
+      })
+    }
+    return Array.from({ length: large ? 7 : 5 }, (_, index) => {
+      const mist = this.scene.add.ellipse(
+        at.x + Phaser.Math.Between(-20, 20) * sizeScale,
+        at.y + Phaser.Math.Between(1, 12),
+        Phaser.Math.Between(14, 26) * sizeScale,
+        Phaser.Math.Between(6, 12) * sizeScale,
+        index % 2 ? 0x8f1028 : 0xc52a3b,
+        Phaser.Math.FloatBetween(.08, .18),
+      ).setDepth(5).setBlendMode(Phaser.BlendModes.ADD).setRotation(Phaser.Math.FloatBetween(-.4, .4))
+      this.scene.tweens.add({
+        targets: mist,
+        alpha: { from: .05, to: Phaser.Math.FloatBetween(.16, .3) },
+        x: mist.x + Phaser.Math.Between(-7, 7),
+        y: mist.y - Phaser.Math.Between(3, 10),
+        scaleX: { from: .82, to: 1.22 },
+        scaleY: { from: .72, to: 1.08 },
+        duration: Phaser.Math.Between(1800, 3000),
+        delay: index * 150,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      })
+      return mist
+    })
+  }
+
+  private destroyEnemyRemnantGroup(group: EnemyRemnantGroup) {
+    group.expiry?.remove(false)
+    for (const object of [group.remnant, ...group.companions]) {
+      this.scene.tweens.killTweensOf(object)
+      if (object.active) object.destroy()
+    }
+    const index = this.enemyRemnants.indexOf(group)
+    if (index >= 0) this.enemyRemnants.splice(index, 1)
+  }
+
+  private fadeEnemyRemnantGroup(group: EnemyRemnantGroup) {
+    if (!group.remnant.active) return
+    group.expiry?.remove(false)
+    const targets = [group.remnant, ...group.companions].filter((object) => object.active)
+    for (const object of targets) this.scene.tweens.killTweensOf(object)
+    this.scene.tweens.add({
+      targets,
+      alpha: 0,
+      duration: EffectsLayer.ENEMY_REMNANT_FADE_MS,
+      ease: 'Sine.easeInOut',
+      onComplete: () => this.destroyEnemyRemnantGroup(group),
+    })
+  }
+
+  /** Enemy remains and their blood mist/sparks persist together, then fade as one group. */
+  playEnemyDeathRemnant(at: { x: number; y: number }, mechanical: boolean, large = false) {
+    const targetAlpha = mechanical ? 0.92 : 0.82
+    const remnant = this.createDeathRemnant(at, mechanical, large, 0)
+    if (!remnant) return
+    remnant
+      .setName(`enemy-remnant-${mechanical ? 'mechanical' : 'biological'}`)
+      .setData('remnant-kind', mechanical ? 'mechanical' : 'biological')
+    const group: EnemyRemnantGroup = {
+      remnant,
+      companions: this.createEnemyRemnantCompanions(at, mechanical, large),
+    }
+    this.enemyRemnants.push(group)
+    const targetScaleX = remnant.scaleX
+    const targetScaleY = remnant.scaleY
+    remnant.setScale(targetScaleX * 0.78, targetScaleY * 0.78)
+    this.scene.tweens.add({
+      targets: remnant,
+      alpha: targetAlpha,
+      scaleX: targetScaleX,
+      scaleY: targetScaleY,
+      duration: 260,
+      ease: 'Sine.easeOut',
+    })
+    group.expiry = this.scene.time.delayedCall(EffectsLayer.ENEMY_REMNANT_HOLD_MS, () => this.fadeEnemyRemnantGroup(group))
+    while (this.enemyRemnants.length > EffectsLayer.MAX_ENEMY_REMNANTS) {
+      const oldest = this.enemyRemnants[0]
+      if (!oldest) break
+      this.destroyEnemyRemnantGroup(oldest)
+    }
+  }
+
+  playDeathRemnant(at: { x: number; y: number }, mechanical: boolean, large = false, revealDuration = 0) {
+    const remnant = this.createDeathRemnant(at, mechanical, large, revealDuration > 0 ? 0 : mechanical ? 0.92 : 0.82)
+    if (!remnant) return
     this.remnants.push(remnant)
     while (this.remnants.length > 28) this.remnants.shift()?.destroy()
     const fadeRemnant = () => this.scene.tweens.add({
@@ -168,9 +504,30 @@ export class EffectsLayer {
     }
   }
 
-  playFlash(from: { x: number; y: number }, to: { x: number; y: number }, color: number) {
-    const line = this.scene.add.line(0, 0, from.x, from.y, to.x, to.y, color, 0.8).setLineWidth(2)
-    line.setOrigin(0, 0)
-    this.scene.tweens.add({ targets: line, alpha: 0, duration: 140, onComplete: () => line.destroy() })
+  destroy() {
+    for (const remnant of this.remnants) {
+      this.scene.tweens.killTweensOf(remnant)
+      if (remnant.active) remnant.destroy()
+    }
+    for (const group of [...this.enemyRemnants]) this.destroyEnemyRemnantGroup(group)
+    this.remnants.length = 0
+    this.enemyRemnants.length = 0
   }
+
+  playFlash(from: { x: number; y: number }, to: { x: number; y: number }, color: number) {
+    const angle = Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y)
+    const distance = Phaser.Math.Distance.Between(from.x, from.y, to.x, to.y)
+    const segments = Phaser.Math.Clamp(Math.round(distance / 18), 5, 14)
+    const points = Array.from({ length: segments + 1 }, (_, index) => {
+      const t = index / segments
+      const jitter = index === 0 || index === segments ? 0 : Phaser.Math.Between(-4, 4)
+      return { x: Phaser.Math.Linear(from.x, to.x, t) - Math.sin(angle) * jitter, y: Phaser.Math.Linear(from.y, to.y, t) + Math.cos(angle) * jitter }
+    })
+    const corona = this.drawPath(points, color, 5, .2, 87)
+    const core = this.drawPath(points, 0xf4ffff, 1, .92, 88)
+    this.fadeAndDestroy(corona, 135)
+    this.fadeAndDestroy(core, 85)
+  }
+
 }
+

@@ -56,6 +56,7 @@ const resultMode = document.getElementById('result-mode') as HTMLElement
 const publishedFile = document.getElementById('published-file') as HTMLElement
 const rawLink = document.getElementById('raw-link') as HTMLAnchorElement
 const processedLink = document.getElementById('processed-link') as HTMLAnchorElement
+const returnGameButton = document.getElementById('return-game-button') as HTMLAnchorElement
 
 
 let config: StudioConfig | null = null
@@ -273,6 +274,19 @@ publishButton.addEventListener('click', async () => {
     setStatus(`ERROR // ${error instanceof Error ? error.message : '发布失败'}`, 'error')
     publishButton.disabled = false
   }
+})
+
+returnGameButton.addEventListener('click', (event) => {
+  event.preventDefault()
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'neon-defense:return-from-image-studio' }, window.location.origin)
+    return
+  }
+  if (window.history.length > 1) {
+    window.history.back()
+    return
+  }
+  window.location.assign('/')
 })
 
 bindStudioSections()

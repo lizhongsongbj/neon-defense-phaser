@@ -1,4 +1,4 @@
-﻿import fs from 'node:fs/promises'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'
 
@@ -36,17 +36,30 @@ async function cleanSource(file){
 
 function effectSvg(form,frame){
   const charge=clamp(frame/6,0,1)
-  const fire=Math.exp(-Math.pow((frame-7.1)/0.72,2))
-  const travel=frame>=8&&frame<=10?1:0
-  const travelOffset=Math.max(0,frame-8)*48
+  const fire=Math.exp(-Math.pow((frame-7.4)/1.05,2))
+  const laserEnvelope=frame<7||frame>11?0:[.72,1,.96,.78,.46][frame-7]
   const [mx,my]=form.muzzle
-  const common=`<circle cx="${mx}" cy="${my}" r="${2+fire*7}" fill="${form.accent}" opacity="${fire}"/>`
-  if(form.variant==='calibration')return `<svg width="512" height="512"><g>${common}<path d="M${mx-53} ${my+27} h8 m-4 -4 v8 M${mx-31} ${my+43} h8 m-4 -4 v8" stroke="#4ef4ff" stroke-width="2" opacity="${frame>2&&frame<7?charge*.45:0}"/>${travel?`<path d="M${mx+travelOffset} ${my-travelOffset*.35} l28 -10 l-13 20 z" fill="#baffff" opacity="${1-(frame-8)*.22}"/>`:''}</g></svg>`
-  if(form.variant==='dual')return `<svg width="512" height="512"><g>${common}<circle cx="${mx-8}" cy="${my+17}" r="${2+fire*6}" fill="#58eaff" opacity="${fire}"/>${travel?`<path d="M${mx+travelOffset} ${my-9-travelOffset*.3} l30 -9 l-12 17 z M${mx+travelOffset-4} ${my+15-travelOffset*.3} l30 -7 l-12 16 z" fill="#9effff" opacity="${1-(frame-8)*.2}"/>`:''}</g></svg>`
-  if(form.variant==='sky')return `<svg width="512" height="512"><g>${common}<path d="M${mx-72} ${my+68} l18 -18 m-18 0 l18 18" stroke="#8befff" stroke-width="3" opacity="${frame<7?charge*.7:0}"/>${travel?`<path d="M${mx+travelOffset} ${my-travelOffset*.55} l36 -18 l-14 27 z" fill="#d4ffff" opacity="${1-(frame-8)*.2}"/><circle cx="${mx+travelOffset+18}" cy="${my-travelOffset*.55-5}" r="13" fill="none" stroke="#74dcff" stroke-width="3" opacity=".7"/>`:''}</g></svg>`
-  return `<svg width="512" height="512"><g>${common}<circle cx="${mx-105}" cy="${my+98}" r="${3+charge*5}" fill="#905cff" opacity="${frame<8?charge*.22:0}"/>${travel?`<path d="M${mx+travelOffset} ${my-travelOffset*.28} l42 -13 l-13 27 z" fill="#d6c4ff" opacity="${1-(frame-8)*.18}"/><path d="M${mx+travelOffset-30} ${my+4-travelOffset*.28} h72" stroke="#7d4cff" stroke-width="8" opacity=".75"/>`:''}</g></svg>`
-}
+  const endpoint={
+    calibration:[560,my-42],
+    dual:[560,my-34],
+    sky:[560,my-62],
+    city:[560,my-30],
+  }[form.variant]
+  const [ex,ey]=endpoint
+  const outer=form.variant==='city'?'#713dff':'#009de8'
+  const body=form.variant==='city'?'#b18cff':form.accent
+  const defs='<defs><filter id="rail-glow" x="-40%" y="-100%" width="180%" height="300%"><feGaussianBlur stdDeviation="7"/></filter></defs>'
+  const beam=(x1,y1,x2,y2,widthScale=1,opacity=laserEnvelope)=>`
+    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${outer}" stroke-width="${38*widthScale}" stroke-linecap="round" opacity="${opacity*.3}" filter="url(#rail-glow)"/>
+    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${body}" stroke-width="${18*widthScale}" stroke-linecap="round" opacity="${opacity*.96}"/>
+    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f8ffff" stroke-width="${7*widthScale}" stroke-linecap="round" opacity="${opacity}"/>`
+  const muzzle=`<circle cx="${mx}" cy="${my}" r="${5+fire*14}" fill="${form.accent}" opacity="${fire*.42}" filter="url(#rail-glow)"/><circle cx="${mx}" cy="${my}" r="${2+fire*7}" fill="#f5ffff" opacity="${fire}"/>`
 
+  if(form.variant==='calibration')return `<svg width="512" height="512">${defs}<g>${muzzle}<path d="M${mx-53} ${my+27} h8 m-4 -4 v8 M${mx-31} ${my+43} h8 m-4 -4 v8" stroke="#4ef4ff" stroke-width="2" opacity="${frame>2&&frame<7?charge*.45:0}"/>${beam(mx,my,ex,ey)}</g></svg>`
+  if(form.variant==='dual')return `<svg width="512" height="512">${defs}<g>${muzzle}<circle cx="${mx-8}" cy="${my+17}" r="${2+fire*7}" fill="#f5ffff" opacity="${fire}"/>${beam(mx,my-3,ex,ey-6,.78)}${beam(mx-8,my+17,ex,ey+17,.78)}</g></svg>`
+  if(form.variant==='sky')return `<svg width="512" height="512">${defs}<g>${muzzle}<path d="M${mx-72} ${my+68} l18 -18 m-18 0 l18 18" stroke="#8befff" stroke-width="3" opacity="${frame<7?charge*.7:0}"/>${beam(mx,my,ex,ey,1.12)}</g></svg>`
+  return `<svg width="512" height="512">${defs}<g>${muzzle}<circle cx="${mx-105}" cy="${my+98}" r="${3+charge*5}" fill="#905cff" opacity="${frame<8?charge*.22:0}"/>${beam(mx,my,ex,ey,1.18)}</g></svg>`
+}
 function movement(form,frame){
   const charge=clamp(frame/6,0,1)
   const recoil=Math.exp(-Math.pow((frame-7.4)/1.05,2))

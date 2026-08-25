@@ -49,3 +49,14 @@ test('佣兵死亡使用血迹残留，无人机死亡使用零件残留', () =>
   assert.ok(droneDeaths.every((entry) => entry.remnantAsset?.endsWith('/mechanical-parts-pile.png')))
   assert.ok(droneDeaths.every((entry) => entry.layers.includes('零件残留')))
 })
+
+
+test('enemy death effects include biological blood and mechanical parts remnants', () => {
+  const enemyDeaths = EFFECT_CATALOG.filter((entry) => entry.category === 'enemy-death')
+  const biological = enemyDeaths.filter((entry) => entry.remnantAsset?.endsWith('/biological-blood-puddle.png'))
+  const mechanical = enemyDeaths.filter((entry) => entry.remnantAsset?.endsWith('/mechanical-parts-pile.png'))
+  assert.equal(biological.length, 5)
+  assert.equal(mechanical.length, 7)
+  assert.ok(biological.every((entry) => entry.layers.includes('\u8840\u8ff9\u6b8b\u7559')))
+  assert.ok(mechanical.every((entry) => entry.layers.includes('\u96f6\u4ef6\u6b8b\u7559')))
+})

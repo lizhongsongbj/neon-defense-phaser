@@ -23,7 +23,7 @@ import { EventBus, GameEvents, type BattleHudPayload } from '../state/EventBus'
 import { ENEMY_TYPES } from '../data/enemies'
 import { BOSS_TYPES, type BossId } from '../data/bosses'
 import type { SavedTower } from '../systems/SaveGame'
-import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
+import { EnemySpawnSfx, MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
 
 function boardToScreen(p: Point2): Point2 {
   return { x: (p.x / 1000) * GAME_WIDTH, y: (p.y / 1000) * GAME_HEIGHT }
@@ -56,6 +56,7 @@ export class BattleScene extends Phaser.Scene {
   private hudTimer = 0
   private voice!: VoiceSystem
   private music!: MusicController
+  private enemySpawnSfx!: EnemySpawnSfx
   private lastBaseDamageSfxAt = -Infinity
   /** 下一波整备倒计时(秒),原 `_0x3ebe3b`;0 表示战斗中或需要玩家手动发动 */
   private nextWaveCountdown = 0
@@ -77,6 +78,7 @@ export class BattleScene extends Phaser.Scene {
     this.campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState
     this.voice = this.game.registry.get(VOICE_REGISTRY_KEY) as VoiceSystem
     this.music = this.game.registry.get(MUSIC_REGISTRY_KEY) as MusicController
+    this.enemySpawnSfx = new EnemySpawnSfx()
     this.mapLevel = MAP_LEVELS[this.campaign.mapIndex]
     EventBus.emit(GameEvents.AchievementSignal, {
       type: 'mission-start',
@@ -127,6 +129,7 @@ export class BattleScene extends Phaser.Scene {
       : this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x050b10)
 
     background
+      .setDepth(-20)
       .setInteractive()
       .on('pointerdown', () => this.clearSelection())
 
@@ -201,6 +204,8 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private teardown() {
+    this.effects?.destroy()
+    this.enemySpawnSfx?.destroy()
     EventBus.off(GameEvents.BuildTower, this.onBuildTowerRequest, this)
     EventBus.off(GameEvents.UpgradeTower, this.onUpgradeRequest, this)
     EventBus.off(GameEvents.SellTower, this.onSellRequest, this)
@@ -277,7 +282,7 @@ export class BattleScene extends Phaser.Scene {
 
     const screen = boardToScreen(tower.source)
     const baseSize = spriteSize(slot.scale)
-    const actor = new TowerActor(this, tower, baseSize)
+    const actor = new TowerActor(this, tower, baseSize).setDepth(20)
     actor.setPosition(screen.x, screen.y)
     actor.onPointerDown(() => this.selectTower(tower.id))
     this.towerActors.set(tower.id, actor)
@@ -427,7 +432,7 @@ export class BattleScene extends Phaser.Scene {
     this.battle.enemies.push(enemy)
     const def = enemy.isBoss ? BOSS_TYPES[enemy.typeId as keyof typeof BOSS_TYPES] : ENEMY_TYPES[enemy.typeId as keyof typeof ENEMY_TYPES]
     const baseSize = spriteSize(def?.size ?? 0.045)
-    const actor = new EnemyActor(this, enemy, baseSize)
+    const actor = new EnemyActor(this, enemy, baseSize).setDepth(30)
     this.enemyActors.set(enemy.id, actor)
 
     if (enemy.isBoss) {
@@ -435,6 +440,7 @@ export class BattleScene extends Phaser.Scene {
       this.voice?.play(bossId, 'entrance', { priority: 3 })
       void this.music?.enterBoss(bossId)
     } else {
+      if (!this.voice?.muted) this.enemySpawnSfx.play(enemy.typeId, entry.lane === 'left' ? 0.18 : 0.82)
       this.voice?.play(enemy.typeId as VoiceCategory, 'spawn', { chance: 0.3 })
     }
   }
@@ -483,6 +489,7 @@ export class BattleScene extends Phaser.Scene {
       if (events.length) {
         const towerScreen = boardToScreen(tower.source)
         let hackerPulsePlayed = false
+        let previousArcTarget: { x: number; y: number } | null = null
         for (const event of events) {
           const target = this.battle.enemies.find((e) => e.id === event.targetId)
           if (target) {
@@ -495,6 +502,10 @@ export class BattleScene extends Phaser.Scene {
               const squad = this.droneActors.get(tower.id)
               if (squad) squad.dispatch(event.droneIndex ?? 0, targetScreen, () => this.effects.playImpact(targetScreen, event.effect))
               else this.effects.playImpact(targetScreen, event.effect)
+            } else if (event.effect === 'arc') {
+              const origin = previousArcTarget ?? this.towerActors.get(tower.id)?.attackOrigin() ?? towerScreen
+              this.effects.playArcLightning(origin, targetScreen, event.chainIndex ?? 0)
+              previousArcTarget = targetScreen
             } else if (event.effect === 'hacker') {
               if (!hackerPulsePlayed) {
                 const origin = this.towerActors.get(tower.id)?.attackOrigin() ?? towerScreen
@@ -504,7 +515,10 @@ export class BattleScene extends Phaser.Scene {
                 this.effects.playImpact(targetScreen, event.effect)
               }
             } else {
-              this.effects.playShot(towerScreen, targetScreen, event.effect)
+              const origin = event.effect === 'rail'
+                ? this.towerActors.get(tower.id)?.attackOrigin() ?? towerScreen
+                : towerScreen
+              this.effects.playShot(origin, targetScreen, event.effect)
             }
           }
           if (target) {
@@ -562,7 +576,7 @@ export class BattleScene extends Phaser.Scene {
       const leaked = enemy.distance >= 1000
       if (!leaked) {
         const deathPosition = boardToScreen(enemyPosition(this.geometry, enemy))
-        this.effects.playDeathRemnant(deathPosition, enemy.mechanical, enemy.isBoss)
+        this.effects.playEnemyDeathRemnant(deathPosition, enemy.mechanical, enemy.isBoss)
         const reward = scaleReward(enemy.reward, this.battle.mapIndex)
         this.battle.coins += reward
         this.battle.kills += 1
@@ -615,7 +629,7 @@ export class BattleScene extends Phaser.Scene {
     if (tower.typeId !== 'street-mercenary' || !tower.mercs || !tower.rallyPoint) return
     let actor = this.mercActors.get(tower.id)
     if (!actor) {
-      actor = new MercenaryActor(this, tower.mercs.length)
+      actor = new MercenaryActor(this, tower.mercs.length).setDepth(25)
       this.mercActors.set(tower.id, actor)
     }
     const screen = boardToScreen(tower.rallyPoint)
@@ -629,7 +643,7 @@ export class BattleScene extends Phaser.Scene {
     if (tower.typeId !== 'drone-hive') return
     let actor = this.droneActors.get(tower.id)
     if (!actor) {
-      actor = new DroneSquadActor(this, TOWER_COMBAT['drone-hive'].drones)
+      actor = new DroneSquadActor(this, TOWER_COMBAT['drone-hive'].drones).setDepth(25)
       this.droneActors.set(tower.id, actor)
     }
     const screen = boardToScreen(tower.source)

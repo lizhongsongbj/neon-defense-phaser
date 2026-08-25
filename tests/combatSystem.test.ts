@@ -150,9 +150,17 @@ test('后期地图的高波次会编入两种新敌人', () => {
 
 
 test('企业浮空艇归类为机械单位', () => {
-  const aerostat = spawnEnemy({ id: 20, mapIndex: 2, wave: 1, difficulty: 'normal', now: 0, entry: { type: 'aerostat', boss: false, lane: 'left', delay: 0 } })
+  const aerostat = spawnEnemy({ id: 20, mapIndex: 0, wave: 1, difficulty: 'normal', now: 0, entry: { type: 'aerostat', boss: false, lane: 'left', delay: 0 } })
   assert.equal(aerostat.mechanical, true)
   assert.equal(aerostat.air, true)
+  assert.equal(canMercenaryIntercept(aerostat, 0), false)
+})
+
+test('劫持浮游体沿用企业浮空艇的空中规则且不能被佣兵拦截', () => {
+  const hijacker = spawnEnemy({ id: 21, mapIndex: 0, wave: 1, difficulty: 'normal', now: 0, entry: { type: 'hijacker', boss: false, lane: 'right', delay: 0 } })
+  assert.equal(hijacker.mechanical, true)
+  assert.equal(hijacker.air, true)
+  assert.equal(canMercenaryIntercept(hijacker, 0), false)
 })
 
 test('神经猎犬在低生命时触发痛觉超频', () => {

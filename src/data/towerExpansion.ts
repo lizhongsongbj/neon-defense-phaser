@@ -1,8 +1,10 @@
-﻿import type { TowerId } from './towers'
+﻿import { TOWER_IDS, type TowerId } from './towers'
 
 /** 尚未接入战斗循环的三种扩展塔。 */
 export type ExpansionTowerId = 'gravity-nail' | 'grey-tide' | 'trajectory-rewriter'
 export type AllTowerId = TowerId | ExpansionTowerId
+export const EXPANSION_TOWER_IDS: readonly ExpansionTowerId[] = ['gravity-nail', 'grey-tide', 'trajectory-rewriter']
+export const GROWTH_TOWER_IDS: readonly AllTowerId[] = [...TOWER_IDS, ...EXPANSION_TOWER_IDS]
 export type DamageKind = 'physical' | 'energy'
 export type TargetLayer = 'ground' | 'air' | 'both'
 
@@ -28,6 +30,8 @@ export interface ExpansionTowerDefinition {
   id: ExpansionTowerId
   name: string
   role: string
+  accent: string
+  image: string
   buildCost: number
   damageKind: DamageKind
   targetLayer: TargetLayer
@@ -45,6 +49,8 @@ export const EXPANSION_TOWERS: readonly ExpansionTowerDefinition[] = [
     id: 'gravity-nail',
     name: '重力钉',
     role: '聚怪牵引 / 飞行偏转',
+    accent: '#a978ff',
+    image: 'assets/towers/new-concepts/gravity-nail-level-1.png',
     buildCost: 125,
     damageKind: 'energy',
     targetLayer: 'both',
@@ -60,6 +66,8 @@ export const EXPANSION_TOWERS: readonly ExpansionTowerDefinition[] = [
     id: 'grey-tide',
     name: '灰潮解构站',
     role: '群体解构 / 护甲削弱',
+    accent: '#74e69a',
+    image: 'assets/towers/new-concepts/grey-tide-level-1.png',
     buildCost: 120,
     damageKind: 'energy',
     targetLayer: 'ground',
@@ -75,6 +83,8 @@ export const EXPANSION_TOWERS: readonly ExpansionTowerDefinition[] = [
     id: 'trajectory-rewriter',
     name: '轨迹回写器',
     role: '路径回滚 / 延迟复写',
+    accent: '#58cfff',
+    image: 'assets/towers/new-concepts/trajectory-rewriter-level-1.png',
     buildCost: 145,
     damageKind: 'energy',
     targetLayer: 'both',

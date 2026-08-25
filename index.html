@@ -40,9 +40,8 @@
           <button class="command-tab" type="button" role="tab" data-command-tab="missions" aria-selected="true">关卡选择</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="growth" aria-selected="false">塔楼成长</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="balance" aria-selected="false">数值测试</button>
-          <button class="command-tab" type="button" role="tab" data-command-tab="animations" aria-selected="false">动画面板</button>
+          <button class="command-tab" type="button" role="tab" data-command-tab="assets" aria-selected="false">素材生图</button>
           <button class="command-tab achievement-launch" id="achievement-command-button" type="button" aria-label="打开成就面板">成就</button>
-          <button class="command-tab" type="button" role="tab" data-command-tab="effects" aria-selected="false">特效面板</button>
         </nav>
 
         <div class="command-profile">
@@ -124,7 +123,15 @@
           <div class="balance-empty">NO REPORT // 尚无测试报告</div>
         </div>
       </section>
-      <section class="command-panel animation-panel" data-command-panel="animations" aria-label="游戏动画面板" hidden>
+      <section class="command-panel asset-forge-panel" data-command-panel="assets" aria-label="素材生图工作区" hidden>
+        <nav class="asset-forge-tabs" role="tablist" aria-label="素材生图分类">
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="animations" aria-selected="true">动画面板</button>
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="effects" aria-selected="false">特效面板</button>
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="studio" aria-selected="false">生图工作台</button>
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="audio" aria-selected="false">音效工作台</button>
+        </nav>
+        <div class="asset-forge-content">
+      <section class="asset-forge-section animation-panel" data-asset-panel="animations" aria-label="游戏动画面板">
         <header class="animation-panel__header">
           <div><span>ANIMATION MATRIX // COMPLETE MOTION LIBRARY</span><h2>全单位动画面板</h2><p>收录保留攻击表现的防御塔动画、全部怪物行走/攻击/死亡，以及佣兵和无人机单位动作。</p></div>
           <output id="animation-count">正在建立动画索引…</output>
@@ -142,7 +149,7 @@
           <div class="animation-detail__copy"><span id="animation-detail-code"></span><h3 id="animation-detail-name"></h3><p id="animation-detail-description"></p><dl><div><dt>动作时间线</dt><dd id="animation-detail-timeline"></dd></div><div><dt>素材状态</dt><dd id="animation-detail-status"></dd></div></dl><button class="animation-replay" id="animation-replay" type="button">REPLAY // 重新播放</button></div>
         </div></aside>
       </section>
-      <section class="command-panel effect-panel" data-command-panel="effects" aria-label="全素材特效面板" hidden>
+      <section class="asset-forge-section effect-panel" data-asset-panel="effects" aria-label="全素材特效面板" hidden>
         <header class="effect-panel__header">
           <div><span>VFX FORGE // UNIVERSAL EFFECT LIBRARY</span><h2>全素材特效面板</h2><p>包括通用粒子、光束、冲击波、状态效果、全部连携特效，以及怪物、佣兵和无人机死亡特效。</p></div>
           <output id="effect-count">正在建立特效索引…</output>
@@ -164,6 +171,50 @@
           <div class="effect-detail__preview" id="effect-detail-preview"></div>
           <div class="effect-detail__copy"><span id="effect-detail-code"></span><h3 id="effect-detail-name"></h3><p id="effect-detail-description"></p><dl><div><dt>特效时间线</dt><dd id="effect-detail-timeline"></dd></div><div><dt>合成层级</dt><dd id="effect-detail-layers"></dd></div></dl><button class="effect-replay" id="effect-replay" type="button">REPLAY // 重新播放</button></div>
         </div></aside>
+      </section>
+      <section class="asset-forge-section image-studio-panel" data-asset-panel="studio" aria-label="素材生图工作台" hidden>
+        <iframe class="image-studio-frame" data-src="/image-studio.html" title="素材生图工作台"></iframe>
+      </section>
+      <section class="asset-forge-section audio-studio-panel" data-asset-panel="audio" aria-label="音效工作台" hidden>
+        <header class="audio-studio__header">
+          <div><span>音效素材库 // 声音制作工作区</span><h2>音效工作台</h2><p>集中试听已有音乐与角色语音，并用自然语言描述生成新的游戏音效。</p></div>
+          <output id="audio-library-count">正在扫描音频素材…</output>
+        </header>
+        <div class="audio-studio__layout">
+          <section class="audio-library" aria-label="已有音频素材库">
+            <div class="audio-library__toolbar">
+              <div class="audio-library__filters" role="group" aria-label="音频分类">
+                <button type="button" data-audio-filter="all" aria-pressed="true">全部</button>
+                <button type="button" data-audio-filter="music" aria-pressed="false">音乐</button>
+                <button type="button" data-audio-filter="voice" aria-pressed="false">角色语音</button>
+                <button type="button" data-audio-filter="generated" aria-pressed="false">生成音效</button>
+              </div>
+              <label class="audio-library__search"><span>搜索</span><input id="audio-library-search" type="search" placeholder="搜索名称、角色或文件…" autocomplete="off" /></label>
+            </div>
+            <div class="audio-library__grid" id="audio-library-grid" aria-live="polite"></div>
+          </section>
+          <aside class="audio-generator" aria-label="文字生成音效">
+            <div class="audio-generator__eyebrow">文字生成音效 // 智能声音合成</div>
+            <h3>用文字描述你想要的音效</h3>
+            <p>描述声音来源、材质、力度、空间感和结尾方式。生成结果会自动保存到本地素材库。</p>
+            <div class="audio-template-buttons" id="audio-template-buttons" aria-label="快速描述模板">
+              <button type="button" data-audio-template="短促有力的赛博朋克磁轨炮开火，电容充能后金属炮闩闭锁，高速弹芯破空，无人声，无背景音乐，音头清晰，尾音快速收束。">防御塔开火</button>
+              <button type="button" data-audio-template="重型机械单位爆炸，金属外壳撕裂、炽热火花喷溅、低沉冲击和零件落地，无人声，无背景音乐。">机械爆炸</button>
+              <button type="button" data-audio-template="大型生物怪物倒地死亡，沉重肉体撞击、湿润血雾喷散和低沉气息消失，无人声，无背景音乐。">生物死亡</button>
+              <button type="button" data-audio-template="高能量脉冲从核心聚集后瞬间释放，明亮电子谐振、空气震颤和干净短尾音，无人声，无背景音乐。">能量脉冲</button>
+              <button type="button" data-audio-template="干净利落的未来科技界面确认点击，微弱机械触感和明亮数字提示音，极短，无人声，无背景音乐。">UI 点击</button>
+            </div>
+            <form id="audio-generator-form" class="audio-generator__form">
+              <label><span>音效描述</span><textarea id="audio-prompt" maxlength="4000" rows="7" required placeholder="例如：短促有力的赛博朋克磁轨炮开火音效，包含电容充能、金属炮闩闭锁和高速弹芯破空声……"></textarea></label>
+              <label><span>持续时间</span><select id="audio-duration"><option value="1">1 秒</option><option value="2">2 秒</option><option value="3" selected>3 秒</option><option value="5">5 秒</option><option value="8">8 秒</option></select></label>
+              <button class="audio-generate-button" id="audio-generate-button" type="submit">生成音效</button>
+            </form>
+            <output class="audio-generator__status" id="audio-generator-status" aria-live="polite">正在连接音效生成服务…</output>
+            <div class="audio-generator__result" id="audio-generator-result" hidden></div>
+          </aside>
+        </div>
+      </section>
+        </div>
       </section>
     </section>
 

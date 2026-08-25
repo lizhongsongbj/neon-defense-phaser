@@ -55,6 +55,10 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('remnant-biological', 'assets/effects/death-remnants/biological-blood-puddle.png')
     this.load.image('remnant-mechanical', 'assets/effects/death-remnants/mechanical-parts-pile.png')
     this.load.image('drone-crash-flame', 'assets/effects/drone-crash-flame.png')
+    for (let frame = 1; frame <= 12; frame += 1) {
+      const suffix = String(frame).padStart(2, '0')
+      this.load.image(`enemy-hijacker-fly-${suffix}`, `assets/animations/enemies/enemy-07-hijack-hovercraft-fly-frames/frame-${suffix}.png`)
+    }
 
     for (let frame = 1; frame <= 16; frame += 1) {
       const suffix = String(frame).padStart(2, '0')

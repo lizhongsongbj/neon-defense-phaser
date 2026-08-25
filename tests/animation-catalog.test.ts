@@ -5,9 +5,9 @@ import { TOWER_TYPE_BY_ID } from '../src/data/towers'
 
 test('动画面板只保留磁轨、电弧和黑客三种塔的15种攻击形态', () => {
   const towers = ANIMATION_CATALOG.filter((entry) => entry.category === 'tower')
-  assert.equal(towers.length, 15)
+  assert.equal(towers.length, 20)
   const families = new Set(towers.map((entry) => entry.family))
-  assert.equal(families.size, 3)
+  assert.equal(families.size, 4)
   for (const family of families) {
     const entries = towers.filter((entry) => entry.family === family)
     assert.equal(entries.length, 5)
@@ -32,8 +32,8 @@ test('动画面板只展示佣兵和无人机单位动画，不展示系统与�
   assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'mercenary').length, 9)
   assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'drone').length, 9)
   assert.equal(ANIMATION_CATALOG.some((entry) => String(entry.category) === 'system'), false)
-  assert.equal(ANIMATION_CATALOG.length, 72)
-  assert.equal(new Set(ANIMATION_CATALOG.map((entry) => entry.id)).size, 72)
+  assert.equal(ANIMATION_CATALOG.length, 77)
+  assert.equal(new Set(ANIMATION_CATALOG.map((entry) => entry.id)).size, 77)
 })
 
 
@@ -48,7 +48,7 @@ test('街头兵营与无人机巢本身没有攻击动画，只保留佣兵和�
 
 
 test('重力钉、灰潮解构站和轨迹回写器不提供攻击动画', () => {
-  const disabledFamilies = ['重力钉', '灰潮解构站', '轨迹回写器']
+  const disabledFamilies = ['\u7070\u6f6e\u89e3\u6784\u7ad9', '\u8f68\u8ff9\u56de\u5199\u5668']
   for (const family of disabledFamilies) {
     assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'tower' && entry.family === family).length, 0)
   }
@@ -111,4 +111,21 @@ test('电弧塔的四种进阶形态共用一级塔提取出的16帧闪电特效
   assert.ok(advanced.every((entry) => entry.status === 'available'))
   assert.ok(advanced.every((entry) => entry.attackEffectKind === 'arc-lightning'))
   assert.ok(advanced.every((entry) => entry.attackEffectAsset === '/assets/effects/arc-neon-lightning/arc-neon-lightning.webp'))
+})
+
+test('骨铠破障兽三种动图使用无彩色线条版本', () => {
+  const entries = ANIMATION_CATALOG.filter((entry) => entry.id.startsWith('bonebreaker-'))
+  assert.equal(entries.length, 3)
+  assert.ok(entries.every((entry) => entry.previewAsset?.includes('no-color-lines-20260825')))
+})
+
+
+test('gravity nail attack synchronizes tower and target purple particle entanglement', () => {
+  const entries = ANIMATION_CATALOG.filter((entry) => entry.category === 'tower' && entry.family === '\u91cd\u529b\u9489')
+  assert.equal(entries.length, 5)
+  assert.deepEqual(entries.map((entry) => entry.id), ['gravity-l1','gravity-l2','gravity-l3','gravity-a','gravity-b'])
+  assert.ok(entries.every((entry) => entry.motion === 'gravity'))
+  assert.ok(entries.every((entry) => entry.status === 'available'))
+  assert.ok(entries.every((entry) => entry.attackEffectKind === 'gravity-entangle'))
+  assert.ok(entries.every((entry) => entry.timeline.includes('\u5b8c\u6210\u4e00\u6b21\u653b\u51fb')))
 })

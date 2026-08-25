@@ -1,4 +1,4 @@
-﻿import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
+﻿import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import { extname, resolve, sep } from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { fileURLToPath } from 'node:url'
@@ -11,6 +11,8 @@ const rawDirectory = resolve(publicDirectory, 'assets/generated/raw')
 const cutoutDirectory = resolve(publicDirectory, 'assets/generated/cutout')
 const publishDirectory = resolve(publicDirectory, 'assets/towers/fourth-tier')
 const specificationPath = resolve(workspaceRoot, 'asset-generation-spec.json')
+const audioDirectory = resolve(publicDirectory, 'assets/audio')
+const generatedSfxDirectory = resolve(audioDirectory, 'generated-sfx')
 
 const allowedSizes = new Set(['1024x1024', '1536x1536', '1536x1024', '1024x1536'])
 const safeIdPattern = /^[a-z0-9][a-z0-9-]{1,80}$/
@@ -35,6 +37,7 @@ interface ImageEnvironment {
   OG_API_KEY?: string
   OG_HOST?: string
   OG_IMAGE_EDIT_URL?: string
+  OG_AI_GATEWAY?: string
 }
 
 function sendJson(response: ServerResponse, statusCode: number, payload: unknown) {
@@ -393,11 +396,233 @@ function imageStudioPlugin(environment: ImageEnvironment): Plugin {
   }
 }
 
+type AudioCategory = 'music' | 'voice' | 'generated'
+
+interface AudioLibraryItem {
+  id: string
+  name: string
+  category: AudioCategory
+  group: string
+  url: string
+  fileName: string
+  byteLength: number
+  prompt?: string
+}
+
+const supportedAudioExtensions = new Set(['.mp3', '.wav', '.ogg', '.m4a'])
+const allowedAudioDurations = new Set([1, 2, 3, 5, 8])
+
+const musicChineseNames: Record<string, string> = {
+  'boss-01-enforcer-zero': '首领战：亚当·重锤',
+  'boss-02-eve-9': '首领战：夏娃-9',
+  'level-01-megastructure-h4': '第一关：H4 巨型建筑',
+  'level-02-underground-mercenary-bar': '第二关：地下佣兵酒吧',
+  'level-03-neon-market-braindance-club': '第三关：霓虹市场超梦俱乐部',
+  'level-04-megatower-cloud-club': '第四关：巨塔云端会所',
+  'level-05-corporate-hotel-siege': '第五关：企业酒店围攻',
+}
+
+const voiceGroupChineseNames: Record<string, string> = {
+  corp_airship: '企业武装飞艇',
+  data_devourer: '数据吞噬者',
+  enforcer_zero: '亚当·重锤',
+  eve_9: '夏娃-9',
+  gang_cyborg: '帮派义体人',
+  gray_falcon: '灰隼',
+  iron_fist: '铁拳',
+  lan: '岚·战场指挥',
+  phase_ninja: '相位忍者',
+  queen_bee: '蜂后无人机',
+  riot_machine: '镇暴机兵',
+  spark: '火花',
+  zero_day: '零日',
+}
+
+const audioChineseNames: Record<string, string> = {
+  anti_air_mode: '切换防空模式', area_locked: '区域已经封锁', blade_mode: '切换刀刃模式',
+  bomb_mode: '切换轰炸模式', bounty: '悬赏目标', break_shield: '击破护盾', build: '部署完成',
+  capture_node: '夺取节点', chain_attack: '连锁攻击', charge: '发起冲锋', clear_resistance: '清除抵抗',
+  control_enemy: '控制敌人', core_exposed: '核心已经暴露', core_revealed: '核心显露', data_kill: '数据抹杀',
+  defeat: '防线失守', defeated: '目标被击败', drone_destroyed: '无人机被摧毁', drop_countdown: '空投倒计时',
+  elite_kill: '精英目标击杀', enemy_incoming: '敌军来袭', enraged: '进入狂暴状态', entrance: '首领登场',
+  final_phase: '进入最终阶段', final_wave: '最终波次来袭', fortress_damaged: '堡垒遭到破坏', get_down: '立即趴下',
+  hack_failed: '入侵失败', intercept_elite: '拦截精英单位', invade_node: '入侵防御节点', invisible: '进入隐形状态',
+  jammed: '武器受到干扰', lock_tower: '锁定防御塔', lockdown: '执行区域封锁', mechanical_kill: '机械目标击杀',
+  memory_belongs: '记忆属于我们', missile_destroyed: '导弹发射器被摧毁', multi_pierce: '多重贯穿', node_attacked: '节点遭到攻击',
+  open_port: '开放数据端口', opening: '战斗开场', player_defeat: '玩家战败', repair_mode: '切换维修模式',
+  retreat: '撤离战场', return: '无人机返航', route_split: '敌军路线分流', select: '单位已选中',
+  shield_broken: '护盾已经击破', shield_mode: '切换护盾模式', shutdown: '系统关闭', skill: '释放战术技能',
+  skill_charge: '技能蓄能', skill_fire: '技能开火', strip_access: '剥夺访问权限', suppression_mode: '启动压制模式',
+  target_ahead: '发现前方目标', teammate_down: '队友倒下', thruster_destroyed: '推进器被摧毁', transfer_body: '转移躯体',
+  upgrade: '升级完成', victory: '防守胜利', vision_cut: '切断视觉', weak_firepower: '火力太弱', wet_target: '目标处于潮湿状态',
+}
+
+function readableAudioName(fileName: string): string {
+  const stem = fileName.replace(/\.[^.]+$/, '')
+  if (musicChineseNames[stem]) return musicChineseNames[stem]
+  if (audioChineseNames[stem]) return audioChineseNames[stem]
+  if (/^sfx-\d{4}-\d{2}-\d{2}T/.test(stem)) return stem.replace(/^sfx-\d{4}-\d{2}-\d{2}T/, 'AI 生成音效 ')
+  return '未命名音效'
+}
+
+async function readGeneratedPrompt(audioPath: string): Promise<string | undefined> {
+  try {
+    const metadata = JSON.parse(await readFile(audioPath.replace(/\.[^.]+$/, '.json'), 'utf8')) as { prompt?: unknown }
+    return typeof metadata.prompt === 'string' ? metadata.prompt : undefined
+  } catch {
+    return undefined
+  }
+}
+
+async function scanAudioFiles(directory: string, category: AudioCategory, groupRoot: string): Promise<AudioLibraryItem[]> {
+  let entries
+  try {
+    entries = await readdir(directory, { withFileTypes: true })
+  } catch {
+    return []
+  }
+
+  const items: AudioLibraryItem[] = []
+  for (const entry of entries) {
+    const absolute = resolve(directory, entry.name)
+    if (entry.isDirectory()) {
+      items.push(...await scanAudioFiles(absolute, category, groupRoot))
+      continue
+    }
+    if (!entry.isFile() || !supportedAudioExtensions.has(extname(entry.name).toLowerCase())) continue
+    if (extname(entry.name).toLowerCase() === '.mp3') {
+      const wavSibling = resolve(directory, entry.name.replace(/\.mp3$/i, '.wav'))
+      try {
+        await stat(wavSibling)
+        continue
+      } catch {
+        // 没有男声替换文件时继续展示原始 MP3。
+      }
+    }
+    const relative = absolute.slice(audioDirectory.length + 1).split(sep).join('/')
+    const groupPath = absolute.slice(groupRoot.length + 1).split(sep).slice(0, -1).join(' / ')
+    const details = await stat(absolute)
+    const prompt = category === 'generated' ? await readGeneratedPrompt(absolute) : undefined
+    items.push({
+      id: relative.toLowerCase(),
+      name: readableAudioName(entry.name),
+      category,
+      group: category === 'music' ? '游戏背景音乐' : category === 'generated' ? 'AI 生成音效' : (voiceGroupChineseNames[groupPath] || '角色语音'),
+      url: `/assets/audio/${relative}`,
+      fileName: entry.name,
+      byteLength: details.size,
+      ...(prompt ? { prompt } : {}),
+    })
+  }
+  return items
+}
+
+async function listAudioLibrary(): Promise<AudioLibraryItem[]> {
+  const [music, voices, generated] = await Promise.all([
+    scanAudioFiles(resolve(audioDirectory, 'music'), 'music', resolve(audioDirectory, 'music')),
+    scanAudioFiles(resolve(audioDirectory, 'voices'), 'voice', resolve(audioDirectory, 'voices')),
+    scanAudioFiles(generatedSfxDirectory, 'generated', generatedSfxDirectory),
+  ])
+  return [...generated.sort((a, b) => b.fileName.localeCompare(a.fileName)), ...music, ...voices]
+}
+
+function audioExtension(mimeType: string): string {
+  if (mimeType.includes('wav')) return '.wav'
+  if (mimeType.includes('ogg')) return '.ogg'
+  if (mimeType.includes('mp4') || mimeType.includes('m4a')) return '.m4a'
+  return '.mp3'
+}
+
+function decodeAudioPayload(payload: Record<string, any>): { bytes: Buffer; mimeType: string } {
+  const candidates = [payload.audio_base64, payload.audioBase64, payload.base64, payload.audio, payload.data?.audio_base64, payload.data?.audioBase64, payload.data?.base64, payload.data?.audio, typeof payload.data === 'string' ? payload.data : undefined, payload.output?.audio_base64, payload.output?.audio]
+  const encoded = candidates.find((value) => typeof value === 'string' && value.length > 0) as string | undefined
+  if (!encoded) throw new Error('音效服务没有返回可保存的音频数据。')
+  const clean = encoded.includes(',') ? encoded.slice(encoded.indexOf(',') + 1) : encoded
+  const bytes = Buffer.from(clean, 'base64')
+  if (!bytes.length) throw new Error('音效服务返回了空音频。')
+  const mimeType = String(payload.mime_type || payload.mimeType || payload.data?.mime_type || payload.data?.mimeType || 'audio/mpeg')
+  return { bytes, mimeType }
+}
+
+async function requestOriginSound(environment: ImageEnvironment, prompt: string, durationSeconds: number) {
+  const apiKey = environment.OG_API_KEY?.trim()
+  if (!apiKey) throw new Error('OG_API_KEY 尚未配置，请在 .env.local 中设置。')
+  const host = (environment.OG_AI_GATEWAY || 'https://api.origingame.dev').replace(/\/$/, '')
+  const upstream = await fetch(`${host}/v1/sound-generation`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'eleven_text_to_sound_v2', prompt, duration_seconds: durationSeconds }),
+  })
+  if (!upstream.ok) {
+    const detail = await upstream.text().catch(() => '')
+    throw new Error(`音效生成服务返回 HTTP ${upstream.status}${detail ? `：${detail.slice(0, 300)}` : ''}`)
+  }
+  const contentType = upstream.headers.get('content-type') || ''
+  if (contentType.startsWith('audio/')) return { bytes: Buffer.from(await upstream.arrayBuffer()), mimeType: contentType.split(';')[0] }
+  return decodeAudioPayload(await upstream.json() as Record<string, any>)
+}
+
+function audioStudioPlugin(environment: ImageEnvironment): Plugin {
+  return {
+    name: 'neon-audio-studio-api',
+    configureServer(server) {
+      server.middlewares.use(async (request, response, next) => {
+        const pathname = new URL(request.url || '/', 'http://localhost').pathname
+        if (!pathname.startsWith('/api/audio-studio')) {
+          next()
+          return
+        }
+        try {
+          if (request.method === 'GET' && pathname === '/api/audio-studio/config') {
+            sendJson(response, 200, { keyConfigured: Boolean(environment.OG_API_KEY?.trim()), durations: [...allowedAudioDurations] })
+            return
+          }
+          if (request.method === 'GET' && pathname === '/api/audio-studio/library') {
+            sendJson(response, 200, { assets: await listAudioLibrary() })
+            return
+          }
+          if (request.method === 'POST' && pathname === '/api/audio-studio/generate') {
+            const body = await readJsonBody(request)
+            const prompt = String(body.prompt || '').trim().slice(0, 4000)
+            const requestedDuration = Number(body.durationSeconds)
+            const durationSeconds = allowedAudioDurations.has(requestedDuration) ? requestedDuration : 3
+            if (!prompt) throw new Error('音效描述不能为空。')
+
+            const generated = await requestOriginSound(environment, prompt, durationSeconds)
+            const extension = audioExtension(generated.mimeType)
+            const fileName = `sfx-${fileStamp()}${extension}`
+            await mkdir(generatedSfxDirectory, { recursive: true })
+            const target = resolve(generatedSfxDirectory, fileName)
+            await writeFile(target, generated.bytes)
+            await writeFile(target.replace(/\.[^.]+$/, '.json'), JSON.stringify({ prompt, durationSeconds, createdAt: new Date().toISOString() }, null, 2), 'utf8')
+            const item: AudioLibraryItem = {
+              id: `generated-sfx/${fileName}`.toLowerCase(),
+              name: readableAudioName(fileName),
+              category: 'generated',
+              group: 'AI 生成音效',
+              url: `/assets/audio/generated-sfx/${fileName}`,
+              fileName,
+              byteLength: generated.bytes.length,
+              prompt,
+            }
+            sendJson(response, 200, item)
+            return
+          }
+          sendJson(response, 404, { message: '接口不存在。' })
+        } catch (error) {
+          const message = error instanceof Error ? error.message : '未知错误。'
+          sendJson(response, message.includes('OG_API_KEY') ? 503 : 400, { message })
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, workspaceRoot, '') as ImageEnvironment
   return {
     base: './',
-    plugins: [imageStudioPlugin(environment)],
+    plugins: [imageStudioPlugin(environment), audioStudioPlugin(environment)],
     server: {
       port: 5174,
     },

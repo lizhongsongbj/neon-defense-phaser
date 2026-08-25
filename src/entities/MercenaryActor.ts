@@ -32,7 +32,7 @@ export class MercenaryActor extends Phaser.GameObjects.Container {
       if (down && !this.wasDown[i]) {
         this.scene.tweens.killTweensOf(img)
         // 佣兵接近完全倒地后，再从其当前落地位置生成血滴。
-        this.scene.time.delayedCall(360, () => {
+        this.scene.time.delayedCall(320, () => {
           if (!img.active) return
           onDeath?.({ x: this.x + img.x, y: this.y + img.y + 2 })
         })
@@ -41,7 +41,7 @@ export class MercenaryActor extends Phaser.GameObjects.Container {
           rotation: i % 2 === 0 ? -1.28 : 1.28,
           y: 9,
           alpha: 0,
-          duration: 430,
+          duration: 390,
           ease: 'Sine.easeIn',
         })
       } else if (!down && this.wasDown[i]) {
