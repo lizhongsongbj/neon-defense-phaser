@@ -140,19 +140,20 @@ export function chooseBuildAction(battle: DemoBattleSnapshot, ctx: DemoContext):
 export function chooseUpgradeAction(battle: DemoBattleSnapshot, ctx: DemoContext): DemoUpgradeAction | null {
   let best: DemoUpgradeAction | null = null
   battle.towers.forEach((tower) => {
-    if (tower.level >= 3) return
-    const def = TOWER_TYPE_BY_ID[tower.typeId]
+    if (tower.level >= 3 || !(tower.typeId in TOWER_TYPE_BY_ID)) return
+    const typeId = tower.typeId as TowerId
+    const def = TOWER_TYPE_BY_ID[typeId]
     const cost = Math.round(def.cost * (tower.level === 1 ? 0.7 : 1.05))
     if (cost > battle.coins) return
     const slot = battle.slots[tower.slotIndex]
     if (!slot) return
-    const before = coverageScore(tower.typeId, slot, tower.level as 1 | 2 | 3, ctx.geometry, ctx.growthBonuses)
-    const after = coverageScore(tower.typeId, slot, (tower.level + 1) as 1 | 2 | 3, ctx.geometry, ctx.growthBonuses)
+    const before = coverageScore(typeId, slot, tower.level as 1 | 2 | 3, ctx.geometry, ctx.growthBonuses)
+    const after = coverageScore(typeId, slot, (tower.level + 1) as 1 | 2 | 3, ctx.geometry, ctx.growthBonuses)
     const score =
-      ((after + Math.max(0.08, after - before) * 2) * priorityWeight(tower.typeId, battle.towers, ctx.wave, ctx.mapIndex)) /
+      ((after + Math.max(0.08, after - before) * 2) * priorityWeight(typeId, battle.towers, ctx.wave, ctx.mapIndex)) /
       (1 + tower.level * 0.12)
     if (!best || score > best.score) {
-      best = { kind: 'upgrade', typeId: tower.typeId, slotIndex: tower.slotIndex, level: tower.level, score, cost }
+      best = { kind: 'upgrade', typeId, slotIndex: tower.slotIndex, level: tower.level, score, cost }
     }
   })
   return best

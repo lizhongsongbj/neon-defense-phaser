@@ -139,7 +139,7 @@ function simulateWave(
         enemies: battle.enemies.filter((e) => !e.dead),
         dt: TICK_SECONDS,
         now: battle.now,
-        growth: growthFor(tower.typeId),
+        growth: growthFor(tower.typeId as TowerId),
       })
     }
 
