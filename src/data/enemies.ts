@@ -75,7 +75,7 @@ export const ENEMY_TYPES: Record<EnemyId, EnemyDefinition> = {
   hijacker: {
     id: 'hijacker', name: '劫持浮游体', hp: 430, shield: 150, speed: 31, armor: 0.1, reward: 54, attack: 0,
     image: 'assets/enemies/new/enemy-07-hijack-hovercraft.png', size: 0.061,
-    air: true, mechanical: true, network: true, droneEvasion: 0.72,
+    air: true, heavy: true, mechanical: true, network: true, droneEvasion: 0.72,
     countersTower: '无人机巢', counteredByTower: '黑客中继',
     moveAnimation: 'assets/animations/enemies/enemy-07-hijack-hovercraft-fly.webp?v=generated-flight-20260825',
     trait: '未被扫描时欺骗无人机链路，减免72%无人机伤害；黑客中继可破解伪装并施加易伤',
@@ -97,7 +97,7 @@ export const ENEMY_TYPES: Record<EnemyId, EnemyDefinition> = {
   bonebreaker: {
     id: 'bonebreaker', name: '骨铠破障兽', hp: 1100, speed: 13, armor: 0.52, reward: 74, attack: 34,
     image: 'assets/enemies/new/enemy-10-bonebreaker.png', size: 0.071,
-    energyResistance: -0.35,
+    heavy: true, energyResistance: -0.35,
     moveAnimation: 'assets/animations/enemies/enemy-10-bonebreaker-move.webp?v=generated-crawl-20260825',
     trait: '再生骨铠提供52%物理护甲；导电脊液使其受到的能量伤害提高35%',
   },

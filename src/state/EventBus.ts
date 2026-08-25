@@ -51,6 +51,13 @@ export interface WaveClearedPayload {
   researchPoints: number
 }
 
+export interface TacticalAlertPayload {
+  enemyType: string
+  enemyName: string
+  title: string
+  description: string
+}
+
 export interface SpecialEventPayload {
   id: string
   tone: 'good' | 'bad'
@@ -83,6 +90,7 @@ export const GameEvents = {
   ResetDeployment: 'reset-deployment',
   EarlyWaveBonus: 'early-wave-bonus',
   SpecialEventStarted: 'special-event-started',
+  TacticalAlert: 'tactical-alert',
   SpecialEventEnded: 'special-event-ended',
   AchievementSignal: 'achievement-signal',
   AchievementUnlocked: 'achievement-unlocked',
