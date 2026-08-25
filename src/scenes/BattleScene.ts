@@ -473,8 +473,8 @@ export class BattleScene extends Phaser.Scene {
       EventBus.emit(GameEvents.TacticalAlert, {
         enemyType: enemy.typeId,
         enemyName: heavyDef.name,
-        title: `???????${heavyDef.name}`,
-        description: '???????????????????????????????',
+        title: `重型敌人识别：${heavyDef.name}`,
+        description: '装甲与战场抗性较高，已标记为重型敌人。建议优先使用针对性火力。',
       })
     }
     const baseSize = spriteSize(def?.size ?? 0.045)

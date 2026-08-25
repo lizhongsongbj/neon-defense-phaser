@@ -9,7 +9,7 @@ function textureKeyFor(state: EnemyState): string {
 
 function displayName(state: EnemyState): string {
   const def = state.isBoss ? BOSS_TYPES[state.typeId as keyof typeof BOSS_TYPES] : ENEMY_TYPES[state.typeId as keyof typeof ENEMY_TYPES]
-  return !state.isBoss && def && 'heavy' in def && def.heavy ? `?? ? ${def.name}` : def?.name ?? state.typeId
+  return !state.isBoss && def && 'heavy' in def && def.heavy ? `重型 · ${def.name}` : def?.name ?? state.typeId
 }
 
 /**

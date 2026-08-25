@@ -276,7 +276,7 @@ export class BattleHud {
     const hostileRows = [...Object.values(ENEMY_TYPES), ...Object.values(BOSS_TYPES)].map((def: HostileDefinition) => {
       const isBoss = 'boss' in def && def.boss
       const badges = [
-        isBoss ? 'BOSS' : ('heavy' in def && def.heavy ? '??' : '??'),
+        isBoss ? 'BOSS' : ('heavy' in def && def.heavy ? '重型' : '常规'),
         'air' in def && def.air ? '空中' : null,
         def.mechanical ? '机械' : '生物',
         'phase' in def && def.phase ? '相位' : null,
@@ -466,7 +466,7 @@ export class BattleHud {
     this.specialEventSource.textContent = payload.enemyType.toUpperCase()
     this.specialEventTitle.textContent = payload.title
     this.specialEventDescription.textContent = payload.description
-    this.specialEventEffect.textContent = '???? ? ????'
+    this.specialEventEffect.textContent = '优先锁定 · 重型敌人'
     this.specialEventBanner.hidden = false
     this.tacticalAlertTimer = window.setTimeout(() => {
       this.specialEventBanner.hidden = true
