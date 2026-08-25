@@ -16,6 +16,8 @@ export interface EnemyDefinition {
   size: number
   shield?: number
   air?: boolean
+  /** Heavy enemies trigger a tactical alert on their first appearance in a battle. */
+  heavy?: boolean
   phase?: boolean
   mechanical?: boolean
   network?: boolean

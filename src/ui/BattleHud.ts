@@ -144,6 +144,7 @@ export class BattleHud {
     this.toast.classList.remove('visible')
     this.specialEventBanner.hidden = true
     window.clearTimeout(this.specialEventTimer)
+    window.clearTimeout(this.tacticalAlertTimer)
     this.setHint(HINT_IDLE)
     const campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState | undefined
     this.currentSpeed = campaign?.gameSpeed ?? 1
@@ -275,7 +276,7 @@ export class BattleHud {
     const hostileRows = [...Object.values(ENEMY_TYPES), ...Object.values(BOSS_TYPES)].map((def: HostileDefinition) => {
       const isBoss = 'boss' in def && def.boss
       const badges = [
-        isBoss ? 'BOSS' : '常规',
+        isBoss ? 'BOSS' : ('heavy' in def && def.heavy ? '??' : '??'),
         'air' in def && def.air ? '空中' : null,
         def.mechanical ? '机械' : '生物',
         'phase' in def && def.phase ? '相位' : null,
