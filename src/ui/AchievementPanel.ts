@@ -59,6 +59,7 @@ export class AchievementPanel {
     const unlockedCount = Object.keys(state.unlockedAt).length
     this.completedCount.textContent = `${unlockedCount} / ${ACHIEVEMENT_TOTAL}`
     this.totalProgress.style.width = `${Math.round((unlockedCount / ACHIEVEMENT_TOTAL) * 100)}%`
+    this.syncAchievementIndicators()
 
     const definitions = this.system.definitions().filter((definition) => {
       if (this.filter === 'all') return true
@@ -100,6 +101,36 @@ export class AchievementPanel {
     this.notificationQueue.push(payload.definition)
     this.render()
     this.showNextNotification()
+  }
+
+  private loadUnreadAchievements() {
+    try {
+      const raw = localStorage.getItem(this.unreadStorageKey)
+      if (raw) {
+        const ids = JSON.parse(raw) as unknown
+        if (Array.isArray(ids)) this.unreadAchievementIds = new Set(ids.filter((id): id is string => typeof id === 'string'))
+      }
+    } catch {
+      this.unreadAchievementIds.clear()
+    }
+  }
+
+  private persistUnreadAchievements() {
+    try {
+      localStorage.setItem(this.unreadStorageKey, JSON.stringify([...this.unreadAchievementIds]))
+    } catch { /* ignore storage failures */ }
+  }
+
+  private markAchievementsAsRead() {
+    this.unreadAchievementIds.clear()
+    this.persistUnreadAchievements()
+    this.syncAchievementIndicators()
+  }
+
+  private syncAchievementIndicators() {
+    const hasUnread = this.unreadAchievementIds.size > 0
+    document.getElementById('achievement-command-button')?.classList.toggle('has-unread-achievements', hasUnread)
+    document.getElementById('achievement-button')?.classList.toggle('has-unread-achievements', hasUnread)
   }
 
   private showNextNotification() {
