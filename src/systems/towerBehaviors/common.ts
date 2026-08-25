@@ -1,13 +1,16 @@
-import { TOWER_COMBAT, type TowerId } from '../../data/towers'
+import { TOWER_COMBAT } from '../../data/towers'
+import { EXPANSION_TOWER_BY_ID, isExpansionTowerId, type AllTowerId } from '../../data/towerExpansion'
 import { enemyPosition } from '../CombatSystem'
 import { projectedDistance } from '../PathSystem'
 import type { EnemyState, TowerState } from '../types'
 import type { TowerAttackContext } from './types'
 
 /** 塔楼当前实际射程,原 `_0x1b0355` */
-export function effectiveRange<T extends TowerId>(tower: TowerState, typeId: T, growthRange: number): number {
-  const combat = TOWER_COMBAT[typeId] as { ranges: [number, number, number] }
-  return combat.ranges[tower.level - 1] * growthRange * tower.rangeScale
+export function effectiveRange(tower: TowerState, typeId: AllTowerId, growthRange: number): number {
+  const baseRange = isExpansionTowerId(typeId)
+    ? EXPANSION_TOWER_BY_ID[typeId].levels[tower.level - 1].range
+    : (TOWER_COMBAT[typeId] as { ranges: [number, number, number] }).ranges[tower.level - 1]
+  return baseRange * growthRange * tower.rangeScale
 }
 
 /** 塔楼实际伤害(叠加研发强化),原 `_0xac2a0f` */
