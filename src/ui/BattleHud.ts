@@ -7,6 +7,7 @@ import { SPECIAL_EVENTS } from '../data/specialEvents'
 import { EventBus, GameEvents, type BattleHudPayload, type SlotSelectedPayload, type SpecialEventPayload, type TacticalAlertPayload, type WaveClearedPayload } from '../state/EventBus'
 import { REGISTRY_KEY, type CampaignState } from '../state/CampaignState'
 import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceSystem } from '../audio'
+import type { PlayerSkillId } from '../data/playerSkills'
 
 interface TowerInfoPayload {
   towerId: string
@@ -64,6 +65,7 @@ export class BattleHud {
   private readonly intelPanel: HTMLElement
   private readonly intelContent: HTMLElement
   private readonly helpPanel: HTMLElement
+  private readonly skillButtons: HTMLButtonElement[]
 
   private currentSpeed: 1 | 2 | 3 = 1
   private currentTowerInfo: TowerInfoPayload | null = null
@@ -71,6 +73,7 @@ export class BattleHud {
   private toastTimer: number | undefined
   private specialEventTimer: number | undefined
   private tacticalAlertTimer: number | undefined
+  private targetingSkill: PlayerSkillId | null = null
 
   constructor(private readonly game: Phaser.Game) {
     this.counterEl = document.getElementById('counter') as HTMLElement
@@ -105,6 +108,7 @@ export class BattleHud {
     this.intelPanel = document.getElementById('intel-panel') as HTMLElement
     this.intelContent = document.getElementById('intel-content') as HTMLElement
     this.helpPanel = document.getElementById('help-panel') as HTMLElement
+    this.skillButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-player-skill]'))
 
     this.buildTowerPicker()
     this.buildIntelContent()
@@ -116,6 +120,7 @@ export class BattleHud {
     this.bindResetButton()
     this.bindPickerClose()
     this.bindOverlayToggles()
+    this.bindPlayerSkills()
 
     EventBus.on(GameEvents.HudUpdate, this.onHudUpdate, this)
     EventBus.on(GameEvents.SlotClicked, this.onSlotClicked, this)
@@ -128,6 +133,8 @@ export class BattleHud {
     EventBus.on(GameEvents.TacticalAlert, this.onTacticalAlert, this)
     EventBus.on(GameEvents.Victory, this.onVictory, this)
     EventBus.on(GameEvents.GameOver, this.onGameOver, this)
+    EventBus.on(GameEvents.PlayerSkillTargeting, this.onPlayerSkillTargeting, this)
+    EventBus.on(GameEvents.PlayerSkillFeedback, this.onPlayerSkillFeedback, this)
   }
 
   /** 每次进入新的一局战斗前重置界面状态,对应旧 UiScene.create() 的初始化。 */
@@ -143,6 +150,8 @@ export class BattleHud {
     this.helpPanel.hidden = true
     this.toast.classList.remove('visible')
     this.specialEventBanner.hidden = true
+    this.targetingSkill = null
+    this.skillButtons.forEach((button) => button.classList.remove('is-targeting'))
     window.clearTimeout(this.specialEventTimer)
     window.clearTimeout(this.tacticalAlertTimer)
     this.setHint(HINT_IDLE)
@@ -162,6 +171,29 @@ export class BattleHud {
 
   private setHint(text: string) {
     this.hintEl.textContent = text
+  }
+
+  private bindPlayerSkills() {
+    this.skillButtons.forEach((button, index) => {
+      const skillId = button.dataset.playerSkill as PlayerSkillId
+      button.addEventListener('click', () => EventBus.emit(GameEvents.ActivatePlayerSkill, { skillId }))
+      window.addEventListener('keydown', (event) => {
+        if (event.repeat || event.key !== String(index + 1)) return
+        const gameRoot = document.getElementById('game-root') as HTMLElement | null
+        if (gameRoot?.hidden) return
+        EventBus.emit(GameEvents.ActivatePlayerSkill, { skillId })
+      })
+    })
+  }
+
+  private onPlayerSkillTargeting(payload: { skillId: PlayerSkillId | null }) {
+    this.targetingSkill = payload.skillId
+    this.skillButtons.forEach((button) => button.classList.toggle('is-targeting', button.dataset.playerSkill === payload.skillId))
+    this.setHint(payload.skillId ? 'TARGETING // 点击战场释放，重复点击技能可取消' : HINT_IDLE)
+  }
+
+  private onPlayerSkillFeedback(payload: { message: string }) {
+    this.showToast(payload.message)
   }
 
   private bindSpeedButtons() {
@@ -427,6 +459,19 @@ export class BattleHud {
     this.healthEl.textContent = String(payload.health)
     this.healthFillEl.style.width = `${Math.max(0, Math.min(100, (payload.health / payload.maxHealth) * 100))}%`
     this.startWaveButton.disabled = payload.waveActive
+    payload.skills.forEach((skill) => {
+      const button = this.skillButtons.find((item) => item.dataset.playerSkill === skill.id)
+      if (!button) return
+      const status = button.querySelector('[data-role="skill-status"]') as HTMLElement
+      const cooldown = button.querySelector('[data-role="skill-cooldown"]') as HTMLElement
+      if (skill.level === 0) status.textContent = '未解锁 · 指挥中心研发'
+      else if (!payload.waveActive) status.textContent = `LV.${skill.level} · 等待敌军`
+      else if (skill.remaining > 0) status.textContent = `LV.${skill.level} · 冷却中`
+      else status.textContent = `LV.${skill.level} · 可释放`
+      cooldown.textContent = skill.remaining > 0 ? `${skill.remaining.toFixed(1)}s` : ''
+      button.style.setProperty('--cooldown-fill', `${skill.cooldown > 0 ? (skill.remaining / skill.cooldown) * 100 : 0}%`)
+      button.disabled = skill.level === 0 || !payload.waveActive || skill.remaining > 0
+    })
     if (this.currentSpeed !== payload.speed) {
       this.currentSpeed = payload.speed as 1 | 2 | 3
       this.refreshSpeedButtons()
@@ -486,10 +531,12 @@ export class BattleHud {
     this.toastTimer = window.setTimeout(() => this.toast.classList.remove('visible'), 3400)
   }
 
-  private onVictory(payload: { newlyUnlocked: boolean }) {
+  private onVictory(payload: { newlyUnlocked: boolean; demoActive?: boolean }) {
     this.endTitle.textContent = '基地安然无恙'
     this.endTitle.className = 'victory'
-    this.endSubtitle.textContent = payload.newlyUnlocked ? '已解锁下一张地图' : '本关已通关'
+    this.endSubtitle.textContent = payload.demoActive
+      ? 'AUTO 演示不会保存进度或解锁关卡'
+      : payload.newlyUnlocked ? '已解锁下一张地图' : '本关已通关'
     this.endOverlay.hidden = false
   }
 

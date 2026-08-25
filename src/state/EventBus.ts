@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import type { Difficulty } from '../data/balance'
 import type { AllTowerId } from '../data/towerExpansion'
+import type { PlayerSkillId } from '../data/playerSkills'
 
 /**
  * BattleScene 与 UiScene 并行运行,通过这个共享事件总线通信,
@@ -26,6 +27,14 @@ export interface HudTowerSnapshot {
   level: 1 | 2 | 3
 }
 
+export interface BattleSkillSnapshot {
+  id: PlayerSkillId
+  level: number
+  cooldown: number
+  remaining: number
+  ready: boolean
+}
+
 export interface BattleHudPayload {
   coins: number
   health: number
@@ -43,6 +52,7 @@ export interface BattleHudPayload {
   difficulty: Difficulty
   /** AUTO 演示代理决策所需的塔位快照,原 `window.neonDemoGame.snapshot().towers` */
   towers: HudTowerSnapshot[]
+  skills: BattleSkillSnapshot[]
 }
 
 export interface WaveClearedPayload {
@@ -95,6 +105,9 @@ export const GameEvents = {
   AchievementSignal: 'achievement-signal',
   AchievementUnlocked: 'achievement-unlocked',
   AchievementStateChanged: 'achievement-state-changed',
+  ActivatePlayerSkill: 'activate-player-skill',
+  PlayerSkillTargeting: 'player-skill-targeting',
+  PlayerSkillFeedback: 'player-skill-feedback',
   /** AUTO 演示代理请求重开指定关卡(不持久化存档),原 `window.neonDemoGame.restart` */
   RestartBattle: 'restart-battle',
 } as const

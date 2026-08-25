@@ -10,6 +10,7 @@ import { GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
 import { TOWER_IDS } from '../data/towers'
 import { loadGame, saveGame, type SavedTower } from '../systems/SaveGame'
 import type { Difficulty } from '../data/balance'
+import { PLAYER_SKILLS, type PlayerSkillId } from '../data/playerSkills'
 
 export const REGISTRY_KEY = 'campaignState'
 
@@ -18,6 +19,7 @@ export class CampaignState {
   completedMaps: boolean[] = MAP_LEVELS.map(() => false)
   researchPoints = INITIAL_RESEARCH_POINTS
   towerGrowth: Record<AllTowerId, number> = Object.fromEntries(GROWTH_TOWER_IDS.map((id) => [id, 0])) as Record<AllTowerId, number>
+  playerSkillLevels: Record<PlayerSkillId, number> = Object.fromEntries(PLAYER_SKILLS.map(({ id }) => [id, 0])) as Record<PlayerSkillId, number>
 
   /**
    * AUTO 演示代理运行期间置为 true,期间所有 `persist()` 调用直接跳过(不写 localStorage),
@@ -45,6 +47,7 @@ export class CampaignState {
       state.completedMaps = data.completedMaps
       state.researchPoints = data.researchPoints
       state.towerGrowth = data.towerGrowth
+      state.playerSkillLevels = data.playerSkillLevels ?? state.playerSkillLevels
       state.mapIndex = data.mapIndex
       state.difficulty = data.difficulty
       state.gameSpeed = data.gameSpeed as 1 | 2 | 3
@@ -96,17 +99,26 @@ export class CampaignState {
 
   /** 通关结算,原 `window.completeCampaignLevel` */
   completeMission(mapIndex: number): { unlocked: number; newlyUnlocked: boolean } {
-    this.completedMaps[mapIndex] = true
+    const completedIndex = Math.max(0, Math.min(MAP_LEVELS.length - 1, mapIndex))
+    this.completedMaps[completedIndex] = true
     const before = this.unlockedMapIndex
-    if (mapIndex === this.unlockedMapIndex && this.unlockedMapIndex < MAP_LEVELS.length - 1) {
-      this.unlockedMapIndex += 1
-    }
+
+    // 以实际完成的战区为准推进进度。这样即使旧存档里的 mapIndex 与
+    // unlockedMapIndex 偶尔不同步，胜利结算也不会漏掉下一关。
+    this.unlockedMapIndex = Math.max(
+      this.unlockedMapIndex,
+      Math.min(MAP_LEVELS.length - 1, completedIndex + 1),
+    )
     this.persist()
     return { unlocked: this.unlockedMapIndex, newlyUnlocked: this.unlockedMapIndex > before }
   }
 
   towerGrowthBonus(id: AllTowerId) {
     return this.towerGrowth[id] ?? 0
+  }
+
+  playerSkillLevel(id: PlayerSkillId) {
+    return this.playerSkillLevels[id] ?? 0
   }
 
   /** 波次通关奖励研发点,原 `window.awardResearchPoints` */
@@ -132,6 +144,7 @@ export class CampaignState {
       difficulty: this.difficulty,
       gameSpeed: this.gameSpeed,
       selectedTowerIds: this.selectedTowerIds,
+      playerSkillLevels: this.playerSkillLevels,
     })
   }
 }

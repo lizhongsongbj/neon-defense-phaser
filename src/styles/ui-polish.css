@@ -27,7 +27,7 @@ body::before {
 .title-screen__backdrop {
   background:
     linear-gradient(90deg, rgba(1, 6, 10, .96) 0%, rgba(1, 7, 11, .77) 39%, rgba(1, 7, 11, .25) 70%, rgba(1, 6, 10, .72) 100%),
-    url('/assets/maps/map-01.png') center / cover no-repeat;
+    url('../../public/assets/maps/map-01.png') center / cover no-repeat;
   transform: scale(1.035);
   filter: saturate(.88) contrast(1.16) brightness(.68);
   animation: title-backdrop-drift 16s ease-in-out infinite alternate;
@@ -582,3 +582,4 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   .title-screen__backdrop, .title-screen__title, #game-root .tower-picker, #game-root .tower-actions { animation: none !important; }
 }
+

@@ -22,6 +22,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
   private readonly hpBarFill: Phaser.GameObjects.Rectangle
   private readonly shieldBarFill: Phaser.GameObjects.Rectangle
   private readonly tag: Phaser.GameObjects.Text
+  private readonly statusRing: Phaser.GameObjects.Graphics
   private readonly barWidth = 46
 
   constructor(scene: Phaser.Scene, state: EnemyState, baseSize: number) {
@@ -57,12 +58,14 @@ export class EnemyActor extends Phaser.GameObjects.Container {
       })
       .setOrigin(0.5, 1)
 
-    this.add([this.hpBarBg, this.shieldBarFill, this.hpBarFill, this.sprite, this.tag])
+    this.statusRing = scene.add.graphics()
+
+    this.add([this.statusRing, this.hpBarBg, this.shieldBarFill, this.hpBarFill, this.sprite, this.tag])
     scene.add.existing(this)
   }
 
   /** 每帧根据 enemy 状态同步位置/血量/护盾/相位透明度,position 为屏幕坐标 */
-  syncVisual(screenX: number, screenY: number) {
+  syncVisual(screenX: number, screenY: number, now: number) {
     this.setPosition(screenX, screenY)
     if (this.enemy.air) {
       // Air units use the corporate aerostat's stable hover: slow lift with minor attitude correction.
@@ -79,6 +82,21 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     this.hpBarFill.width = this.barWidth * hpRatio
     this.shieldBarFill.width = this.barWidth * shieldRatio
     this.sprite.setAlpha(this.enemy.phased ? 0.35 : 1)
+    this.statusRing.clear()
+    if (now < this.enemy.stunnedUntil) {
+      const pulse = 0.65 + Math.sin(this.scene.time.now * 0.03) * 0.25
+      this.sprite.setTint(0x7fffff)
+      this.statusRing.lineStyle(3, 0x20f4e6, pulse).strokeCircle(0, 0, this.sprite.displayWidth * 0.54)
+      this.statusRing.lineStyle(1, 0xffffff, 0.8).strokeCircle(0, 0, this.sprite.displayWidth * 0.68)
+    } else if (now < this.enemy.attackSuppressedUntil) {
+      this.sprite.setTint(0xff78c1)
+      this.statusRing.lineStyle(3, 0xff3ea5, 0.85).strokeRect(-this.sprite.displayWidth * 0.56, -this.sprite.displayHeight * 0.56, this.sprite.displayWidth * 1.12, this.sprite.displayHeight * 1.12)
+    } else if (now < this.enemy.skillSlowUntil) {
+      this.sprite.setTint(0x83eaff)
+      this.statusRing.lineStyle(2, 0x20f4e6, 0.55).strokeCircle(0, 0, this.sprite.displayWidth * 0.58)
+    } else {
+      this.sprite.clearTint()
+    }
     if (this.enemy.isBoss) {
       const activeComponent = this.enemy.components.find((c) => c.hp > 0)
       this.tag.setText(activeComponent ? `${displayName(this.enemy)} · ${activeComponent.name}` : `${displayName(this.enemy)} · 阶段 ${this.enemy.stage}`)

@@ -6,6 +6,7 @@
 import { MAP_LEVELS } from '../data/maps'
 import { SAVE_KEY, SAVE_VERSION, type Difficulty } from '../data/balance'
 import { GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
+import { PLAYER_SKILLS, MAX_PLAYER_SKILL_LEVEL, type PlayerSkillId } from '../data/playerSkills'
 
 export interface SavedTower {
   slot: number
@@ -30,6 +31,7 @@ export interface SaveData {
   difficulty: Difficulty
   gameSpeed: number
   selectedTowerIds?: AllTowerId[]
+  playerSkillLevels?: Record<PlayerSkillId, number>
 }
 
 export function saveGame(data: SaveData): void {
@@ -60,6 +62,10 @@ export function loadGame(): SaveData | null {
   const completedMaps = MAP_LEVELS.map(
     (_, i) => Boolean(parsed.completedMaps?.[i]) || i < unlockedMapIndex,
   )
+  const playerSkillLevels = Object.fromEntries(
+    PLAYER_SKILLS.map(({ id }) => [id, Math.max(0, Math.min(MAX_PLAYER_SKILL_LEVEL, Math.round(Number(parsed.playerSkillLevels?.[id]) || 0)))]),
+  ) as Record<PlayerSkillId, number>
+
   const towerGrowth = Object.fromEntries(
     GROWTH_TOWER_IDS.map((id) => [id, Math.max(0, Math.min(3, Math.round(Number(parsed.towerGrowth?.[id]) || 0)))]),
   ) as Record<AllTowerId, number>
@@ -78,6 +84,7 @@ export function loadGame(): SaveData | null {
     difficulty: ['easy', 'normal', 'hard'].includes(parsed.difficulty) ? parsed.difficulty : 'normal',
     gameSpeed: [1, 2, 3].includes(Number(parsed.gameSpeed)) ? Number(parsed.gameSpeed) : 1,
     selectedTowerIds: Array.isArray(parsed.selectedTowerIds) ? parsed.selectedTowerIds : undefined,
+    playerSkillLevels,
   }
 }
 

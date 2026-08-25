@@ -48,6 +48,11 @@ export interface EnemyState {
   revealedUntil: number
   slowUntil: number
   slowAmount: number
+  stunnedUntil: number
+  skillSlowUntil: number
+  skillSlowAmount: number
+  attackSuppressedUntil: number
+  attackSuppression: number
   vulnerableUntil: number
   vulnerability: number
   shieldBlockedUntil: number

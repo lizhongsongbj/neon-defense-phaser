@@ -11,6 +11,7 @@ import { AnimationPanel } from './AnimationPanel'
 import { EffectPanel } from './EffectPanel'
 import { AudioStudio } from './AudioStudio'
 import { UIArtStudio } from './UIArtStudio'
+import { MAX_PLAYER_SKILL_LEVEL, PLAYER_SKILLS, playerSkillCooldown, playerSkillUpgradeCost, type PlayerSkillId } from '../data/playerSkills'
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = { easy: '简单', normal: '标准', hard: '困难' }
 const STATUS_LABEL: Record<'cleared' | 'online' | 'locked', string> = { cleared: 'CLEARED', online: 'ONLINE', locked: 'LOCKED' }
@@ -44,6 +45,7 @@ export class CommandCenterUI {
   private readonly researchPointsEl: HTMLElement
   private readonly growthTotalEl: HTMLElement
   private readonly growthGrid: HTMLElement
+  private readonly skillGrowthGrid: HTMLElement
   private readonly closeButton: HTMLButtonElement
   private readonly tabs: HTMLButtonElement[]
   private readonly panels: Record<string, HTMLElement>
@@ -81,6 +83,7 @@ export class CommandCenterUI {
     this.researchPointsEl = document.getElementById('research-points') as HTMLElement
     this.growthTotalEl = document.getElementById('growth-total') as HTMLElement
     this.growthGrid = document.getElementById('growth-grid') as HTMLElement
+    this.skillGrowthGrid = document.getElementById('skill-growth-grid') as HTMLElement
     this.closeButton = document.getElementById('command-close') as HTMLButtonElement
     this.tabs = Array.from(this.el.querySelectorAll('[data-command-tab]'))
     this.panels = {
@@ -111,6 +114,7 @@ export class CommandCenterUI {
     this.buildMissionList()
     this.buildDifficultyButtons()
     this.buildGrowthGrid()
+    this.buildSkillGrowthGrid()
     this.bindTabs()
     this.bindAssetTabs()
     this.bindImageStudioReturn()
@@ -256,6 +260,43 @@ export class CommandCenterUI {
     })
   }
 
+  private buildSkillGrowthGrid() {
+    PLAYER_SKILLS.forEach((skill) => {
+      const card = document.createElement('article')
+      card.className = 'skill-growth-card'
+      card.dataset.skill = skill.id
+      card.style.setProperty('--skill-accent', skill.accent)
+      card.innerHTML = `
+        <div class="skill-growth-card__icon" aria-hidden="true">${skill.icon}</div>
+        <div class="skill-growth-card__body">
+          <small>${skill.code}</small>
+          <h3>${skill.name}</h3>
+          <p>${skill.description}</p>
+          <b>${skill.effect}</b>
+        </div>
+        <div class="skill-growth-card__status">
+          <span data-role="skill-state">LOCKED</span>
+          <strong data-role="skill-cd">CD --</strong>
+          <div class="skill-growth-level"><i></i><i></i><i></i></div>
+          <button type="button" data-role="skill-upgrade"></button>
+        </div>
+      `
+      ;(card.querySelector('[data-role="skill-upgrade"]') as HTMLButtonElement).addEventListener('click', () => this.tryUpgradeSkill(skill.id))
+      this.skillGrowthGrid.appendChild(card)
+    })
+  }
+
+  private tryUpgradeSkill(id: PlayerSkillId) {
+    const level = this.campaign.playerSkillLevel(id)
+    if (level >= MAX_PLAYER_SKILL_LEVEL) return
+    const cost = playerSkillUpgradeCost(id, level)
+    if (this.campaign.researchPoints < cost) return
+    this.campaign.researchPoints -= cost
+    this.campaign.playerSkillLevels[id] = level + 1
+    this.campaign.persist()
+    this.refresh()
+  }
+
   private tryUpgradeGrowth(id: AllTowerId) {
     const level = this.campaign.towerGrowthBonus(id)
     if (level >= MAX_GROWTH_LEVEL) return
@@ -373,6 +414,24 @@ export class CommandCenterUI {
     this.researchPointsEl.textContent = String(this.campaign.researchPoints)
     const growthTotal = GROWTH_TOWER_IDS.reduce((sum, id) => sum + this.campaign.towerGrowthBonus(id), 0)
     this.growthTotalEl.textContent = String(growthTotal).padStart(2, '0')
+
+    PLAYER_SKILLS.forEach((skill) => {
+      const card = this.skillGrowthGrid.querySelector<HTMLElement>(`[data-skill="${skill.id}"]`)!
+      const level = this.campaign.playerSkillLevel(skill.id)
+      card.classList.toggle('is-locked', level === 0)
+      card.querySelectorAll<HTMLElement>('.skill-growth-level i').forEach((bar, index) => bar.classList.toggle('active', index < level))
+      ;(card.querySelector('[data-role="skill-state"]') as HTMLElement).textContent = level === 0 ? 'LOCKED // 未解锁' : `PROTOCOL LV.${level}`
+      ;(card.querySelector('[data-role="skill-cd"]') as HTMLElement).textContent = level === 0 ? 'CD --' : `CD ${playerSkillCooldown(skill.id, level)} 秒`
+      const button = card.querySelector('[data-role="skill-upgrade"]') as HTMLButtonElement
+      if (level >= MAX_PLAYER_SKILL_LEVEL) {
+        button.textContent = '协议已满级'
+        button.disabled = true
+      } else {
+        const cost = playerSkillUpgradeCost(skill.id, level)
+        button.textContent = level === 0 ? `解锁 · ${cost} 研发点` : `缩短冷却 · ${cost} 研发点`
+        button.disabled = this.campaign.researchPoints < cost
+      }
+    })
 
     const cards = Array.from(this.growthGrid.querySelectorAll<HTMLElement>('.growth-card'))
     GROWTH_TOWER_TYPES.forEach((def, i) => {

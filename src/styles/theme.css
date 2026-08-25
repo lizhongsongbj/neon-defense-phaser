@@ -1783,3 +1783,44 @@ html, body {
 .ui-art-status { display:block; margin-top:10px; padding:9px; border-left:3px solid #20f4e6; color:#7eb7b4; background:rgba(0,0,0,.2); font:8px/1.45 var(--font-mono); }.ui-art-status[data-state="success"]{border-color:#72ff9e;color:#91dbaa}.ui-art-status[data-state="warning"]{border-color:#ffd15c;color:#d9b96f}
 @media(max-width:1100px){.ui-art-studio__layout{grid-template-columns:180px minmax(430px,1fr)}.ui-art-inspector{display:none}}
 @media(max-width:780px){.ui-art-studio-panel{padding:12px;overflow:auto}.ui-art-studio__header{align-items:stretch;flex-direction:column}.ui-art-studio__layout{display:flex;height:auto;min-height:0;flex-direction:column}.ui-art-library{overflow:visible}.ui-art-preset-list{grid-template-columns:1fr 1fr}.ui-art-workspace{min-height:540px}.ui-art-inspector{display:block;overflow:visible}.ui-art-viewport{overflow:auto}}
+
+/* ---------------- 主动技能协议 ---------------- */
+.growth-heading--towers { margin-top: 30px; padding-top: 24px; border-top: 1px solid rgba(32, 244, 230, .18); }
+.skill-growth-grid { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 14px; }
+.skill-growth-card { --skill-accent: var(--neon-cyan); min-height: 178px; display: grid; grid-template-columns: 92px minmax(0, 1fr) 150px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--skill-accent) 45%, transparent); border-top: 2px solid var(--skill-accent); background: linear-gradient(135deg, color-mix(in srgb, var(--skill-accent) 9%, #071117), #071117 62%); box-shadow: 0 0 18px color-mix(in srgb, var(--skill-accent) 10%, transparent) inset; }
+.skill-growth-card.is-locked { filter: saturate(.45); opacity: .78; }
+.skill-growth-card__icon { display: grid; place-items: center; color: var(--skill-accent); background: repeating-linear-gradient(0deg, transparent 0 8px, color-mix(in srgb, var(--skill-accent) 7%, transparent) 8px 9px); border-right: 1px solid color-mix(in srgb, var(--skill-accent) 24%, transparent); font: 900 48px/1 var(--font-mono); text-shadow: 0 0 16px var(--skill-accent); }
+.skill-growth-card__body { min-width: 0; padding: 17px 18px; }
+.skill-growth-card__body small { color: var(--skill-accent); font: 900 8px/1 var(--font-mono); letter-spacing: .12em; }
+.skill-growth-card__body h3 { margin: 8px 0 7px; color: #fff; font-size: 18px; }
+.skill-growth-card__body p { margin: 0; color: #9ab5b7; font-size: 11px; line-height: 1.55; }
+.skill-growth-card__body b { display: block; margin-top: 10px; color: #d8f5f2; font-size: 10px; line-height: 1.5; font-weight: 700; }
+.skill-growth-card__status { display: grid; align-content: center; gap: 9px; padding: 14px; border-left: 1px solid rgba(255,255,255,.08); background: rgba(0,0,0,.2); }
+.skill-growth-card__status > span { color: #879fa2; font: 900 8px/1 var(--font-mono); }
+.skill-growth-card__status > strong { color: var(--skill-accent); font: 900 16px/1 var(--font-mono); }
+.skill-growth-level { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.skill-growth-level i { height: 5px; background: rgba(113,139,141,.22); }
+.skill-growth-level i.active { background: var(--skill-accent); box-shadow: 0 0 7px var(--skill-accent); }
+.skill-growth-card__status button { min-height: 34px; padding: 0 8px; border: 1px solid var(--skill-accent); color: #061116; background: var(--skill-accent); font: 900 9px/1 var(--font-mono); cursor: pointer; }
+.skill-growth-card__status button:disabled { border-color: #27383b; color: #607477; background: #111d21; cursor: not-allowed; }
+.skill-dock { position: absolute; z-index: 45; left: 18px; bottom: 78px; width: 270px; padding: 8px; border-left: 2px solid var(--neon-cyan); background: rgba(3, 10, 14, .88); box-shadow: 0 0 16px rgba(32,244,230,.08) inset; }
+.skill-dock__heading { display: flex; align-items: baseline; justify-content: space-between; padding: 0 2px 7px; }
+.skill-dock__heading span { color: #718f91; font: 900 7px/1 var(--font-mono); letter-spacing: .12em; }
+.skill-dock__heading b { color: #cffffb; font-size: 10px; }
+.skill-dock__buttons { display: grid; gap: 6px; }
+.skill-button { --skill-accent: var(--neon-cyan); position: relative; isolation: isolate; display: grid; grid-template-columns: 42px minmax(0,1fr) 22px; align-items: center; min-height: 50px; padding: 0 7px 0 0; overflow: hidden; border: 1px solid color-mix(in srgb, var(--skill-accent) 50%, transparent); color: #dff; background: rgba(7,18,23,.96); cursor: crosshair; text-align: left; }
+.skill-button::after { content: ''; position: absolute; z-index: -1; inset: 0; width: var(--cooldown-fill, 0%); background: color-mix(in srgb, var(--skill-accent) 13%, transparent); transition: width .12s linear; }
+.skill-button:hover:not(:disabled), .skill-button.is-targeting { border-color: var(--skill-accent); box-shadow: 0 0 13px color-mix(in srgb, var(--skill-accent) 30%, transparent); }
+.skill-button.is-targeting { color: #061116; background: var(--skill-accent); }
+.skill-button:disabled { cursor: not-allowed; filter: grayscale(.7); opacity: .58; }
+.skill-button__icon { display: grid; place-items: center; align-self: stretch; color: var(--skill-accent); border-right: 1px solid color-mix(in srgb, var(--skill-accent) 30%, transparent); font: 900 23px/1 var(--font-mono); text-shadow: 0 0 10px var(--skill-accent); }
+.skill-button.is-targeting .skill-button__icon { color: #061116; text-shadow: none; }
+.skill-button__copy { min-width: 0; padding-left: 9px; }
+.skill-button__copy b, .skill-button__copy small { display: block; }
+.skill-button__copy b { color: currentColor; font-size: 11px; }
+.skill-button__copy small { margin-top: 4px; color: #789799; font: 800 8px/1 var(--font-mono); }
+.skill-button.is-targeting .skill-button__copy small { color: #173136; }
+.skill-button kbd { align-self: start; margin-top: 5px; color: var(--skill-accent); background: transparent; font: 900 8px/1 var(--font-mono); }
+.skill-button.is-targeting kbd { color: #061116; }
+.skill-button i { position: absolute; right: 7px; bottom: 5px; color: var(--skill-accent); font: normal 900 10px/1 var(--font-mono); }
+@media (max-width: 900px) { .skill-growth-grid { grid-template-columns: 1fr; } }

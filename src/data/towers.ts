@@ -26,6 +26,8 @@ export interface TowerVisualDefinition {
   accent: string
   role: string
   image: string
+  /** 战场上的视觉放大系数，用于抵消透明素材四周留白并覆盖地图塔基。 */
+  battleScale: number
   attackAnimation?: string
 }
 
@@ -38,6 +40,7 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     accent: '#20f4e6',
     role: '连锁清场 / 潮湿增伤',
     image: 'assets/towers/generated-raw-selected/tower-02-arc-neon-base-cutout-1.png',
+    battleScale: 1.54,
     attackAnimation: 'assets/animations/towers/tower-02-arc-neon-attack.webp',
   },
   {
@@ -47,6 +50,7 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     accent: '#e8ffff',
     role: '空中拦截 / 远程追击',
     image: 'assets/towers/generated-raw-selected/tower-05-drone-hive-base-new-drones.png',
+    battleScale: 1.43,
   },
   {
     id: 'hacker-relay',
@@ -55,6 +59,7 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     accent: '#79ff9e',
     role: '揭露隐身 / 护盾干扰',
     image: 'assets/towers/generated-raw-selected/tower-04-hacker-relay-base-cutout.png',
+    battleScale: 2.06,
     attackAnimation: 'assets/animations/towers/tower-04-hacker-relay-attack.webp',
   },
   {
@@ -64,6 +69,7 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     accent: '#34c9ff',
     role: '重甲击破 / 超远射程',
     image: 'assets/towers/generated-raw-selected/tower-01-magnetic-rail-base-cutout.png',
+    battleScale: 1.41,
     attackAnimation: 'assets/animations/towers/tower-01-magnetic-rail-attack.webp',
   },
   {
@@ -73,6 +79,7 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     accent: '#c99245',
     role: '地面拦截 / 阵线维持',
     image: 'assets/towers/generated-raw-selected/tower-03-mercenary-outpost-base-cutout.png',
+    battleScale: 1.25,
   },
 ]
 

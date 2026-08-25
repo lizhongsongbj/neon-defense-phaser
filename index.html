@@ -77,6 +77,11 @@
 
       <section class="command-panel growth-panel" data-command-panel="growth" aria-label="塔楼成长" hidden>
         <div class="growth-heading">
+          <div><span>ACTIVE COMBAT PROTOCOLS</span><h2>主动技能协议</h2></div>
+          <p>使用研发点解锁主动技能。技能升级只缩短冷却时间，不提升效果强度，避免压缩塔楼布阵的价值。</p>
+        </div>
+        <div class="skill-growth-grid" id="skill-growth-grid"></div>
+        <div class="growth-heading growth-heading--towers">
           <div><span>PERMANENT TOWER AUGMENTS</span><h2>塔楼成长矩阵</h2></div>
           <p>强化对所有关卡永久生效。每级提升 6% 伤害与 3% 射程,完成波次可获得研发点。</p>
         </div>
@@ -311,6 +316,22 @@
           <button id="start-wave" type="button"><span aria-hidden="true">▶</span> 发动波次</button>
         </aside>
 
+        <section class="skill-dock" id="skill-dock" aria-label="主动技能">
+          <div class="skill-dock__heading"><span>ACTIVE PROTOCOLS</span><b>主动技能</b></div>
+          <div class="skill-dock__buttons">
+            <button class="skill-button" type="button" data-player-skill="pulse-overload" style="--skill-accent:#20f4e6">
+              <span class="skill-button__icon" aria-hidden="true">⌁</span>
+              <span class="skill-button__copy"><b>脉冲过载</b><small data-role="skill-status">未解锁</small></span>
+              <i data-role="skill-cooldown"></i><kbd>1</kbd>
+            </button>
+            <button class="skill-button" type="button" data-player-skill="quantum-firewall" style="--skill-accent:#ff3ea5">
+              <span class="skill-button__icon" aria-hidden="true">▰</span>
+              <span class="skill-button__copy"><b>量子防火墙</b><small data-role="skill-status">未解锁</small></span>
+              <i data-role="skill-cooldown"></i><kbd>2</kbd>
+            </button>
+          </div>
+        </section>
+
         <div class="wave-toast" id="wave-toast"></div>
 
         <section class="special-event-banner" id="special-event-banner" data-tone="good" aria-live="polite" hidden>
@@ -369,6 +390,7 @@
               <li>点击空闲塔位选择要建造的塔楼,金币足够即可建造。</li>
               <li>点击已建塔楼可查看详情、升级或拆除(拆除返还部分金币)。</li>
               <li>右上角 <b>SPEED</b> 可调整战斗倍速,<b>发动波次</b> 可提前触发下一波。</li>
+              <li>左下角主动技能可点击或按 <b>1 / 2</b> 选择，再点击战场指定释放位置；技能需在指挥中心使用研发点解锁。</li>
               <li>顶部图标依次为:音乐 / 语音 / 主界面 / 战术档案 / 成就 / 操作说明 / 清空部署。</li>
             </ul>
           </div>

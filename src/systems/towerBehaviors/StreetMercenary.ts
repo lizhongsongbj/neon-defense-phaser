@@ -54,7 +54,8 @@ export function resolveStreetMercenary(tower: TowerState, ctx: TowerAttackContex
     if (!target) return
 
     target.blocked = true
-    merc.hp -= target.attack * ctx.dt
+    const attackScale = ctx.now < target.attackSuppressedUntil ? Math.max(0.1, 1 - target.attackSuppression) : 1
+    merc.hp -= target.attack * attackScale * ctx.dt
     if (merc.hp <= 0) {
       merc.targetId = null
       merc.respawnAt = ctx.now + combat.respawn * 1000

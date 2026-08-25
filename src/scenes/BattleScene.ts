@@ -26,6 +26,7 @@ import { chooseSpecialEvent, specialEventHistory, specialEventTriggerDelay, type
 import { BOSS_TYPES, type BossId } from '../data/bosses'
 import type { SavedTower } from '../systems/SaveGame'
 import { EnemySpawnSfx, MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
+import { PLAYER_SKILLS, PLAYER_SKILL_BY_ID, playerSkillCooldown, type PlayerSkillId } from '../data/playerSkills'
 
 function boardToScreen(p: Point2): Point2 {
   return { x: (p.x / 1000) * GAME_WIDTH, y: (p.y / 1000) * GAME_HEIGHT }
@@ -37,6 +38,15 @@ function spriteSize(scale: number): number {
 }
 
 const BASE_DAMAGE_VOICE_INTERVAL_MS = 20_000
+
+interface ActiveFirewall {
+  point: Point2
+  expiresAt: number
+  affected: Set<number>
+  capacity: number
+  graphic: Phaser.GameObjects.Graphics
+  label: Phaser.GameObjects.Text
+}
 
 export class BattleScene extends Phaser.Scene {
   private campaign!: CampaignState
@@ -72,6 +82,11 @@ export class BattleScene extends Phaser.Scene {
   private readonly heavyEnemyAlertsShown = new Set<string>()
   /** 下一波整备倒计时(秒),原 `_0x3ebe3b`;0 表示战斗中或需要玩家手动发动 */
   private nextWaveCountdown = 0
+  private skillCooldowns: Record<PlayerSkillId, number> = { 'pulse-overload': 0, 'quantum-firewall': 0 }
+  private targetingSkill: PlayerSkillId | null = null
+  private targetingOverlay: Phaser.GameObjects.Zone | null = null
+  private targetingReticle: Phaser.GameObjects.Graphics | null = null
+  private activeFirewalls: ActiveFirewall[] = []
 
   constructor() {
     super('Battle')
@@ -94,6 +109,11 @@ export class BattleScene extends Phaser.Scene {
     this.specialEventsTriggered = 0
     this.usedSpecialEventIds.clear()
     this.heavyEnemyAlertsShown.clear()
+    this.skillCooldowns = { 'pulse-overload': 0, 'quantum-firewall': 0 }
+    this.targetingSkill = null
+    this.targetingOverlay = null
+    this.targetingReticle = null
+    this.activeFirewalls = []
 
     this.campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState
     this.voice = this.game.registry.get(VOICE_REGISTRY_KEY) as VoiceSystem
@@ -228,11 +248,15 @@ export class BattleScene extends Phaser.Scene {
     EventBus.on(GameEvents.StartNextWave, this.onStartWaveRequest, this)
     EventBus.on(GameEvents.ResetDeployment, this.onResetDeployment, this)
     EventBus.on(GameEvents.RestartBattle, this.onRestartBattleRequest, this)
+    EventBus.on(GameEvents.ActivatePlayerSkill, this.onActivatePlayerSkillRequest, this)
   }
 
   private teardown() {
     this.effects?.destroy()
     this.enemySpawnSfx?.destroy()
+    this.cancelSkillTargeting()
+    this.activeFirewalls.forEach((firewall) => { this.tweens.killTweensOf(firewall.graphic); firewall.graphic.destroy(); firewall.label.destroy() })
+    this.activeFirewalls = []
     EventBus.off(GameEvents.BuildTower, this.onBuildTowerRequest, this)
     EventBus.off(GameEvents.UpgradeTower, this.onUpgradeRequest, this)
     EventBus.off(GameEvents.SellTower, this.onSellRequest, this)
@@ -241,6 +265,187 @@ export class BattleScene extends Phaser.Scene {
     EventBus.off(GameEvents.StartNextWave, this.onStartWaveRequest, this)
     EventBus.off(GameEvents.ResetDeployment, this.onResetDeployment, this)
     EventBus.off(GameEvents.RestartBattle, this.onRestartBattleRequest, this)
+    EventBus.off(GameEvents.ActivatePlayerSkill, this.onActivatePlayerSkillRequest, this)
+  }
+
+  private onActivatePlayerSkillRequest(payload: { skillId: PlayerSkillId }) {
+    const id = payload.skillId
+    if (this.targetingSkill === id) {
+      this.cancelSkillTargeting()
+      return
+    }
+    const level = this.campaign.playerSkillLevel(id)
+    if (level <= 0) {
+      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `${PLAYER_SKILL_BY_ID[id].name}尚未解锁` })
+      return
+    }
+    if (!this.waveActive || this.battle.enemies.length === 0) {
+      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '当前没有可锁定的敌军信号' })
+      return
+    }
+    if (this.skillCooldowns[id] > 0) {
+      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `协议冷却中 · ${this.skillCooldowns[id].toFixed(1)} 秒` })
+      return
+    }
+    this.beginSkillTargeting(id)
+  }
+
+  private beginSkillTargeting(id: PlayerSkillId) {
+    this.cancelSkillTargeting(false)
+    this.targetingSkill = id
+    const accent = id === 'pulse-overload' ? 0x20f4e6 : 0xff3ea5
+    const radius = id === 'pulse-overload' ? 190 : 88
+    this.targetingReticle = this.add.graphics().setDepth(101)
+    const drawReticle = (x: number, y: number) => {
+      this.targetingReticle?.clear()
+      this.targetingReticle?.lineStyle(2, accent, 0.95).strokeCircle(x, y, radius)
+      this.targetingReticle?.lineStyle(1, accent, 0.35).strokeCircle(x, y, Math.max(20, radius - 12))
+      this.targetingReticle?.lineBetween(x - 15, y, x + 15, y)
+      this.targetingReticle?.lineBetween(x, y - 15, x, y + 15)
+    }
+    drawReticle(GAME_WIDTH / 2, GAME_HEIGHT / 2)
+    this.targetingOverlay = this.add.zone(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT).setDepth(100).setInteractive({ cursor: 'crosshair' })
+    this.targetingOverlay.on('pointermove', (pointer: Phaser.Input.Pointer) => drawReticle(pointer.worldX, pointer.worldY))
+    this.targetingOverlay.once('pointerdown', (pointer: Phaser.Input.Pointer, _x: number, _y: number, event: Phaser.Types.Input.EventData) => {
+      event.stopPropagation()
+      this.executePlayerSkill(id, { x: pointer.worldX, y: pointer.worldY })
+    })
+    EventBus.emit(GameEvents.PlayerSkillTargeting, { skillId: id })
+  }
+
+  private cancelSkillTargeting(notify = true) {
+    this.targetingOverlay?.destroy()
+    this.targetingReticle?.destroy()
+    this.targetingOverlay = null
+    this.targetingReticle = null
+    this.targetingSkill = null
+    if (notify) EventBus.emit(GameEvents.PlayerSkillTargeting, { skillId: null })
+  }
+
+  private executePlayerSkill(id: PlayerSkillId, point: Point2) {
+    const level = this.campaign.playerSkillLevel(id)
+    if (level <= 0 || this.skillCooldowns[id] > 0 || !this.waveActive) {
+      this.cancelSkillTargeting()
+      return
+    }
+    if (id === 'pulse-overload') this.castPulseOverload(point)
+    else this.castQuantumFirewall(point)
+    this.skillCooldowns[id] = playerSkillCooldown(id, level)
+    this.cancelSkillTargeting()
+    this.emitHud()
+  }
+
+  private castPulseOverload(point: Point2) {
+    const radius = 190
+    let affected = 0
+    let shieldsDisrupted = 0
+    for (const enemy of this.battle.enemies) {
+      if (enemy.dead) continue
+      const screen = boardToScreen(enemyPosition(this.geometry, enemy))
+      if (Phaser.Math.Distance.Between(point.x, point.y, screen.x, screen.y) > radius) continue
+      affected += 1
+      const stunMs = enemy.isBoss ? 0 : enemy.elite ? 1000 : 2000
+      enemy.stunnedUntil = Math.max(enemy.stunnedUntil, this.battle.now + stunMs)
+      enemy.skillSlowAmount = Math.max(enemy.skillSlowAmount, enemy.isBoss ? 0.15 : enemy.elite ? 0.28 : 0.35)
+      enemy.skillSlowUntil = Math.max(enemy.skillSlowUntil, this.battle.now + 5500)
+      if (enemy.shield > 0) {
+        enemy.shield = Math.max(0, enemy.shield - enemy.maxShield * 0.25)
+        enemy.shieldBlockedUntil = Math.max(enemy.shieldBlockedUntil, this.battle.now + 3500)
+        shieldsDisrupted += 1
+      }
+      this.playPulseTargetBurst(screen)
+    }
+
+    this.cameras.main.shake(260, 0.009, true)
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x8fffff, 0.16).setDepth(69)
+    this.tweens.add({ targets: flash, alpha: 0, duration: 230, onComplete: () => flash.destroy() })
+    ;[0, 90, 180].forEach((delay, index) => {
+      const ring = this.add.graphics().setDepth(70)
+      ring.fillStyle(0x20f4e6, index === 0 ? 0.16 : 0.05).fillCircle(point.x, point.y, radius)
+      ring.lineStyle(index === 0 ? 5 : 3, index === 1 ? 0xffffff : 0x20f4e6, 1).strokeCircle(point.x, point.y, radius)
+      ring.lineStyle(1, 0x73fff5, 0.75).strokeCircle(point.x, point.y, radius * 0.58)
+      ring.setScale(0.08)
+      ring.setAlpha(0)
+      this.tweens.add({ targets: ring, scale: 1.18 + index * 0.08, alpha: { from: 1, to: 0 }, delay, duration: 820, ease: 'Cubic.easeOut', onComplete: () => ring.destroy() })
+    })
+    const core = this.add.graphics().setDepth(71)
+    core.fillStyle(0xffffff, 0.92).fillCircle(point.x, point.y, 18)
+    core.lineStyle(5, 0x20f4e6, 0.95).strokeCircle(point.x, point.y, 34)
+    this.tweens.add({ targets: core, scale: 2.6, alpha: 0, duration: 420, onComplete: () => core.destroy() })
+    const label = this.add.text(point.x, point.y - 34, 'PULSE OVERRIDE // SYSTEM SHOCK', { fontFamily: 'monospace', fontSize: '15px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#042126ee', padding: { x: 9, y: 5 } }).setOrigin(0.5).setDepth(72)
+    this.tweens.add({ targets: label, y: label.y - 34, alpha: 0, duration: 1150, onComplete: () => label.destroy() })
+    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `脉冲过载爆发 · 控制 ${affected} 个目标${shieldsDisrupted ? ` · 击穿 ${shieldsDisrupted} 层护盾` : ''}` })
+  }
+
+  private playPulseTargetBurst(point: Point2) {
+    const burst = this.add.graphics().setDepth(73)
+    burst.lineStyle(3, 0xcffffb, 0.95)
+    for (let arm = 0; arm < 6; arm += 1) {
+      const angle = (Math.PI * 2 * arm) / 6
+      const innerX = point.x + Math.cos(angle) * 12
+      const innerY = point.y + Math.sin(angle) * 12
+      const outerX = point.x + Math.cos(angle) * 42
+      const outerY = point.y + Math.sin(angle) * 42
+      burst.lineBetween(innerX, innerY, outerX, outerY)
+    }
+    burst.fillStyle(0x20f4e6, 0.75).fillCircle(point.x, point.y, 8)
+    this.tweens.add({ targets: burst, scale: 1.45, alpha: 0, duration: 520, onComplete: () => burst.destroy() })
+  }
+
+  private castQuantumFirewall(point: Point2) {
+    const radius = 88
+    const graphic = this.add.graphics().setDepth(66)
+    graphic.fillStyle(0xff3ea5, 0.14).fillCircle(point.x, point.y, radius)
+    graphic.lineStyle(5, 0xff3ea5, 1).strokeCircle(point.x, point.y, radius)
+    graphic.lineStyle(2, 0x20f4e6, 0.95).strokeCircle(point.x, point.y, radius - 12)
+    graphic.fillStyle(0x20f4e6, 0.18).fillRect(point.x - 76, point.y - 42, 152, 84)
+    graphic.lineStyle(4, 0xff78c1, 0.95)
+    graphic.lineBetween(point.x - 78, point.y - 42, point.x + 78, point.y - 42)
+    graphic.lineBetween(point.x - 78, point.y + 42, point.x + 78, point.y + 42)
+    for (let x = -66; x <= 66; x += 22) {
+      graphic.lineStyle(2, x % 44 === 0 ? 0xffffff : 0x20f4e6, 0.85)
+      graphic.strokeRect(point.x + x - 7, point.y - 36, 14, 72)
+    }
+    const label = this.add.text(point.x, point.y - 66, 'QUANTUM FIREWALL // 12', { fontFamily: 'monospace', fontSize: '12px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#2a0620e6', padding: { x: 8, y: 4 } }).setOrigin(0.5).setDepth(68)
+    this.tweens.add({ targets: graphic, alpha: 0.58, duration: 260, yoyo: true, repeat: -1 })
+    this.tweens.add({ targets: label, scaleX: 1.05, scaleY: 1.05, duration: 360, yoyo: true, repeat: -1 })
+    this.cameras.main.shake(150, 0.004, true)
+    this.activeFirewalls.push({ point, expiresAt: this.battle.now + 8000, affected: new Set(), capacity: 12, graphic, label })
+    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '量子防火墙强化部署 · 容量 12 · 持续 8 秒' })
+  }
+
+  private tickQuantumFirewalls() {
+    for (let i = this.activeFirewalls.length - 1; i >= 0; i -= 1) {
+      const firewall = this.activeFirewalls[i]
+      if (this.battle.now >= firewall.expiresAt || firewall.capacity <= 0) {
+        this.tweens.killTweensOf(firewall.graphic)
+        this.tweens.killTweensOf(firewall.label)
+        firewall.graphic.destroy()
+        firewall.label.destroy()
+        this.activeFirewalls.splice(i, 1)
+        continue
+      }
+      for (const enemy of this.battle.enemies) {
+        if (enemy.dead || firewall.affected.has(enemy.id)) continue
+        const screen = boardToScreen(enemyPosition(this.geometry, enemy))
+        if (Phaser.Math.Distance.Between(firewall.point.x, firewall.point.y, screen.x, screen.y) > 88) continue
+        firewall.affected.add(enemy.id)
+        firewall.capacity -= 1
+        firewall.label.setText(`QUANTUM FIREWALL // ${firewall.capacity}`)
+        enemy.distance = Math.max(0, enemy.distance - (enemy.isBoss ? 0 : enemy.elite ? 24 : 50))
+        enemy.attackSuppression = Math.max(enemy.attackSuppression, enemy.isBoss ? 0.08 : enemy.elite ? 0.18 : 0.35)
+        enemy.attackSuppressedUntil = Math.max(enemy.attackSuppressedUntil, this.battle.now + (enemy.isBoss ? 3500 : 6000))
+        enemy.skillSlowAmount = Math.max(enemy.skillSlowAmount, enemy.isBoss ? 0.05 : enemy.elite ? 0.1 : 0.2)
+        enemy.skillSlowUntil = Math.max(enemy.skillSlowUntil, this.battle.now + 3200)
+        const impact = this.add.graphics().setDepth(72)
+        impact.lineStyle(4, 0xff3ea5, 1).strokeRect(screen.x - 28, screen.y - 28, 56, 56)
+        impact.lineStyle(2, 0x20f4e6, 0.9).strokeCircle(screen.x, screen.y, 38)
+        this.tweens.add({ targets: impact, scale: 1.45, alpha: 0, duration: 560, onComplete: () => impact.destroy() })
+        const denied = this.add.text(screen.x, screen.y - 34, 'ACCESS DENIED // ROLLBACK', { fontFamily: 'monospace', fontSize: '11px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#5a083be8', padding: { x: 6, y: 4 } }).setOrigin(0.5).setDepth(73)
+        this.tweens.add({ targets: denied, y: denied.y - 24, alpha: 0, duration: 900, onComplete: () => denied.destroy() })
+        if (firewall.capacity <= 0) break
+      }
+    }
   }
 
   /** AUTO 演示代理请求切换/重开某关卡,原 `window.restartCampaignBattle` */
@@ -308,7 +513,10 @@ export class BattleScene extends Phaser.Scene {
     EventBus.emit(GameEvents.AchievementSignal, { type: 'tower-built', towerType: tower.typeId })
 
     const screen = boardToScreen(tower.source)
-    const baseSize = spriteSize(slot.scale)
+    // 素材本身带有不同大小的透明留白；按塔型补偿后，实际可见底座
+    // 会刚好覆盖地图上的圆形建造基座。
+    const battleScale = typeId in TOWER_TYPE_BY_ID ? TOWER_TYPE_BY_ID[typeId as TowerId].battleScale : 1.5
+    const baseSize = spriteSize(slot.scale) * battleScale
     const actor = new TowerActor(this, tower, baseSize).setDepth(20)
     actor.setPosition(screen.x, screen.y)
     actor.onPointerDown(() => this.selectTower(tower.id))
@@ -496,6 +704,7 @@ export class BattleScene extends Phaser.Scene {
     const speed = this.campaign.gameSpeed || 1
     const dt = Math.min(deltaMs, 50) * speed
     const dtSeconds = dt / 1000
+    PLAYER_SKILLS.forEach(({ id }) => { this.skillCooldowns[id] = Math.max(0, this.skillCooldowns[id] - dtSeconds) })
     this.battle.now += dt
 
     if (this.waveActive && this.pendingSpecialEvent && this.waveElapsed >= this.specialEventTriggerAt) {
@@ -604,12 +813,14 @@ export class BattleScene extends Phaser.Scene {
     }
 
     tickEnemyTraits(this.geometry, this.battle.enemies, this.battle.now, dtSeconds)
+    this.tickQuantumFirewalls()
 
     let baseDamageThisFrame = 0
     for (const enemy of this.battle.enemies) {
-      if (enemy.dead || enemy.blocked) continue
+      if (enemy.dead || enemy.blocked || this.battle.now < enemy.stunnedUntil) continue
       const enemySpeedScale = this.activeSpecialEvent?.modifiers.enemySpeedScale ?? 1
-      enemy.distance += enemy.speed * dtSeconds * enemySpeedScale
+      const skillSlowScale = this.battle.now < enemy.skillSlowUntil ? Math.max(0.2, 1 - enemy.skillSlowAmount) : 1
+      enemy.distance += enemy.speed * dtSeconds * enemySpeedScale * skillSlowScale
       if (enemy.distance >= 1000) {
         enemy.dead = true
         this.battle.leaks += 1
@@ -622,7 +833,7 @@ export class BattleScene extends Phaser.Scene {
     for (const enemy of this.battle.enemies) {
       if (enemy.dead) continue
       const pos = boardToScreen(enemyPosition(this.geometry, enemy))
-      this.enemyActors.get(enemy.id)?.syncVisual(pos.x, pos.y)
+      this.enemyActors.get(enemy.id)?.syncVisual(pos.x, pos.y, this.battle.now)
     }
 
     for (let i = this.battle.enemies.length - 1; i >= 0; i -= 1) {
@@ -780,6 +991,12 @@ export class BattleScene extends Phaser.Scene {
       mapIndex: this.battle.mapIndex,
       difficulty: this.battle.difficulty,
       towers: this.battle.towers.map((t) => ({ slotIndex: t.slotIndex, typeId: t.typeId, level: t.level })),
+      skills: PLAYER_SKILLS.map(({ id }) => {
+        const level = this.campaign.playerSkillLevel(id)
+        const cooldown = level > 0 ? playerSkillCooldown(id, level) : 0
+        const remaining = this.skillCooldowns[id]
+        return { id, level, cooldown, remaining, ready: level > 0 && remaining <= 0 && this.waveActive }
+      }),
     }
     EventBus.emit(GameEvents.HudUpdate, payload)
   }
