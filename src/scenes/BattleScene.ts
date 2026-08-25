@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { MAP_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_STARTING_COINS, type MapLevel, type Point2 } from '../data/maps'
 import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
+import { ALL_TOWER_TYPE_BY_ID, type AllTowerId } from '../data/towerExpansion'
 import { scaleReward, towerGrowthBonuses, RANGE_PROJECTION_Y, MAX_HEALTH, type Difficulty } from '../data/balance'
 import { COUNTDOWN_SECONDS, earlyWaveReward } from '../data/waveEconomy'
 import { buildMapGeometry, toBoardUnits, type MapGeometry } from '../systems/PathSystem'
@@ -266,14 +267,14 @@ export class BattleScene extends Phaser.Scene {
     })
   }
 
-  private onBuildTowerRequest(payload: { slotIndex: number; typeId: TowerId }) {
+  private onBuildTowerRequest(payload: { slotIndex: number; typeId: AllTowerId }) {
     const { slotIndex, typeId } = payload
     if (this.battle.towers.some((t) => t.slotIndex === slotIndex)) return
-    const cost = TOWER_TYPE_BY_ID[typeId].cost
+    const cost = ALL_TOWER_TYPE_BY_ID[typeId].cost
     if (this.battle.coins < cost) return
     this.battle.coins -= cost
     this.instantiateTower(slotIndex, typeId, { level: 1, spent: cost, rallyPoint: null })
-    this.voice?.play(typeId, 'build')
+    if (typeId in TOWER_TYPE_BY_ID) this.voice?.play(typeId as TowerId, 'build')
     this.persistProgress()
     this.emitHud()
     EventBus.emit(GameEvents.ClearSelection)
@@ -281,7 +282,7 @@ export class BattleScene extends Phaser.Scene {
 
   private instantiateTower(
     slotIndex: number,
-    typeId: TowerId,
+    typeId: AllTowerId,
     opts: { level: 1 | 2 | 3; spent: number; rallyPoint: { x: number; y: number } | null },
   ) {
     const slot = this.mapLevel.slots[slotIndex]
@@ -327,7 +328,7 @@ export class BattleScene extends Phaser.Scene {
       const radiusY = ((range * RANGE_PROJECTION_Y) / 1000) * GAME_HEIGHT
       actor.showRange(radiusX, radiusY)
     }
-    this.voice?.play(tower.typeId, 'select', { chance: 0.4 })
+    if (tower.typeId in TOWER_TYPE_BY_ID) this.voice?.play(tower.typeId as TowerId, 'select', { chance: 0.4 })
     this.emitTowerInfo(tower)
   }
 
@@ -340,7 +341,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private emitTowerInfo(tower: TowerState) {
-    const def = TOWER_TYPE_BY_ID[tower.typeId]
+    const def = ALL_TOWER_TYPE_BY_ID[tower.typeId]
     EventBus.emit(GameEvents.TowerInfoUpdate, {
       towerId: tower.id,
       typeId: tower.typeId,
@@ -365,7 +366,7 @@ export class BattleScene extends Phaser.Scene {
     tower.level = (tower.level + 1) as 1 | 2 | 3
     tower.spent += cost
     this.towerActors.get(tower.id)?.setLevel(tower.level)
-    this.voice?.play(tower.typeId, 'upgrade')
+    if (tower.typeId in TOWER_TYPE_BY_ID) this.voice?.play(tower.typeId as TowerId, 'upgrade')
     this.persistProgress()
     this.emitHud()
     this.selectTower(tower.id)
@@ -377,7 +378,7 @@ export class BattleScene extends Phaser.Scene {
     const tower = this.battle.towers[index]
     const refund = towerRefundValue(tower.typeId, tower.spent)
     this.battle.coins += refund
-    this.voice?.play(tower.typeId, 'dismantle')
+    if (tower.typeId in TOWER_TYPE_BY_ID) this.voice?.play(tower.typeId as TowerId, 'dismantle')
     this.battle.towers.splice(index, 1)
     this.towerActors.get(tower.id)?.destroy()
     this.towerActors.delete(tower.id)
