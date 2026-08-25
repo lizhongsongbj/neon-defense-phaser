@@ -252,7 +252,7 @@ export class BattleHud {
     // HUD ??????????????????/????????
     this.towerPicker.replaceChildren()
     const campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState | undefined
-    const selected = new Set(campaign?.selectedTowerIds ?? ALL_TOWER_TYPES.map((tower) => tower.id))
+    const selected = new Set(campaign?.selectedTowerIds ?? ALL_ALL_TOWER_TYPES.map((tower) => tower.id))
     ALL_TOWER_TYPES.filter((def) => selected.has(def.id)).forEach((def) => {
       const card = document.createElement('button')
       card.type = 'button'
@@ -321,7 +321,7 @@ export class BattleHud {
       `
     }).join('')
 
-    const towerRows = TOWER_TYPES.map(
+    const towerRows = ALL_TOWER_TYPES.map(
       (def) => `
         <div class="intel-tower-row">
           <img src="${def.image}" alt="${def.name}" />
@@ -348,7 +348,7 @@ export class BattleHud {
         <div class="intel-enemy-list">${hostileRows}</div>
       </section>
       <section class="intel-section">
-        <div class="intel-section__heading"><span>DEFENSE DATABASE</span><strong>塔楼档案</strong><em>${TOWER_TYPES.length} 座塔楼</em></div>
+        <div class="intel-section__heading"><span>DEFENSE DATABASE</span><strong>塔楼档案</strong><em>${ALL_TOWER_TYPES.length} 座塔楼</em></div>
         <div class="intel-tower-list">${towerRows}</div>
       </section>
       <section class="intel-section">
