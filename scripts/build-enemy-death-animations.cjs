@@ -11,7 +11,7 @@ const jobs = [
   {
     id: 'enemy-02-riot-mech',
     base: path.join(ROOT, 'public/assets/enemies/generated-raw-selected/enemy-02-riot-mech-base-cutout.png'),
-    generated: 'C:/Users/1/.codex/generated_images/01a03384-aace-70b0-8be4-40cc65f4fa16/call_F5iuE32kV5Hf9AnrqLf61AQQ.png',
+    key: path.join(OUT_DIR, 'enemy-02-riot-mech-death-key.png'),
     maxWidth: 438,
     maxHeight: 438,
     bottom: 496,
@@ -19,7 +19,7 @@ const jobs = [
   {
     id: 'enemy-03-phase-ninja',
     base: path.join(ROOT, 'public/assets/enemies/generated-raw-selected/enemy-03-phase-ninja-base-cutout.png'),
-    generated: 'C:/Users/1/.codex/generated_images/01a03384-aace-70b0-8be4-40cc65f4fa16/call_Dn0j6glYCZjiwp02MvkjOLHl.png',
+    key: path.join(OUT_DIR, 'enemy-03-phase-ninja-death-key.png'),
     maxWidth: 452,
     maxHeight: 438,
     bottom: 496,
@@ -151,12 +151,11 @@ function blendPremultiplied(a, b, t, darken = 1) {
 }
 
 async function build(job) {
-  const keyPath = path.join(OUT_DIR, `${job.id}-death-key.png`);
+  const keyPath = job.key;
   const frameDir = path.join(OUT_DIR, `${job.id}-death-frames`);
   const animationPath = path.join(OUT_DIR, `${job.id}-death.webp`);
   fs.mkdirSync(frameDir, { recursive: true });
 
-  await removeBakedCheckerboard(job.generated, keyPath);
   const base = await normalizeSprite(job.base, job.maxWidth, job.maxHeight, job.bottom);
   const death = await normalizeSprite(keyPath, job.maxWidth, job.maxHeight, job.bottom);
   const stages = [0, 0.08, 0.22, 0.42, 0.66, 0.84, 1, 1];
