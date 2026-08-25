@@ -11,18 +11,18 @@ export const LATE_MAP_BONUSES = [0, 0, 1, 1, 2, 2, 3, 3]
 /** 击杀奖励随地图衰减系数,原变量名 `_0x1e8c62` */
 export const REWARD_SCALES = [1, 1, 0.95, 0.9, 0.82, 0.74, 0.66, 0.58]
 
-/** 难度基础系数,原变量名 `_0x8c8ac0` */
+/** 难度基础系数：三档差异明确，但保持中后期仍可通过升级和合理布阵完成。 */
 export const DIFFICULTY_COEFFICIENTS: Record<'easy' | 'normal' | 'hard', number> = {
-  easy: 0.68,
+  easy: 0.78,
   normal: 1,
-  hard: 1.28,
+  hard: 1.2,
 }
 
-/** 难度 × 地图压力系数,原变量名 `_0x59ea61` */
+/** 难度 × 地图压力系数；八张地图都有独立参数，避免后期回退到默认值。 */
 export const DIFFICULTY_MAP_PRESSURE: Record<'easy' | 'normal' | 'hard', number[]> = {
-  easy: [1.8, 1.6, 1.65, 1.55, 1.5, 1.55],
-  normal: [1.28, 1.25, 1.26, 1.1, 1.05, 1.4],
-  hard: [1.22, 1.22, 1.13, 1.06, 1, 1.27],
+  easy: [0.9, 0.91, 0.92, 0.94, 0.96, 0.98, 1, 1.02],
+  normal: [1, 1, 1.01, 1.02, 1.03, 1.04, 1.05, 1.06],
+  hard: [1.08, 1.08, 1.1, 1.1, 1.12, 1.14, 1.16, 1.18],
 }
 
 /** 2.5D 视角下 y 轴距离压缩系数,原变量名 `_0x1ce4d5` / `RANGE_PROJECTION_Y` */
@@ -62,6 +62,16 @@ export function enemyStatMultiplier(mapIndex: number, wave: number, difficulty: 
 }
 
 /** 敌人移速随地图微幅提升,原 gameplay.js `_0x4346c0` */
+/** 难度对敌人移动速度的影响，困难档更考验提前布防，简单档留出反应时间。 */
+export function difficultySpeedMultiplier(difficulty: Difficulty): number {
+  return { easy: 0.94, normal: 1, hard: 1.06 }[difficulty]
+}
+
+/** 难度对敌人突破基地时的伤害影响。 */
+export function difficultyAttackMultiplier(difficulty: Difficulty): number {
+  return { easy: 0.88, normal: 1, hard: 1.12 }[difficulty]
+}
+
 export function mapSpeedBonus(mapIndex: number): number {
   return 1 + Math.min(0.1, mapIndex * 0.02)
 }

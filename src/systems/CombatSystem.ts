@@ -7,7 +7,7 @@
 
 import { ENEMY_TYPES, type EnemyId } from '../data/enemies'
 import { BOSS_TYPES, ENFORCER_COMPONENT_VOICE_EVENT, type BossId } from '../data/bosses'
-import { enemyStatMultiplier, mapSpeedBonus, type Difficulty } from '../data/balance'
+import { difficultyAttackMultiplier, difficultySpeedMultiplier, enemyStatMultiplier, mapSpeedBonus, type Difficulty } from '../data/balance'
 import type { MapGeometry } from './PathSystem'
 import { projectedDistance, routePointByIndex } from './PathSystem'
 import type { EnemyState, EnemyTypeId, TowerState, WaveRosterEntry } from './types'
@@ -102,7 +102,7 @@ export function spawnEnemy({ id, mapIndex, wave, difficulty, now, entry }: Spawn
   const multiplier = enemyStatMultiplier(mapIndex, wave, difficulty)
   const power = Math.max(0.1, Number(entry.power) || 1)
   const speedBonus = mapSpeedBonus(mapIndex)
-  const movementSpeed = (Number.isFinite(entry.speed) ? (entry.speed as number) : def.speed) * speedBonus
+  const movementSpeed = (Number.isFinite(entry.speed) ? (entry.speed as number) : def.speed) * speedBonus * difficultySpeedMultiplier(difficulty)
 
   return {
     id,
@@ -117,7 +117,7 @@ export function spawnEnemy({ id, mapIndex, wave, difficulty, now, entry }: Spawn
     armor: def.armor,
     speed: movementSpeed,
     baseSpeed: movementSpeed,
-    attack: Number.isFinite(entry.attack) ? (entry.attack as number) : def.attack,
+    attack: (Number.isFinite(entry.attack) ? (entry.attack as number) : def.attack) * difficultyAttackMultiplier(difficulty),
     reward: Number.isFinite(entry.reward) ? (entry.reward as number) : def.reward,
     elite: Boolean(entry.elite),
     air: def.air,
