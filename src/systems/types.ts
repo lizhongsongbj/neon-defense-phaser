@@ -1,7 +1,7 @@
 import type { Lane } from '../data/maps'
 import type { EnemyId } from '../data/enemies'
 import type { BossId } from '../data/bosses'
-import type { TowerId } from '../data/towers'
+import type { AllTowerId } from '../data/towerExpansion'
 import type { Difficulty } from '../data/balance'
 import type { MapGeometry } from './PathSystem'
 
