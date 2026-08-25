@@ -69,6 +69,7 @@ export class BattleScene extends Phaser.Scene {
   private specialEventEndsAt = Infinity
   private specialEventsTriggered = 0
   private readonly usedSpecialEventIds = new Set<SpecialEventId>()
+  private readonly heavyEnemyAlertsShown = new Set<string>()
   /** 下一波整备倒计时(秒),原 `_0x3ebe3b`;0 表示战斗中或需要玩家手动发动 */
   private nextWaveCountdown = 0
 
@@ -92,6 +93,7 @@ export class BattleScene extends Phaser.Scene {
     this.specialEventEndsAt = Infinity
     this.specialEventsTriggered = 0
     this.usedSpecialEventIds.clear()
+    this.heavyEnemyAlertsShown.clear()
 
     this.campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState
     this.voice = this.game.registry.get(VOICE_REGISTRY_KEY) as VoiceSystem
@@ -465,6 +467,15 @@ export class BattleScene extends Phaser.Scene {
     })
     this.battle.enemies.push(enemy)
     const def = enemy.isBoss ? BOSS_TYPES[enemy.typeId as keyof typeof BOSS_TYPES] : ENEMY_TYPES[enemy.typeId as keyof typeof ENEMY_TYPES]
+    if (!enemy.isBoss && def?.heavy && !this.heavyEnemyAlertsShown.has(enemy.typeId)) {
+      this.heavyEnemyAlertsShown.add(enemy.typeId)
+      EventBus.emit(GameEvents.TacticalAlert, {
+        enemyType: enemy.typeId,
+        enemyName: def.name,
+        title: `???????${def.name}`,
+        description: '???????????????????????????????',
+      })
+    }
     const baseSize = spriteSize(def?.size ?? 0.045)
     const actor = new EnemyActor(this, enemy, baseSize).setDepth(30)
     this.enemyActors.set(enemy.id, actor)

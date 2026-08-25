@@ -4,7 +4,7 @@ import { ALL_TOWER_TYPES, type AllTowerId } from '../data/towerExpansion'
 import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
 import { BOSS_TYPES, type BossDefinition } from '../data/bosses'
 import { SPECIAL_EVENTS } from '../data/specialEvents'
-import { EventBus, GameEvents, type BattleHudPayload, type SlotSelectedPayload, type SpecialEventPayload, type WaveClearedPayload } from '../state/EventBus'
+import { EventBus, GameEvents, type BattleHudPayload, type SlotSelectedPayload, type SpecialEventPayload, type TacticalAlertPayload, type WaveClearedPayload } from '../state/EventBus'
 import { REGISTRY_KEY, type CampaignState } from '../state/CampaignState'
 import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceSystem } from '../audio'
 
@@ -70,6 +70,7 @@ export class BattleHud {
   private pendingSlot: SlotSelectedPayload | null = null
   private toastTimer: number | undefined
   private specialEventTimer: number | undefined
+  private tacticalAlertTimer: number | undefined
 
   constructor(private readonly game: Phaser.Game) {
     this.counterEl = document.getElementById('counter') as HTMLElement
@@ -124,6 +125,7 @@ export class BattleHud {
     EventBus.on(GameEvents.EarlyWaveBonus, this.onEarlyWaveBonus, this)
     EventBus.on(GameEvents.SpecialEventStarted, this.onSpecialEventStarted, this)
     EventBus.on(GameEvents.SpecialEventEnded, this.onSpecialEventEnded, this)
+    EventBus.on(GameEvents.TacticalAlert, this.onTacticalAlert, this)
     EventBus.on(GameEvents.Victory, this.onVictory, this)
     EventBus.on(GameEvents.GameOver, this.onGameOver, this)
   }
@@ -454,6 +456,20 @@ export class BattleHud {
         this.specialEventBanner.hidden = true
       }, 4800)
     }
+  }
+
+  private onTacticalAlert(payload: TacticalAlertPayload) {
+    window.clearTimeout(this.tacticalAlertTimer)
+    this.specialEventBanner.dataset.tone = 'bad'
+    this.specialEventKicker.textContent = 'TACTICAL ALERT // HEAVY HOSTILE'
+    this.specialEventSource.textContent = payload.enemyType.toUpperCase()
+    this.specialEventTitle.textContent = payload.title
+    this.specialEventDescription.textContent = payload.description
+    this.specialEventEffect.textContent = '???? ? ????'
+    this.specialEventBanner.hidden = false
+    this.tacticalAlertTimer = window.setTimeout(() => {
+      this.specialEventBanner.hidden = true
+    }, 6000)
   }
 
   private onSpecialEventEnded(payload: { id: string; title: string }) {
