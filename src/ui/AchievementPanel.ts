@@ -15,6 +15,8 @@ export class AchievementPanel {
   private readonly totalProgress = document.getElementById('achievement-total-progress') as HTMLElement
   private readonly filters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-achievement-filter]'))
   private readonly notificationHost = document.getElementById('achievement-notification-host') as HTMLElement
+  private readonly unreadStorageKey = 'neon-defense-achievement-unread-v1'
+  private unreadAchievementIds = new Set<string>()
   private filter: Filter = 'all'
   private notificationQueue: AchievementDefinition[] = []
   private notificationActive = false

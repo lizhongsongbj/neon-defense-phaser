@@ -971,8 +971,8 @@ html, body {
 
 /* ---------------- 成就系统 ---------------- */
 .achievement-launch { position: relative; }
-.achievement-launch::after,
-.achievement-hud-button::after {
+.achievement-launch.has-unread-achievements::after,
+.achievement-hud-button.has-unread-achievements::after {
   content: '';
   position: absolute;
   top: 6px;
