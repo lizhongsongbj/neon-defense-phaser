@@ -45,7 +45,7 @@ export class BattleScene extends Phaser.Scene {
   private enemyActors = new Map<number, EnemyActor>()
   private mercActors = new Map<string, MercenaryActor>()
   private droneActors = new Map<string, DroneSquadActor>()
-  private slotMarkers: Phaser.GameObjects.Arc[] = []
+  private slotMarkers: Phaser.GameObjects.Graphics[] = []
   private effects!: EffectsLayer
 
   private selectedTowerId: string | null = null
@@ -178,13 +178,37 @@ export class BattleScene extends Phaser.Scene {
   private drawSlots() {
     this.mapLevel.slots.forEach((slot, index) => {
       const screen = boardToScreen(toBoardUnits(slot))
-      const marker = this.add
-        .circle(screen.x, screen.y, 14, 0x20f4e6, 0.18)
-        .setStrokeStyle(1, 0x79ffe8, 0.6)
-        .setInteractive({ useHandCursor: true })
+      const radius = Math.max(18, spriteSize(slot.scale) * 0.34)
+      const marker = this.add.graphics().setPosition(screen.x, screen.y).setDepth(2)
+
+      // 在地图自带的圆形塔基上覆盖轻量建造网格，既保持原画可见，也明确提示可放塔。
+      marker.fillStyle(0x061b23, 0.32)
+      marker.fillCircle(0, 0, radius)
+      marker.lineStyle(1, 0x79ffe8, 0.34)
+      const gridStep = radius * 0.48
+      for (const offset of [-gridStep, 0, gridStep]) {
+        const half = Math.sqrt(Math.max(0, radius * radius - offset * offset))
+        marker.lineBetween(offset, -half, offset, half)
+        marker.lineBetween(-half, offset, half, offset)
+      }
+      marker.lineStyle(2, 0x79ffe8, 0.78)
+      marker.strokeCircle(0, 0, radius)
+      marker.lineStyle(1, 0xffffff, 0.5)
+      marker.strokeCircle(0, 0, radius * 0.72)
+
+      marker.setInteractive(new Phaser.Geom.Circle(0, 0, radius + 8), Phaser.Geom.Circle.Contains)
+      marker.input!.cursor = 'pointer'
       marker.on('pointerdown', (pointer: Phaser.Input.Pointer, _x: number, _y: number, event: Phaser.Types.Input.EventData) => {
         event.stopPropagation()
         this.onSlotClicked(index)
+      })
+      this.tweens.add({
+        targets: marker,
+        alpha: { from: 0.72, to: 1 },
+        duration: 1050 + (index % 4) * 120,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.InOut',
       })
       this.slotMarkers[index] = marker
     })

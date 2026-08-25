@@ -53,7 +53,7 @@ export function buildWavePlan(wave: number, mapIndex: number): WaveRosterEntry[]
     })
   }
 
-  const bossPeriod = mapIndex === 5 ? 5 : 10
+  const bossPeriod = mapIndex >= 5 ? 5 : 10
   if (wave % bossPeriod === 0) {
     const bossId: BossId = Math.floor(wave / bossPeriod) % 2 === 1 ? 'enforcer' : 'eve'
     roster.push({

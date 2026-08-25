@@ -50,7 +50,7 @@ export class CampaignState {
       state.wave = data.wave
       state.savedTowers = data.towers
 
-      // 旧版六关地图已清空：把旧存档安全收束到当前翻修占位战区。
+      // 地图阵容已更新为八个新战区：把旧存档安全收束到当前有效关卡范围。
       state.mapIndex = Math.max(0, Math.min(MAP_LEVELS.length - 1, state.mapIndex))
       state.unlockedMapIndex = Math.max(0, Math.min(MAP_LEVELS.length - 1, state.unlockedMapIndex))
       state.completedMaps = MAP_LEVELS.map((_, index) => Boolean(data.completedMaps[index]))

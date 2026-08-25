@@ -3,13 +3,13 @@
  */
 
 /** 地图校准系数,原变量名 `_0x4c1e93`,补偿路线长度与塔位覆盖差异 */
-export const MAP_COEFFICIENTS = [1.3, 1.1, 1.45, 1.5, 1.6, 0.8]
+export const MAP_COEFFICIENTS = [1.3, 1.1, 1.2, 1.28, 1.36, 1.44, 1.52, 1.62]
 
 /** 第4-6关每波额外敌人数,原变量名 `_0x1bcd4e` */
-export const LATE_MAP_BONUSES = [0, 0, 0, 2, 2, 2]
+export const LATE_MAP_BONUSES = [0, 0, 1, 1, 2, 2, 3, 3]
 
 /** 击杀奖励随地图衰减系数,原变量名 `_0x1e8c62` */
-export const REWARD_SCALES = [1, 1, 1, 1, 0.55, 0.3]
+export const REWARD_SCALES = [1, 1, 0.95, 0.9, 0.82, 0.74, 0.66, 0.58]
 
 /** 难度基础系数,原变量名 `_0x8c8ac0` */
 export const DIFFICULTY_COEFFICIENTS: Record<'easy' | 'normal' | 'hard', number> = {

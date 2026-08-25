@@ -86,8 +86,13 @@ export function buildLaneSegments(smoothedPoints: Point2[]): LaneGeometry {
 
 /** 组装某条车道(left/right)的完整路线:入场 -> 共享段 -> 出场,原 gameplay.js `_0x5f0af5` 内联逻辑 */
 export function buildLaneGeometry(map: MapLevel, lane: Lane): LaneGeometry {
-  const raw = [...map.entries[lane], ...map.shared.slice(1), ...map.exits[lane].slice(1)]
-  return buildLaneSegments(catmullRomSmooth(raw))
+  // 新版地图直接保存沿道路中心线标定的完整路线；旧地图仍可回退到
+  // entries -> shared -> exits 的组合结构。
+  const calibratedRoute = map.routes?.[lane]
+  const raw = calibratedRoute?.length
+    ? calibratedRoute
+    : [...map.entries[lane], ...map.shared.slice(1), ...map.exits[lane].slice(1)]
+  return buildLaneSegments(catmullRomSmooth(raw, 8))
 }
 
 /** 组装整张地图两条车道的几何数据,原 `_0x4fd372` */

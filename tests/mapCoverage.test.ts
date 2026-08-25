@@ -31,3 +31,22 @@ test('路线几何返回有限坐标', () => {
   const midpoint = { x: geometry.left.metricLength, y: 0 }
   assert.ok(Number.isFinite(midpoint.x))
 })
+
+
+test('八张地图的标定路线连续且始终位于画面内', () => {
+  assert.equal(MAP_LEVELS.length, 8)
+  for (const map of MAP_LEVELS) {
+    assert.ok(map.slots.length >= 10, `${map.name} 塔位数量不足`)
+    for (const lane of ['left', 'right'] as const) {
+      const route = map.routes[lane]
+      assert.ok(route.length >= 10, `${map.name} ${lane} 路线采样点不足`)
+      for (const point of route) {
+        assert.ok(point.x >= 0 && point.x <= 100 && point.y >= 0 && point.y <= 100, `${map.name} 路线越界`)
+      }
+      for (let i = 1; i < route.length; i += 1) {
+        const gap = Math.hypot(route[i].x - route[i - 1].x, route[i].y - route[i - 1].y)
+        assert.ok(gap <= 13, `${map.name} ${lane} 路线存在过大断点: ${gap.toFixed(1)}`)
+      }
+    }
+  }
+})
