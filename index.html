@@ -128,6 +128,7 @@
           <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="animations" aria-selected="true">动画面板</button>
           <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="effects" aria-selected="false">特效面板</button>
           <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="studio" aria-selected="false">生图工作台</button>
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="ui-art" aria-selected="false">UI美术台</button>
           <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="audio" aria-selected="false">音效工作台</button>
         </nav>
         <div class="asset-forge-content">
@@ -175,7 +176,48 @@
       <section class="asset-forge-section image-studio-panel" data-asset-panel="studio" aria-label="素材生图工作台" hidden>
         <iframe class="image-studio-frame" data-src="/image-studio.html" title="素材生图工作台"></iframe>
       </section>
-      <section class="asset-forge-section audio-studio-panel" data-asset-panel="audio" aria-label="音效工作台" hidden>
+      <section class="asset-forge-section ui-art-studio-panel" id="ui-art-studio" data-asset-panel="ui-art" aria-label="UI美术设计工作台" hidden>
+        <header class="ui-art-studio__header">
+          <div><span>INTERFACE ART LAB // NIGHT CITY SYSTEM</span><h2>UI美术设计工作台</h2><p>设计指挥中心、战斗HUD、防御塔卡片、战术警报与结算界面，并导出统一的颜色和组件规范。</p></div>
+          <output>5 套界面模板 · 4 套视觉主题</output>
+        </header>
+        <div class="ui-art-studio__layout">
+          <aside class="ui-art-library" aria-label="界面模板">
+            <div class="ui-art-section-title"><span>01</span><div><b>界面模板</b><small>SCREEN BLUEPRINTS</small></div></div>
+            <div class="ui-art-preset-list">
+              <button type="button" data-ui-preset="command" aria-pressed="true"><i>CMD-01</i><b>指挥中心</b><small>关卡、难度与部署</small></button>
+              <button type="button" data-ui-preset="battle" aria-pressed="false"><i>HUD-02</i><b>战斗 HUD</b><small>资源、波次与基地状态</small></button>
+              <button type="button" data-ui-preset="tower" aria-pressed="false"><i>TWR-03</i><b>防御塔卡片</b><small>等级、数值与建造操作</small></button>
+              <button type="button" data-ui-preset="alert" aria-pressed="false"><i>ALT-04</i><b>战术警报</b><small>Boss、受损与紧急提示</small></button>
+              <button type="button" data-ui-preset="result" aria-pressed="false"><i>RSL-05</i><b>战斗结算</b><small>评分、奖励与继续推进</small></button>
+            </div>
+            <button class="ui-art-randomize" id="ui-art-randomize" type="button">生成随机设计方案</button>
+          </aside>
+          <section class="ui-art-workspace" aria-label="UI实时预览">
+            <header><div><span>LIVE PREVIEW</span><h3 id="ui-art-preview-title">指挥中心</h3></div><code id="ui-art-preview-meta">CMD-01 // 夜城防线 // 密度 88%</code></header>
+            <div class="ui-art-viewport"><div class="ui-art-preview has-grid has-scanlines" id="ui-art-preview"></div></div>
+            <footer><span><i></i>实时组件预览</span><em>1440 × 900 / RESPONSIVE SAFE AREA</em></footer>
+          </section>
+          <aside class="ui-art-inspector" aria-label="视觉参数">
+            <div class="ui-art-section-title"><span>02</span><div><b>视觉参数</b><small>ART DIRECTION</small></div></div>
+            <div class="ui-art-theme-list" role="group" aria-label="视觉主题">
+              <button type="button" data-ui-theme="night" aria-pressed="true"><i style="--swatch:#20f4e6"></i>夜城防线</button>
+              <button type="button" data-ui-theme="corporate" aria-pressed="false"><i style="--swatch:#75bfff"></i>企业战术</button>
+              <button type="button" data-ui-theme="street" aria-pressed="false"><i style="--swatch:#ff5b55"></i>街头佣兵</button>
+              <button type="button" data-ui-theme="biotech" aria-pressed="false"><i style="--swatch:#74ff9f"></i>生体协议</button>
+            </div>
+            <div class="ui-art-controls">
+              <label><span>主强调色</span><input id="ui-art-accent" type="color" value="#20f4e6"></label>
+              <label><span>信息密度</span><input id="ui-art-density" type="range" min="70" max="100" value="88"></label>
+              <label><span>边角语言</span><select id="ui-art-corners"><option value="sharp">工业直角</option><option value="tech" selected>科技切角</option><option value="soft">柔和圆角</option></select></label>
+              <label class="ui-art-check"><input id="ui-art-grid" type="checkbox" checked><span>显示战术网格</span></label>
+              <label class="ui-art-check"><input id="ui-art-scanlines" type="checkbox" checked><span>显示扫描线</span></label>
+            </div>
+            <div class="ui-art-actions"><button id="ui-art-copy" type="button">复制 CSS 变量</button><button id="ui-art-export" type="button">导出设计规范</button><button id="ui-art-reset" type="button">恢复默认</button></div>
+            <output class="ui-art-status" id="ui-art-status" data-state="ready">指挥中心已应用 · 夜城防线 · #20F4E6</output>
+          </aside>
+        </div>
+      </section>      <section class="asset-forge-section audio-studio-panel" data-asset-panel="audio" aria-label="音效工作台" hidden>
         <header class="audio-studio__header">
           <div><span>音效素材库 // 声音制作工作区</span><h2>音效工作台</h2><p>集中试听已有音乐与角色语音，并用自然语言描述生成新的游戏音效。</p></div>
           <output id="audio-library-count">正在扫描音频素材…</output>
