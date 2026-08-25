@@ -16,8 +16,8 @@ test('all eight tower definitions are available to the mission loadout and battl
 })
 
 test('expansion tower textures and combat resolvers are connected to battle runtime', () => {
-  assert.match(preload, /for (const tower of ALL_TOWER_TYPES)/)
+  assert.ok(preload.includes('for (const tower of ALL_TOWER_TYPES)'))
   assert.match(resolver, /EXPANSION_TOWER_IDS/)
   assert.match(resolver, /resolveExpansionTower/)
-  assert.match(battle, /ALL_TOWER_TYPE_BY_ID[typeId]/)
+  assert.ok(battle.includes('ALL_TOWER_TYPE_BY_ID[typeId]'))
 })
