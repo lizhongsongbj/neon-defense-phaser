@@ -467,12 +467,13 @@ export class BattleScene extends Phaser.Scene {
     })
     this.battle.enemies.push(enemy)
     const def = enemy.isBoss ? BOSS_TYPES[enemy.typeId as keyof typeof BOSS_TYPES] : ENEMY_TYPES[enemy.typeId as keyof typeof ENEMY_TYPES]
-    if (!enemy.isBoss && def?.heavy && !this.heavyEnemyAlertsShown.has(enemy.typeId)) {
+    const heavyDef = enemy.isBoss ? undefined : ENEMY_TYPES[enemy.typeId as keyof typeof ENEMY_TYPES]
+    if (heavyDef?.heavy && !this.heavyEnemyAlertsShown.has(enemy.typeId)) {
       this.heavyEnemyAlertsShown.add(enemy.typeId)
       EventBus.emit(GameEvents.TacticalAlert, {
         enemyType: enemy.typeId,
-        enemyName: def.name,
-        title: `???????${def.name}`,
+        enemyName: heavyDef.name,
+        title: `???????${heavyDef.name}`,
         description: '???????????????????????????????',
       })
     }
