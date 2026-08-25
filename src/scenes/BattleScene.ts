@@ -21,6 +21,7 @@ import { EffectsLayer } from '../entities/EffectsLayer'
 import { CampaignState, REGISTRY_KEY } from '../state/CampaignState'
 import { EventBus, GameEvents, type BattleHudPayload } from '../state/EventBus'
 import { ENEMY_TYPES } from '../data/enemies'
+import { chooseSpecialEvent, specialEventHistory, specialEventTriggerDelay, type SpecialEventDefinition, type SpecialEventId } from '../data/specialEvents'
 import { BOSS_TYPES, type BossId } from '../data/bosses'
 import type { SavedTower } from '../systems/SaveGame'
 import { EnemySpawnSfx, MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
@@ -33,6 +34,8 @@ function boardToScreen(p: Point2): Point2 {
 function spriteSize(scale: number): number {
   return Math.max(28, scale * GAME_WIDTH)
 }
+
+const BASE_DAMAGE_VOICE_INTERVAL_MS = 20_000
 
 export class BattleScene extends Phaser.Scene {
   private campaign!: CampaignState
@@ -58,6 +61,13 @@ export class BattleScene extends Phaser.Scene {
   private music!: MusicController
   private enemySpawnSfx!: EnemySpawnSfx
   private lastBaseDamageSfxAt = -Infinity
+  private lastBaseDamageVoiceAt = -Infinity
+  private activeSpecialEvent: SpecialEventDefinition | null = null
+  private pendingSpecialEvent: SpecialEventDefinition | null = null
+  private specialEventTriggerAt = Infinity
+  private specialEventEndsAt = Infinity
+  private specialEventsTriggered = 0
+  private readonly usedSpecialEventIds = new Set<SpecialEventId>()
   /** 下一波整备倒计时(秒),原 `_0x3ebe3b`;0 表示战斗中或需要玩家手动发动 */
   private nextWaveCountdown = 0
 
@@ -74,6 +84,13 @@ export class BattleScene extends Phaser.Scene {
     this.droneActors.clear()
     this.slotMarkers = []
     this.lastBaseDamageSfxAt = -Infinity
+    this.lastBaseDamageVoiceAt = -Infinity
+    this.activeSpecialEvent = null
+    this.pendingSpecialEvent = null
+    this.specialEventTriggerAt = Infinity
+    this.specialEventEndsAt = Infinity
+    this.specialEventsTriggered = 0
+    this.usedSpecialEventIds.clear()
 
     this.campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState
     this.voice = this.game.registry.get(VOICE_REGISTRY_KEY) as VoiceSystem
@@ -105,6 +122,10 @@ export class BattleScene extends Phaser.Scene {
       enemySequence: 1,
       now: 0,
     }
+
+    const eventHistory = specialEventHistory(this.battle.mapIndex, this.battle.wave)
+    this.specialEventsTriggered = eventHistory.triggeredCount
+    for (const eventId of eventHistory.usedIds) this.usedSpecialEventIds.add(eventId)
 
     this.drawMapBackground()
 
@@ -419,6 +440,15 @@ export class BattleScene extends Phaser.Scene {
     this.waveQueue = scheduleWave(roster)
     this.waveElapsed = 0
     this.waveActive = true
+    this.pendingSpecialEvent = chooseSpecialEvent(
+      this.battle.mapIndex,
+      this.battle.wave,
+      this.usedSpecialEventIds,
+      this.specialEventsTriggered,
+    )
+    this.specialEventTriggerAt = this.pendingSpecialEvent
+      ? specialEventTriggerDelay(this.battle.mapIndex, this.battle.wave)
+      : Infinity
     this.voice?.play('lan', this.battle.wave === this.totalWaves ? 'finalWave' : 'wave', { chance: 0.7 })
     this.emitHud()
   }
@@ -455,6 +485,13 @@ export class BattleScene extends Phaser.Scene {
     const dtSeconds = dt / 1000
     this.battle.now += dt
 
+    if (this.waveActive && this.pendingSpecialEvent && this.waveElapsed >= this.specialEventTriggerAt) {
+      this.activateSpecialEvent(this.pendingSpecialEvent)
+    }
+    if (this.activeSpecialEvent && this.battle.now >= this.specialEventEndsAt) {
+      this.endSpecialEvent()
+    }
+
     if (this.waveActive) {
       this.waveElapsed += dtSeconds
       while (this.waveQueue.length && this.waveQueue[0].spawnAt <= this.waveElapsed) {
@@ -480,10 +517,11 @@ export class BattleScene extends Phaser.Scene {
 
     for (const tower of this.battle.towers) {
       const growth = towerGrowthBonuses(this.campaign.towerGrowthBonus(tower.typeId))
+      const towerTimeScale = this.activeSpecialEvent?.modifiers.towerTimeScale ?? 1
       const events = resolveTowerAttack(tower, {
         geometry: this.geometry,
         enemies: this.battle.enemies.filter((e) => !e.dead),
-        dt: dtSeconds,
+        dt: dtSeconds * towerTimeScale,
         now: this.battle.now,
         growth,
       })
@@ -557,7 +595,8 @@ export class BattleScene extends Phaser.Scene {
     let baseDamageThisFrame = 0
     for (const enemy of this.battle.enemies) {
       if (enemy.dead || enemy.blocked) continue
-      enemy.distance += enemy.speed * dtSeconds
+      const enemySpeedScale = this.activeSpecialEvent?.modifiers.enemySpeedScale ?? 1
+      enemy.distance += enemy.speed * dtSeconds * enemySpeedScale
       if (enemy.distance >= 1000) {
         enemy.dead = true
         this.battle.leaks += 1
@@ -580,7 +619,8 @@ export class BattleScene extends Phaser.Scene {
       if (!leaked) {
         const deathPosition = boardToScreen(enemyPosition(this.geometry, enemy))
         this.effects.playEnemyDeathRemnant(deathPosition, enemy.mechanical, enemy.isBoss)
-        const reward = scaleReward(enemy.reward, this.battle.mapIndex)
+        const bountyMultiplier = this.activeSpecialEvent?.modifiers.bountyMultiplier ?? 1
+        const reward = Math.round(scaleReward(enemy.reward, this.battle.mapIndex) * bountyMultiplier)
         this.battle.coins += reward
         this.battle.kills += 1
         if (enemy.isBoss) {
@@ -600,6 +640,9 @@ export class BattleScene extends Phaser.Scene {
 
     if (this.waveActive && this.waveQueue.length === 0 && this.battle.enemies.length === 0) {
       this.waveActive = false
+      this.pendingSpecialEvent = null
+      this.specialEventTriggerAt = Infinity
+      if (this.activeSpecialEvent) this.endSpecialEvent()
       const clearedWave = this.battle.wave
       const reward = scaleReward(45 + clearedWave * 10, this.battle.mapIndex)
       this.battle.coins += reward
@@ -626,6 +669,45 @@ export class BattleScene extends Phaser.Scene {
       this.hudTimer = 0
       this.emitHud()
     }
+  }
+
+  private activateSpecialEvent(event: SpecialEventDefinition) {
+    this.pendingSpecialEvent = null
+    this.specialEventTriggerAt = Infinity
+    this.usedSpecialEventIds.add(event.id)
+    this.specialEventsTriggered += 1
+
+    const coinGrant = event.modifiers.coins ?? 0
+    if (coinGrant > 0) {
+      this.battle.coins += coinGrant
+      this.emitHud()
+    }
+
+    if (event.durationSeconds > 0) {
+      this.activeSpecialEvent = event
+      this.specialEventEndsAt = this.battle.now + event.durationSeconds * 1000
+    } else {
+      this.activeSpecialEvent = null
+      this.specialEventEndsAt = Infinity
+    }
+
+    EventBus.emit(GameEvents.SpecialEventStarted, {
+      id: event.id,
+      tone: event.tone,
+      title: event.title,
+      source: event.source,
+      description: event.description,
+      effectLabel: event.effectLabel,
+      durationSeconds: event.durationSeconds,
+    })
+  }
+
+  private endSpecialEvent() {
+    const event = this.activeSpecialEvent
+    if (!event) return
+    this.activeSpecialEvent = null
+    this.specialEventEndsAt = Infinity
+    EventBus.emit(GameEvents.SpecialEventEnded, { id: event.id, title: event.title })
   }
 
   private syncMercenaryActor(tower: TowerState) {
@@ -699,7 +781,10 @@ export class BattleScene extends Phaser.Scene {
       this.sound.play('sfx-base-damage', { volume: 0.9 })
       this.lastBaseDamageSfxAt = now
     }
-    this.voice?.play('lan', 'damage', { chance: 0.6, priority: 3 })
+    if (now - this.lastBaseDamageVoiceAt >= BASE_DAMAGE_VOICE_INTERVAL_MS) {
+      const played = this.voice?.play('lan', 'damage', { priority: 3, bypassGlobalCooldown: true })
+      if (played) this.lastBaseDamageVoiceAt = now
+    }
   }
 
   private onVictory(reward = 0) {

@@ -30,6 +30,7 @@ export interface SaveData {
   wave: number
   difficulty: Difficulty
   gameSpeed: number
+  selectedTowerIds?: AllTowerId[]
 }
 
 export function saveGame(data: SaveData): void {
@@ -77,6 +78,7 @@ export function loadGame(): SaveData | null {
     wave: Math.max(1, Math.round(Number(parsed.wave) || 1)),
     difficulty: ['easy', 'normal', 'hard'].includes(parsed.difficulty) ? parsed.difficulty : 'normal',
     gameSpeed: [1, 2, 3].includes(Number(parsed.gameSpeed)) ? Number(parsed.gameSpeed) : 1,
+    selectedTowerIds: Array.isArray(parsed.selectedTowerIds) ? parsed.selectedTowerIds : undefined,
   }
 }
 

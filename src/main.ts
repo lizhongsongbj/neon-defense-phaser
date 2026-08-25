@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+﻿import Phaser from 'phaser'
 import './styles/theme.css'
 import './styles/hacker-pulse.css'
 import { gameConfig, GAME_WIDTH, GAME_HEIGHT } from './config/gameConfig'
@@ -13,9 +13,9 @@ import { AchievementSystem } from './systems/AchievementSystem'
 import { AchievementPanel } from './ui/AchievementPanel'
 
 /**
- * App shell —— 对应原版 index.html 里 title-screen/command-center/scene 三段式导航,
- * 只是这里的"scene(战场)"部分由 Phaser 渲染,菜单与 HUD 仍是 HTML+CSS,
- * 两者通过固定 1280x800 的 #stage 共享同一套坐标系,靠 EventBus 通信。
+ * App shell 鈥斺€?瀵瑰簲鍘熺増 index.html 閲?title-screen/command-center/scene 涓夋寮忓鑸?
+ * 鍙槸杩欓噷鐨?scene(鎴樺満)"閮ㄥ垎鐢?Phaser 娓叉煋,鑿滃崟涓?HUD 浠嶆槸 HTML+CSS,
+ * 涓よ€呴€氳繃鍥哄畾 1280x800 鐨?#stage 鍏变韩鍚屼竴濂楀潗鏍囩郴,闈?EventBus 閫氫俊銆?
  */
 const campaign = CampaignState.loadOrCreate()
 const achievementSystem = new AchievementSystem()
@@ -44,8 +44,9 @@ const autoDemo = new AutoDemo(campaign, game)
 const commandCenterUI = new CommandCenterUI(
   campaign,
   game,
-  (mapIndex, difficulty) => {
+  (mapIndex, difficulty, towerIds) => {
     campaign.difficulty = difficulty
+    campaign.setTowerLoadout(towerIds)
     campaign.startMission(mapIndex)
     commandCenterUI.hide()
     gameRoot.hidden = false
@@ -75,3 +76,5 @@ EventBus.on(GameEvents.ReturnToCommandCenter, () => {
 
 installWebGameGuards()
 signalWebGameReady()
+
+

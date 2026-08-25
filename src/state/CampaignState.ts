@@ -7,6 +7,7 @@
 import { MAP_LEVELS, CAMPAIGN_STARTING_COINS } from '../data/maps'
 import { INITIAL_RESEARCH_POINTS, MAX_HEALTH } from '../data/balance'
 import { GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
+import { TOWER_IDS } from '../data/towers'
 import { loadGame, saveGame, type SavedTower } from '../systems/SaveGame'
 import type { Difficulty } from '../data/balance'
 
@@ -33,6 +34,8 @@ export class CampaignState {
   health = MAX_HEALTH
   wave = 1
   savedTowers: SavedTower[] = []
+  /** 本局携带的五种防御塔；开局编组时从全部八种塔中自由选择。 */
+  selectedTowerIds: AllTowerId[] = [...TOWER_IDS]
 
   static loadOrCreate(): CampaignState {
     const state = new CampaignState()
@@ -49,6 +52,7 @@ export class CampaignState {
       state.health = data.health
       state.wave = data.wave
       state.savedTowers = data.towers
+      state.selectedTowerIds = Array.isArray(data.selectedTowerIds) && data.selectedTowerIds.length === 5 ? [...data.selectedTowerIds] : [...TOWER_IDS]
 
       // 地图阵容已更新为八个新战区：把旧存档安全收束到当前有效关卡范围。
       state.mapIndex = Math.max(0, Math.min(MAP_LEVELS.length - 1, state.mapIndex))
@@ -74,6 +78,13 @@ export class CampaignState {
   }
 
   /** 开始新的一局,原 `resetCampaignMission` */
+  setTowerLoadout(ids: AllTowerId[]) {
+    if (ids.length !== 5 || new Set(ids).size !== 5) return false
+    this.selectedTowerIds = [...ids]
+    this.persist()
+    return true
+  }
+
   startMission(mapIndex: number) {
     this.mapIndex = Math.max(0, Math.min(MAP_LEVELS.length - 1, mapIndex))
     this.coins = CAMPAIGN_STARTING_COINS[this.mapIndex]
@@ -120,6 +131,7 @@ export class CampaignState {
       wave: this.wave,
       difficulty: this.difficulty,
       gameSpeed: this.gameSpeed,
+      selectedTowerIds: this.selectedTowerIds,
     })
   }
 }

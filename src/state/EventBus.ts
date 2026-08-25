@@ -51,6 +51,16 @@ export interface WaveClearedPayload {
   researchPoints: number
 }
 
+export interface SpecialEventPayload {
+  id: string
+  tone: 'good' | 'bad'
+  title: string
+  source: string
+  description: string
+  effectLabel: string
+  durationSeconds: number
+}
+
 export const GameEvents = {
   SlotClicked: 'slot-clicked',
   TowerClicked: 'tower-clicked',
@@ -72,6 +82,8 @@ export const GameEvents = {
   AssetsReady: 'assets-ready',
   ResetDeployment: 'reset-deployment',
   EarlyWaveBonus: 'early-wave-bonus',
+  SpecialEventStarted: 'special-event-started',
+  SpecialEventEnded: 'special-event-ended',
   AchievementSignal: 'achievement-signal',
   AchievementUnlocked: 'achievement-unlocked',
   AchievementStateChanged: 'achievement-state-changed',

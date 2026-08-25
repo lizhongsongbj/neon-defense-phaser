@@ -57,11 +57,15 @@ export class CommandCenterUI {
   private selectedMapIndex = 0
   private selectedDifficulty: Difficulty = 'normal'
   private assetsReady = false
+  private loadoutDialog!: HTMLElement
+  private loadoutGrid!: HTMLElement
+  private loadoutCount!: HTMLElement
+  private pendingLoadout: AllTowerId[] = []
 
   constructor(
     private readonly campaign: CampaignState,
     private readonly game: Phaser.Game,
-    private readonly onDeploy: (mapIndex: number, difficulty: Difficulty) => void,
+    private readonly onDeploy: (mapIndex: number, difficulty: Difficulty, towerIds: AllTowerId[]) => void,
     private readonly onExitToTitle: () => void,
   ) {
     this.el = document.getElementById('command-center') as HTMLElement
@@ -98,6 +102,7 @@ export class CommandCenterUI {
     this.animationPanel = new AnimationPanel()
     this.effectPanel = new EffectPanel()
     this.audioStudio = new AudioStudio()
+    this.buildLoadoutDialog()
 
     this.buildMissionList()
     this.buildDifficultyButtons()
@@ -257,10 +262,57 @@ export class CommandCenterUI {
     this.refresh()
   }
 
+  private buildLoadoutDialog() {
+    this.loadoutDialog = document.createElement('section')
+    this.loadoutDialog.className = 'tower-loadout-dialog'
+    this.loadoutDialog.hidden = true
+    this.loadoutDialog.innerHTML = `
+      <div class="tower-loadout-dialog__backdrop"></div>
+      <div class="tower-loadout-dialog__panel" role="dialog" aria-modal="true" aria-labelledby="tower-loadout-title">
+        <div class="tower-loadout-dialog__head"><div><small>DEPLOYMENT LOADOUT</small><h2 id="tower-loadout-title">选择本局携带的防御塔</h2></div><b id="tower-loadout-count">0 / 5</b></div>
+        <p class="tower-loadout-dialog__hint">一局只能携带五种防御塔。点击卡片自由编组，确认后进入战区。</p>
+        <div class="tower-loadout-grid" id="tower-loadout-grid"></div>
+        <div class="tower-loadout-dialog__actions"><button type="button" data-loadout-cancel>取消</button><button type="button" data-loadout-confirm>确认编组并部署</button></div>
+      </div>`
+    this.el.appendChild(this.loadoutDialog)
+    this.loadoutGrid = this.loadoutDialog.querySelector('#tower-loadout-grid') as HTMLElement
+    this.loadoutCount = this.loadoutDialog.querySelector('#tower-loadout-count') as HTMLElement
+    this.loadoutDialog.querySelector('[data-loadout-cancel]')?.addEventListener('click', () => { this.loadoutDialog.hidden = true })
+    this.loadoutDialog.querySelector('.tower-loadout-dialog__backdrop')?.addEventListener('click', () => { this.loadoutDialog.hidden = true })
+    this.loadoutDialog.querySelector('[data-loadout-confirm]')?.addEventListener('click', () => {
+      if (this.pendingLoadout.length !== 5) return
+      this.campaign.setTowerLoadout(this.pendingLoadout)
+      this.loadoutDialog.hidden = true
+      this.onDeploy(this.selectedMapIndex, this.selectedDifficulty, this.pendingLoadout)
+    })
+  }
+
+  private openLoadoutDialog() {
+    this.pendingLoadout = [...this.campaign.selectedTowerIds]
+    this.loadoutGrid.replaceChildren(...GROWTH_TOWER_TYPES.map((def) => {
+      const card = document.createElement('button')
+      card.type = 'button'
+      card.className = 'tower-loadout-card'
+      card.dataset.tower = def.id
+      card.innerHTML = `<img src="${def.image}" alt="${def.name}" /><span><strong>${def.name}</strong><small>${def.role}</small></span><i>✓</i>`
+      card.classList.toggle('is-selected', this.pendingLoadout.includes(def.id))
+      card.addEventListener('click', () => {
+        const index = this.pendingLoadout.indexOf(def.id)
+        if (index >= 0) this.pendingLoadout.splice(index, 1)
+        else if (this.pendingLoadout.length < 5) this.pendingLoadout.push(def.id)
+        this.loadoutGrid.querySelectorAll<HTMLElement>('[data-tower]').forEach((item) => item.classList.toggle('is-selected', this.pendingLoadout.includes(item.dataset.tower as AllTowerId)))
+        this.loadoutCount.textContent = `${this.pendingLoadout.length} / 5`
+      })
+      return card
+    }))
+    this.loadoutCount.textContent = `${this.pendingLoadout.length} / 5`
+    this.loadoutDialog.hidden = false
+  }
+
   private bindDeploy() {
     this.deployButton.addEventListener('click', () => {
       if (!this.campaign.isMapUnlocked(this.selectedMapIndex) || !this.assetsReady) return
-      this.onDeploy(this.selectedMapIndex, this.selectedDifficulty)
+      this.openLoadoutDialog()
     })
   }
 

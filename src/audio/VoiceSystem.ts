@@ -1,7 +1,6 @@
 /**
- * 语音播报系统 —— 原样迁移自 霓虹防线/voice-system.js 的行为语义,
- * 底层音频播放换成 Phaser Sound Manager,但冷却/优先级/轮换选取逻辑保持一致。
- */
+ * 璇煶鎾姤绯荤粺 鈥斺€?鍘熸牱杩佺Щ鑷?闇撹櫣闃茬嚎/voice-system.js 鐨勮涓鸿涔?
+ * 搴曞眰闊抽鎾斁鎹㈡垚 Phaser Sound Manager,浣嗗喎鍗?浼樺厛绾?杞崲閫夊彇閫昏緫淇濇寔涓€鑷淬€? */
 
 import Phaser from 'phaser'
 import { VOICE_CATALOG, VOICE_COOLDOWN_MS, voiceClassId, type VoiceCategory } from './voiceManifest'
@@ -12,6 +11,8 @@ const MUTE_KEY = 'neon-defense-voice-muted'
 export interface VoicePlayOptions {
   priority?: number
   chance?: number
+  /** 鐢ㄤ簬鏈夌嫭绔嬭妭娴佽鏃剁殑鍏抽敭鎾姤锛屼緥濡傚ぇ鏈惀鍙楀嚮璀︽姤銆?*/
+  bypassGlobalCooldown?: boolean
 }
 
 export class VoiceSystem {
@@ -19,7 +20,6 @@ export class VoiceSystem {
   private readonly roundRobin = new Map<string, number>()
   private current: Phaser.Sound.BaseSound | null = null
   private currentClassId: string | null = null
-  private currentPriority = 0
   private lastPlayedAt = -Infinity
   private _muted = localStorage.getItem(MUTE_KEY) === 'true'
   private unlocked = false
@@ -47,14 +47,16 @@ export class VoiceSystem {
     this.setMuted(!this._muted)
   }
 
-  /** 播放一条语音,原 `window.NeonVoice.play`,category:event 命中清单则按轮换顺序播放候选文件之一 */
+  /** 鎾斁涓€鏉¤闊?鍘?`window.NeonVoice.play`,category:event 鍛戒腑娓呭崟鍒欐寜杞崲椤哄簭鎾斁鍊欓€夋枃浠朵箣涓€ */
   play(category: VoiceCategory, event: string, opts: VoicePlayOptions = {}): boolean {
-    const priority = opts.priority ?? 1
     if (this._muted || !this.unlocked) return false
     if (opts.chance != null && Math.random() > opts.chance) return false
 
+    // All character voices use one exclusive channel; background music remains independent.
+    if (this.current) return false
+
     const now = performance.now()
-    if (now - this.lastPlayedAt < VOICE_COOLDOWN_MS) return false
+    if (!opts.bypassGlobalCooldown && now - this.lastPlayedAt < VOICE_COOLDOWN_MS) return false
 
     const list = VOICE_CATALOG[category]?.[event] ?? []
     if (!list.length) return false
@@ -66,39 +68,35 @@ export class VoiceSystem {
     const index = list.indexOf(file)
     const key = `voice-${category}-${event}-${index}`
 
-    if (this.current && !this.currentEnded() && priority < this.currentPriority) return false
-
-    this.stopCurrent()
     this.lastPlayedAt = now
-    this.currentPriority = priority
     this.currentClassId = voiceClassId(category, event)
 
     const instance = this.sound.add(key, { volume: 0.82 })
-    instance.once('complete', () => this.onCurrentEnded())
-    instance.once('stop', () => this.onCurrentEnded())
+    instance.once('complete', () => this.onCurrentEnded(instance))
+    instance.once('stop', () => this.onCurrentEnded(instance))
     this.current = instance
     EventBus.emit(GameEvents.VoiceStart, { classId: this.currentClassId })
     instance.play()
     return true
   }
 
-  private currentEnded(): boolean {
-    return !this.current || !this.current.isPlaying
-  }
-
   private stopCurrent() {
-    if (this.current) {
-      this.current.stop()
-      this.current.destroy()
-    }
+    const instance = this.current
+    const classId = this.currentClassId
+    if (!instance) return
     this.current = null
+    this.currentClassId = null
+    instance.stop()
+    instance.destroy()
+    if (classId) EventBus.emit(GameEvents.VoiceEnd, { classId })
   }
 
-  private onCurrentEnded() {
-    if (this.currentClassId) {
-      EventBus.emit(GameEvents.VoiceEnd, { classId: this.currentClassId })
-    }
-    this.currentClassId = null
+  private onCurrentEnded(instance: Phaser.Sound.BaseSound) {
+    if (this.current !== instance) return
+    const classId = this.currentClassId
     this.current = null
+    this.currentClassId = null
+    instance.destroy()
+    if (classId) EventBus.emit(GameEvents.VoiceEnd, { classId })
   }
 }

@@ -1,9 +1,10 @@
-﻿import type Phaser from 'phaser'
+import type Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { TOWER_TYPES, type TowerId } from '../data/towers'
 import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
 import { BOSS_TYPES, type BossDefinition } from '../data/bosses'
-import { EventBus, GameEvents, type BattleHudPayload, type SlotSelectedPayload, type WaveClearedPayload } from '../state/EventBus'
+import { SPECIAL_EVENTS } from '../data/specialEvents'
+import { EventBus, GameEvents, type BattleHudPayload, type SlotSelectedPayload, type SpecialEventPayload, type WaveClearedPayload } from '../state/EventBus'
 import { REGISTRY_KEY, type CampaignState } from '../state/CampaignState'
 import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceSystem } from '../audio'
 
@@ -40,6 +41,12 @@ export class BattleHud {
   private readonly speedButtons: HTMLButtonElement[]
   private readonly startWaveButton: HTMLButtonElement
   private readonly toast: HTMLElement
+  private readonly specialEventBanner: HTMLElement
+  private readonly specialEventKicker: HTMLElement
+  private readonly specialEventSource: HTMLElement
+  private readonly specialEventTitle: HTMLElement
+  private readonly specialEventDescription: HTMLElement
+  private readonly specialEventEffect: HTMLElement
   private readonly hintEl: HTMLElement
   private readonly towerPicker: HTMLElement
   private readonly pickerClose: HTMLButtonElement
@@ -62,6 +69,7 @@ export class BattleHud {
   private currentTowerInfo: TowerInfoPayload | null = null
   private pendingSlot: SlotSelectedPayload | null = null
   private toastTimer: number | undefined
+  private specialEventTimer: number | undefined
 
   constructor(private readonly game: Phaser.Game) {
     this.counterEl = document.getElementById('counter') as HTMLElement
@@ -73,6 +81,12 @@ export class BattleHud {
     this.speedButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-speed]'))
     this.startWaveButton = document.getElementById('start-wave') as HTMLButtonElement
     this.toast = document.getElementById('wave-toast') as HTMLElement
+    this.specialEventBanner = document.getElementById('special-event-banner') as HTMLElement
+    this.specialEventKicker = document.getElementById('special-event-kicker') as HTMLElement
+    this.specialEventSource = document.getElementById('special-event-source') as HTMLElement
+    this.specialEventTitle = document.getElementById('special-event-title') as HTMLElement
+    this.specialEventDescription = document.getElementById('special-event-description') as HTMLElement
+    this.specialEventEffect = document.getElementById('special-event-effect') as HTMLElement
     this.hintEl = document.getElementById('hint') as HTMLElement
     this.towerPicker = document.getElementById('tower-picker') as HTMLElement
     this.pickerClose = document.getElementById('picker-close') as HTMLButtonElement
@@ -108,6 +122,8 @@ export class BattleHud {
     EventBus.on(GameEvents.ClearSelection, this.onClearSelection, this)
     EventBus.on(GameEvents.WaveCleared, this.onWaveCleared, this)
     EventBus.on(GameEvents.EarlyWaveBonus, this.onEarlyWaveBonus, this)
+    EventBus.on(GameEvents.SpecialEventStarted, this.onSpecialEventStarted, this)
+    EventBus.on(GameEvents.SpecialEventEnded, this.onSpecialEventEnded, this)
     EventBus.on(GameEvents.Victory, this.onVictory, this)
     EventBus.on(GameEvents.GameOver, this.onGameOver, this)
   }
@@ -117,11 +133,15 @@ export class BattleHud {
     this.currentTowerInfo = null
     this.pendingSlot = null
     this.hideTowerPicker()
+    // ????????????????????????
+    this.buildTowerPicker()
     this.actionPanel.hidden = true
     this.endOverlay.hidden = true
     this.intelPanel.hidden = true
     this.helpPanel.hidden = true
     this.toast.classList.remove('visible')
+    this.specialEventBanner.hidden = true
+    window.clearTimeout(this.specialEventTimer)
     this.setHint(HINT_IDLE)
     const campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState | undefined
     this.currentSpeed = campaign?.gameSpeed ?? 1
@@ -229,7 +249,11 @@ export class BattleHud {
   }
 
   private buildTowerPicker() {
-    TOWER_TYPES.forEach((def) => {
+    // HUD ??????????????????/????????
+    this.towerPicker.replaceChildren()
+    const campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState | undefined
+    const selected = new Set(campaign?.selectedTowerIds ?? TOWER_TYPES.map((tower) => tower.id))
+    TOWER_TYPES.filter((def) => selected.has(def.id)).forEach((def) => {
       const card = document.createElement('button')
       card.type = 'button'
       card.className = 'tower-option'
@@ -309,6 +333,15 @@ export class BattleHud {
       `,
     ).join('')
 
+    const eventRows = SPECIAL_EVENTS.map((event) => `
+      <article class="intel-event-card${event.tone === 'bad' ? ' is-bad' : ''}">
+        <small>${event.tone === 'good' ? '有利事件' : '干扰事件'} · ${event.source}</small>
+        <strong>${event.title}</strong>
+        <span>${event.description}</span>
+        <b>${event.effectLabel}${event.durationSeconds ? ` · ${event.durationSeconds} 秒` : ''}</b>
+      </article>
+    `).join('')
+
     this.intelContent.innerHTML = `
       <section class="intel-section">
         <div class="intel-section__heading"><span>HOSTILE DATABASE</span><strong>怪物图鉴</strong><em>${Object.keys(ENEMY_TYPES).length + Object.keys(BOSS_TYPES).length} 个单位</em></div>
@@ -317,6 +350,10 @@ export class BattleHud {
       <section class="intel-section">
         <div class="intel-section__heading"><span>DEFENSE DATABASE</span><strong>塔楼档案</strong><em>${TOWER_TYPES.length} 座塔楼</em></div>
         <div class="intel-tower-list">${towerRows}</div>
+      </section>
+      <section class="intel-section">
+        <div class="intel-section__heading"><span>STREET ANOMALY FEED</span><strong>街区特殊事件</strong><em>${SPECIAL_EVENTS.length} 种信号</em></div>
+        <div class="intel-event-list">${eventRows}</div>
       </section>
     `
   }
@@ -399,6 +436,30 @@ export class BattleHud {
 
   private onEarlyWaveBonus(payload: { wave: number; reward: number }) {
     this.showToast(`提前开启波次 ${payload.wave} · 战备奖励 +${payload.reward} G`)
+  }
+
+  private onSpecialEventStarted(payload: SpecialEventPayload) {
+    window.clearTimeout(this.specialEventTimer)
+    this.specialEventBanner.dataset.tone = payload.tone
+    this.specialEventKicker.textContent = payload.tone === 'good' ? 'FAVORABLE STREET EVENT' : 'HOSTILE STREET EVENT'
+    this.specialEventSource.textContent = payload.source
+    this.specialEventTitle.textContent = payload.title
+    this.specialEventDescription.textContent = payload.description
+    this.specialEventEffect.textContent = payload.durationSeconds > 0
+      ? `${payload.effectLabel} · ${payload.durationSeconds} 秒`
+      : payload.effectLabel
+    this.specialEventBanner.hidden = false
+    if (payload.durationSeconds === 0) {
+      this.specialEventTimer = window.setTimeout(() => {
+        this.specialEventBanner.hidden = true
+      }, 4800)
+    }
+  }
+
+  private onSpecialEventEnded(payload: { id: string; title: string }) {
+    window.clearTimeout(this.specialEventTimer)
+    this.specialEventBanner.hidden = true
+    this.showToast(`${payload.title} · 信号已消散`)
   }
 
   private showToast(message: string) {
