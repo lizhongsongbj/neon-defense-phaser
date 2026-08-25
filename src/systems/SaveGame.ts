@@ -5,12 +5,11 @@
 
 import { MAP_LEVELS } from '../data/maps'
 import { SAVE_KEY, SAVE_VERSION, type Difficulty } from '../data/balance'
-import { type TowerId } from '../data/towers'
 import { GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
 
 export interface SavedTower {
   slot: number
-  type: TowerId
+  type: AllTowerId
   level: number
   spent: number
   rallyX: number | null

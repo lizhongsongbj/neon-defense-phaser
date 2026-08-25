@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import type { TowerState } from '../systems/types'
-import { TOWER_ACCENT_COLOR } from '../data/towers'
+import { ALL_TOWER_ACCENT_COLOR } from '../data/towerExpansion'
 
 /** 塔楼的可视化包装,原版对应 DOM `.tower` 按钮元素 */
 export class TowerActor extends Phaser.GameObjects.Container {
@@ -31,8 +31,8 @@ export class TowerActor extends Phaser.GameObjects.Container {
       .setOrigin(0.5, 1)
 
     this.rangeIndicator = scene.add
-      .ellipse(0, 0, 0, 0, Phaser.Display.Color.HexStringToColor(TOWER_ACCENT_COLOR[state.typeId]).color, 0.12)
-      .setStrokeStyle(1, Phaser.Display.Color.HexStringToColor(TOWER_ACCENT_COLOR[state.typeId]).color, 0.55)
+      .ellipse(0, 0, 0, 0, Phaser.Display.Color.HexStringToColor(ALL_TOWER_ACCENT_COLOR[state.typeId]).color, 0.12)
+      .setStrokeStyle(1, Phaser.Display.Color.HexStringToColor(ALL_TOWER_ACCENT_COLOR[state.typeId]).color, 0.55)
     this.rangeIndicator.setVisible(false)
 
     this.hitZone = scene.add.zone(0, 0, baseSize, baseSize).setInteractive({ useHandCursor: true })

@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import type { Difficulty } from '../data/balance'
-import type { TowerId } from '../data/towers'
+import type { AllTowerId } from '../data/towerExpansion'
 
 /**
  * BattleScene 与 UiScene 并行运行,通过这个共享事件总线通信,
@@ -22,7 +22,7 @@ export interface TowerSelectedPayload {
 
 export interface HudTowerSnapshot {
   slotIndex: number
-  typeId: TowerId
+  typeId: AllTowerId
   level: 1 | 2 | 3
 }
 

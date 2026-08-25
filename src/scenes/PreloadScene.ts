@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import { TOWER_TYPES } from '../data/towers'
+import { ALL_TOWER_TYPES } from '../data/towerExpansion'
 import { ENEMY_TYPES } from '../data/enemies'
 import { BOSS_TYPES } from '../data/bosses'
 import { MAP_LEVELS } from '../data/maps'
@@ -37,7 +37,7 @@ export class PreloadScene extends Phaser.Scene {
       label.destroy()
     })
 
-    for (const tower of TOWER_TYPES) {
+    for (const tower of ALL_TOWER_TYPES) {
       this.load.image(`tower-${tower.id}`, tower.image)
     }
     for (const enemy of Object.values(ENEMY_TYPES)) {

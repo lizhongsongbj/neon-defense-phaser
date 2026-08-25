@@ -71,7 +71,7 @@ export interface MercenaryState {
 /** 战场中的一座塔的运行时状态,字段对应原 gameplay.js 中 tower 元素上的 dataset + `_combat` */
 export interface TowerState {
   id: string
-  typeId: TowerId
+  typeId: AllTowerId
   slotIndex: number
   source: { x: number; y: number }
   rangeScale: number
