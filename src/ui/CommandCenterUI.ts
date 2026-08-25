@@ -91,7 +91,8 @@ export class CommandCenterUI {
       audio: this.el.querySelector('[data-asset-panel="audio"]') as HTMLElement,
     }
 
-    this.selectedMapIndex = campaign.isMapUnlocked(campaign.mapIndex) ? campaign.mapIndex : campaign.unlockedMapIndex
+    // 新进入游戏时始终从第一个地图开始显示，存档进度不会改变默认选中项。
+    this.selectedMapIndex = 0
     this.selectedDifficulty = campaign.difficulty
     this.balancePanel = new BalancePanel(campaign, () => this.selectedMapIndex)
     this.animationPanel = new AnimationPanel()
