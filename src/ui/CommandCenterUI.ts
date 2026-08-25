@@ -10,6 +10,7 @@ import { BalancePanel } from './BalancePanel'
 import { AnimationPanel } from './AnimationPanel'
 import { EffectPanel } from './EffectPanel'
 import { AudioStudio } from './AudioStudio'
+import { UIArtStudio } from './UIArtStudio'
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = { easy: '简单', normal: '标准', hard: '困难' }
 const STATUS_LABEL: Record<'cleared' | 'online' | 'locked', string> = { cleared: 'CLEARED', online: 'ONLINE', locked: 'LOCKED' }
@@ -52,6 +53,7 @@ export class CommandCenterUI {
   private readonly animationPanel: AnimationPanel
   private readonly effectPanel: EffectPanel
   private readonly audioStudio: AudioStudio
+  private readonly uiArtStudio: UIArtStudio
   private previousAssetTab = 'animations'
 
   private selectedMapIndex = 0
@@ -92,6 +94,7 @@ export class CommandCenterUI {
       animations: this.el.querySelector('[data-asset-panel="animations"]') as HTMLElement,
       effects: this.el.querySelector('[data-asset-panel="effects"]') as HTMLElement,
       studio: this.el.querySelector('[data-asset-panel="studio"]') as HTMLElement,
+      'ui-art': this.el.querySelector('[data-asset-panel="ui-art"]') as HTMLElement,
       audio: this.el.querySelector('[data-asset-panel="audio"]') as HTMLElement,
     }
 
@@ -102,6 +105,7 @@ export class CommandCenterUI {
     this.animationPanel = new AnimationPanel()
     this.effectPanel = new EffectPanel()
     this.audioStudio = new AudioStudio()
+    this.uiArtStudio = new UIArtStudio()
     this.buildLoadoutDialog()
 
     this.buildMissionList()
@@ -176,6 +180,7 @@ export class CommandCenterUI {
     if (target === 'animations') this.animationPanel.activate()
     if (target === 'effects') this.effectPanel.activate()
     if (target === 'audio') this.audioStudio.activate()
+    if (target === 'ui-art') this.uiArtStudio.activate()
     if (target === 'studio') {
       const frame = this.assetPanels.studio.querySelector<HTMLIFrameElement>('.image-studio-frame')
       if (frame && !frame.src) frame.src = frame.dataset.src ?? '/image-studio.html'
