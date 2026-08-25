@@ -159,55 +159,20 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private drawPaths() {
-    const g = this.add.graphics()
-    g.lineStyle(3, 0x2ee8ff, 0.22)
-    this.geometry.routes.forEach((route) => {
-      if (!route.segments.length) return
-      const startPoint = boardToScreen(route.segments[0].from)
-      g.beginPath()
-      g.moveTo(startPoint.x, startPoint.y)
-      for (const seg of route.segments) {
-        const point = boardToScreen(seg.to)
-        g.lineTo(point.x, point.y)
-      }
-      g.strokePath()
-    })
+    // 路线仍由 geometry 驱动怪物移动，但不在画面上绘制调试路线标识。
   }
 
   private drawSlots() {
     this.mapLevel.slots.forEach((slot, index) => {
       const screen = boardToScreen(toBoardUnits(slot))
       const radius = Math.max(18, spriteSize(slot.scale) * 0.34)
-      const marker = this.add.graphics().setPosition(screen.x, screen.y).setDepth(2)
-
-      // 在地图自带的圆形塔基上覆盖轻量建造网格，既保持原画可见，也明确提示可放塔。
-      marker.fillStyle(0x061b23, 0.32)
-      marker.fillCircle(0, 0, radius)
-      marker.lineStyle(1, 0x79ffe8, 0.34)
-      const gridStep = radius * 0.48
-      for (const offset of [-gridStep, 0, gridStep]) {
-        const half = Math.sqrt(Math.max(0, radius * radius - offset * offset))
-        marker.lineBetween(offset, -half, offset, half)
-        marker.lineBetween(-half, offset, half, offset)
-      }
-      marker.lineStyle(2, 0x79ffe8, 0.78)
-      marker.strokeCircle(0, 0, radius)
-      marker.lineStyle(1, 0xffffff, 0.5)
-      marker.strokeCircle(0, 0, radius * 0.72)
-
+      // 保留不可见的点击区域，不再显示塔位网格、圆环或脉冲标识。
+      const marker = this.add.graphics().setPosition(screen.x, screen.y).setDepth(2).setAlpha(0)
       marker.setInteractive(new Phaser.Geom.Circle(0, 0, radius + 8), Phaser.Geom.Circle.Contains)
       marker.input!.cursor = 'pointer'
-      marker.on('pointerdown', (pointer: Phaser.Input.Pointer, _x: number, _y: number, event: Phaser.Types.Input.EventData) => {
+      marker.on('pointerdown', (_pointer: Phaser.Input.Pointer, _x: number, _y: number, event: Phaser.Types.Input.EventData) => {
         event.stopPropagation()
         this.onSlotClicked(index)
-      })
-      this.tweens.add({
-        targets: marker,
-        alpha: { from: 0.72, to: 1 },
-        duration: 1050 + (index % 4) * 120,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.InOut',
       })
       this.slotMarkers[index] = marker
     })
