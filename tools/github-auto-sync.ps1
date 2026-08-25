@@ -1,4 +1,7 @@
-﻿$repo = 'C:\Users\1\Desktop\neon-defense-phaser'
+﻿$mutex = New-Object System.Threading.Mutex($false, 'Local\NeonDefenseGitHubAutoSync')
+if (-not $mutex.WaitOne(0, $false)) { exit 0 }
+
+$repo = 'C:\Users\1\Desktop\neon-defense-phaser'
 $git = 'C:\Users\1\AppData\Local\Programs\MinGit\cmd\git.exe'
 $log = Join-Path $repo '.github-auto-sync.log'
 
