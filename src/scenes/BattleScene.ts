@@ -1,4 +1,4 @@
-﻿import Phaser from 'phaser'
+import Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { MAP_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_STARTING_COINS, type MapLevel, type Point2 } from '../data/maps'
 import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
@@ -23,7 +23,7 @@ import { CampaignState, REGISTRY_KEY } from '../state/CampaignState'
 import { EventBus, GameEvents, type BattleHudPayload } from '../state/EventBus'
 import { ENEMY_TYPES, consumeHeavyEnemyFirstAppearance, type EnemyId } from '../data/enemies'
 import { chooseSpecialEvent, specialEventHistory, specialEventTriggerDelay, type SpecialEventDefinition, type SpecialEventId } from '../data/specialEvents'
-import { BOSS_TYPES, type BossId } from '../data/bosses'
+import { BOSS_TYPES, bossStageDefinition, type BossAbilityId, type BossId } from '../data/bosses'
 import type { SavedTower } from '../systems/SaveGame'
 import { EnemySpawnSfx, claimBattleSfx, MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
 import { PLAYER_SKILLS, PLAYER_SKILL_BY_ID, playerSkillCooldown, type PlayerSkillId } from '../data/playerSkills'
@@ -756,6 +756,74 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
+  private handleBossTick(enemy: EnemyState, stageChanged: boolean, stageName: string, ability: BossAbilityId | null, baseDamage: number) {
+    const bossId = enemy.typeId as BossId
+    const stage = bossStageDefinition(bossId, enemy.stage)
+    if (stageChanged) {
+      EventBus.emit(GameEvents.TacticalAlert, {
+        enemyType: bossId,
+        enemyName: BOSS_TYPES[bossId].name,
+        title: `${BOSS_TYPES[bossId].name} · ${stageName}`,
+        description: stage.enterCondition,
+        effect: `${stage.abilityName} · ${stage.abilityDescription}`,
+      })
+      this.cameras.main.flash(180, bossId === 'eve' ? 175 : 255, 45, bossId === 'eve' ? 255 : 80, false)
+      this.cameras.main.shake(220, 0.006, true)
+    }
+    if (ability) this.applyBossAbility(enemy, ability)
+    if (baseDamage > 0) {
+      this.battle.health = Math.max(0, this.battle.health - baseDamage)
+      this.playBaseDamageFeedback(baseDamage)
+      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `${BOSS_TYPES[bossId].name} · 核心脉冲造成 ${baseDamage} 点基地伤害` })
+    }
+  }
+
+  private applyBossAbility(enemy: EnemyState, ability: BossAbilityId) {
+    const enemyBoard = enemyPosition(this.geometry, enemy)
+    const origin = boardToScreen(enemyBoard)
+    const nearestTowers = (count: number, excludeHacker = false) => this.battle.towers
+      .filter((tower) => !excludeHacker || tower.typeId !== 'hacker-relay')
+      .sort((a, b) => {
+        const adx = a.source.x - enemyBoard.x
+        const ady = a.source.y - enemyBoard.y
+        const bdx = b.source.x - enemyBoard.x
+        const bdy = b.source.y - enemyBoard.y
+        return adx * adx + ady * ady - (bdx * bdx + bdy * bdy)
+      })
+      .slice(0, count)
+    const delayTowers = (towers: TowerState[], delaySeconds: number, color: number) => {
+      towers.forEach((tower) => {
+        tower.cooldown = Math.max(0, tower.cooldown) + delaySeconds
+        this.effects.playFlash(origin, boardToScreen(tower.source), color)
+      })
+    }
+
+    if (ability === 'shield-wave') {
+      const nearby = this.battle.towers.filter((tower) => Phaser.Math.Distance.Between(enemyBoard.x, enemyBoard.y, tower.source.x, tower.source.y) <= 180)
+      delayTowers(nearby, 0.8, 0xff765d)
+    } else if (ability === 'missile-salvo') {
+      delayTowers(nearestTowers(2), 1.6, 0xff5a45)
+    } else if (ability === 'overdrive-salvo') {
+      delayTowers(nearestTowers(3), 1.25, 0xff244f)
+    } else if (ability === 'core-burst') {
+      delayTowers(this.battle.towers, 0.9, 0xff3ea5)
+    } else if (ability === 'node-lock') {
+      const preferred = nearestTowers(2, true)
+      delayTowers(preferred.length ? preferred : nearestTowers(2), 2.2, 0x62e8ff)
+    } else if (ability === 'carrier-emp') {
+      this.battle.towers.forEach((tower) => {
+        const delay = tower.typeId === 'hacker-relay' ? 0.35 : 1.1
+        tower.cooldown = Math.max(0, tower.cooldown) + delay
+        this.effects.playFlash(origin, boardToScreen(tower.source), 0xb76cff)
+      })
+    } else if (ability === 'core-pulse') {
+      this.effects.playImpact(origin, 'hacker')
+      this.cameras.main.shake(260, 0.008, true)
+    }
+
+    const stage = bossStageDefinition(enemy.typeId as BossId, enemy.stage)
+    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `${BOSS_TYPES[enemy.typeId as BossId].name} · ${stage.abilityName}` })
+  }
   update(_time: number, deltaMs: number) {
     if (this.ended) return
     const speed = this.campaign.gameSpeed || 1
@@ -785,11 +853,13 @@ export class BattleScene extends Phaser.Scene {
     for (const enemy of this.battle.enemies) {
       if (enemy.dead) continue
       if (enemy.typeId === 'enforcer') {
-        const voiceEvent = tickEnforcer(enemy, this.battle.mapIndex)
-        if (voiceEvent) this.voice?.play('enforcer', voiceEvent, { priority: 2 })
+        const result = tickEnforcer(enemy, this.battle.mapIndex, this.battle.now)
+        if (result.voiceEvent) this.voice?.play('enforcer', result.voiceEvent, { priority: 2 })
+        this.handleBossTick(enemy, result.stageChanged, result.stageName, result.ability, 0)
       } else if (enemy.typeId === 'eve') {
-        const voiceEvent = tickEve(enemy, this.battle.mapIndex, this.battle.now)
-        if (voiceEvent) this.voice?.play('eve', voiceEvent, { priority: 2 })
+        const result = tickEve(enemy, this.battle.mapIndex, this.battle.now)
+        if (result.voiceEvent) this.voice?.play('eve', result.voiceEvent, { priority: 2 })
+        this.handleBossTick(enemy, result.stageChanged, result.stageName, result.ability, result.baseDamage)
       }
       enemy.phased = isEnemyPhasedAt(enemy, this.battle.now)
     }
@@ -892,8 +962,9 @@ export class BattleScene extends Phaser.Scene {
       if (enemy.distance >= 1000) {
         enemy.dead = true
         this.battle.leaks += 1
-        this.battle.health = Math.max(0, this.battle.health - 1)
-        baseDamageThisFrame += 1
+        const leakDamage = enemy.baseDamage
+        this.battle.health = Math.max(0, this.battle.health - leakDamage)
+        baseDamageThisFrame += leakDamage
       }
     }
     if (baseDamageThisFrame > 0) this.playBaseDamageFeedback(baseDamageThisFrame)

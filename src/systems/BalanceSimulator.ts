@@ -128,7 +128,7 @@ function simulateWave(
 
     for (const enemy of battle.enemies) {
       if (enemy.dead) continue
-      if (enemy.typeId === 'enforcer') tickEnforcer(enemy, battle.mapIndex)
+      if (enemy.typeId === 'enforcer') tickEnforcer(enemy, battle.mapIndex, battle.now)
       else if (enemy.typeId === 'eve') tickEve(enemy, battle.mapIndex, battle.now)
       enemy.phased = isEnemyPhasedAt(enemy, battle.now)
     }
@@ -151,7 +151,7 @@ function simulateWave(
       if (enemy.distance >= 1000) {
         enemy.dead = true
         battle.leaks += 1
-        battle.health = Math.max(0, battle.health - 1)
+        battle.health = Math.max(0, battle.health - enemy.baseDamage)
       }
     }
 
