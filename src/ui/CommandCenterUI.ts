@@ -7,11 +7,52 @@ import { growthUpgradeCost } from '../systems/Economy'
 import { CampaignState } from '../state/CampaignState'
 import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceSystem } from '../audio'
 import { MAX_PLAYER_SKILL_LEVEL, PLAYER_SKILLS, playerSkillCooldown, playerSkillUpgradeCost, type PlayerSkillId } from '../data/playerSkills'
+import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
+import { BOSS_TYPES, type BossDefinition } from '../data/bosses'
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = { easy: '简单', normal: '标准', hard: '困难' }
 const STATUS_LABEL: Record<'cleared' | 'online' | 'locked', string> = { cleared: 'CLEARED', online: 'ONLINE', locked: 'LOCKED' }
 const MAX_GROWTH_LEVEL = 3
-const CAMPAIGN_NODE_POSITIONS = [
+
+const GROWTH_ATTACK_ANIMATIONS: Partial<Record<AllTowerId, string>> = {
+  'mag-rail-sniper': 'assets/animations/towers/tower-01-magnetic-rail-attack.webp',
+  'arc-neon': 'assets/animations/towers/tower-02-arc-neon-attack.webp',
+  'street-mercenary': 'assets/animations/towers/tower-03-mercenary-outpost-attack.webp',
+  'hacker-relay': 'assets/animations/towers/tower-04-hacker-relay-attack.webp',
+  'drone-hive': 'assets/animations/towers/tower-05-drone-hive-attack.webp',
+}
+
+const GROWTH_PROCEDURAL_ATTACKS: Partial<Record<AllTowerId, 'gravity' | 'nano' | 'trajectory'>> = {
+  'gravity-nail': 'gravity',
+  'grey-tide': 'nano',
+  'trajectory-rewriter': 'trajectory',
+}
+
+function growthAttackPreviewMarkup(def: { id: AllTowerId; name: string; image: string }) {
+  const animation = GROWTH_ATTACK_ANIMATIONS[def.id]
+  if (animation) {
+    return `<div class="growth-attack-preview growth-attack-preview--webp">
+      <img src="${animation}" alt="${def.name}攻击动画" loading="lazy" />
+      <span class="growth-attack-preview__badge">ATTACK LOOP</span>
+    </div>`
+  }
+
+  const kind = GROWTH_PROCEDURAL_ATTACKS[def.id] ?? 'gravity'
+  const particles = Array.from({ length: 22 }, (_, index) => {
+    const angle = Math.round((index * 137.508 + (index % 5) * 11) % 360)
+    const radius = 22 + ((index * 17) % 42)
+    const delay = (index * 83) % 1500
+    const size = 2 + (index % 3)
+    return `<i style="--attack-angle:${angle}deg;--attack-radius:${radius}px;--attack-delay:${delay}ms;--attack-size:${size}px"></i>`
+  }).join('')
+  return `<div class="growth-attack-preview growth-attack-preview--${kind}">
+    <img src="${def.image}" alt="${def.name}攻击动画" loading="lazy" />
+    <span class="growth-attack-preview__core" aria-hidden="true"></span>
+    <span class="growth-attack-preview__ring" aria-hidden="true"></span>
+    <span class="growth-attack-preview__particles" aria-hidden="true">${particles}</span>
+    <span class="growth-attack-preview__badge">ATTACK LOOP</span>
+  </div>`
+}const CAMPAIGN_NODE_POSITIONS = [
   { x: 11, y: 31 },
   { x: 27, y: 25 },
   { x: 45, y: 23 },
@@ -67,6 +108,8 @@ export class CommandCenterUI {
   private readonly growthTotalEl: HTMLElement
   private readonly growthGrid: HTMLElement
   private readonly skillGrowthGrid: HTMLElement
+  private readonly enemyCodexGrid: HTMLElement
+  private readonly enemyCodexFilters: HTMLElement
   private readonly closeButton: HTMLButtonElement
   private readonly voiceToggle: HTMLButtonElement
   private readonly musicToggle: HTMLButtonElement
@@ -114,6 +157,8 @@ export class CommandCenterUI {
     this.growthTotalEl = document.getElementById('growth-total') as HTMLElement
     this.growthGrid = document.getElementById('growth-grid') as HTMLElement
     this.skillGrowthGrid = document.getElementById('skill-growth-grid') as HTMLElement
+    this.enemyCodexGrid = document.getElementById('enemy-codex-grid') as HTMLElement
+    this.enemyCodexFilters = document.getElementById('enemy-codex-filters') as HTMLElement
     this.closeButton = document.getElementById('command-close') as HTMLButtonElement
     this.voiceToggle = document.getElementById('hud-toggle-voice') as HTMLButtonElement
     this.musicToggle = document.getElementById('hud-toggle-music') as HTMLButtonElement
@@ -121,6 +166,7 @@ export class CommandCenterUI {
     this.panels = {
       missions: this.el.querySelector('[data-command-panel="missions"]') as HTMLElement,
       growth: this.el.querySelector('[data-command-panel="growth"]') as HTMLElement,
+      codex: this.el.querySelector('[data-command-panel="codex"]') as HTMLElement,
     }
     this.particleCanvas = document.getElementById('campaign-light-particles') as HTMLCanvasElement
     this.particleContext = this.particleCanvas.getContext('2d')
@@ -139,6 +185,8 @@ export class CommandCenterUI {
     this.buildDifficultyButtons()
     this.buildGrowthGrid()
     this.buildSkillGrowthGrid()
+    this.buildEnemyCodex()
+    this.bindEnemyCodexFilters()
     this.bindTabs()
     this.bindDeploy()
     this.bindTestUnlock()
@@ -391,6 +439,76 @@ export class CommandCenterUI {
     })
   }
 
+  private buildEnemyCodex() {
+    type HostileDefinition = EnemyDefinition | BossDefinition
+
+    const cards = [...Object.values(ENEMY_TYPES), ...Object.values(BOSS_TYPES)].map((def: HostileDefinition, index) => {
+      const isBoss = 'boss' in def && def.boss
+      const isAir = 'air' in def && Boolean(def.air)
+      const isHeavy = isBoss || ('heavy' in def && Boolean(def.heavy))
+      const tags = [isAir ? 'air' : 'ground', isHeavy ? 'heavy' : '', isBoss ? 'boss' : ''].filter(Boolean).join(' ')
+      const badges = [
+        isBoss ? 'BOSS' : (isHeavy ? '重型' : '常规'),
+        isAir ? '空中' : '地面',
+        def.mechanical ? '机械' : '生物',
+        'phase' in def && def.phase ? '相位' : null,
+        'network' in def && def.network ? '网络' : null,
+        'healingAura' in def && def.healingAura ? '修复光环' : null,
+        'energyResistance' in def && typeof def.energyResistance === 'number' && def.energyResistance < 0 ? '能量弱点' : null,
+      ].filter(Boolean).map((badge) => `<span>${badge}</span>`).join('')
+      const shield = 'shield' in def && def.shield ? `<li><span>护盾</span><b>${def.shield}</b></li>` : ''
+      const matchup = 'countersTower' in def && def.countersTower && def.counteredByTower
+        ? `<div class="enemy-codex-card__matchup"><span>威胁 ${def.countersTower}</span><b>弱点 ${def.counteredByTower}</b></div>`
+        : ''
+      const bossInfo = isBoss && 'stages' in def
+        ? `<div class="enemy-codex-card__boss"><span>${def.stages.length} 阶段协议</span><b>${def.stages.map((stage) => stage.name).join(' / ')}</b></div>`
+        : ''
+      const unitCode = `HOSTILE-${String(index + 1).padStart(2, '0')}`
+
+      return `
+        <article class="enemy-codex-card${isBoss ? ' is-boss' : ''}" data-codex-tags="${tags}">
+          <div class="enemy-codex-card__visual">
+            <span class="enemy-codex-card__code">${unitCode}</span>
+            <img src="${def.image}" alt="${def.name}" loading="lazy" />
+            <div class="enemy-codex-card__badges">${badges}</div>
+          </div>
+          <div class="enemy-codex-card__content">
+            <header>
+              <div><small>${isBoss ? '首领级威胁' : '敌对单位档案'}</small><h3>${def.name}</h3></div>
+              <em>${def.reward} G</em>
+            </header>
+            <ul class="enemy-codex-card__stats">
+              <li><span>生命</span><b>${def.hp}</b></li>
+              ${shield}
+              <li><span>攻击</span><b>${def.attack}</b></li>
+              <li><span>速度</span><b>${def.speed}</b></li>
+              <li><span>护甲</span><b>${Math.round(def.armor * 100)}%</b></li>
+            </ul>
+            ${bossInfo}
+            ${matchup}
+            <p>${def.trait}</p>
+          </div>
+        </article>
+      `
+    }).join('')
+
+    this.enemyCodexGrid.innerHTML = cards
+  }
+
+  private bindEnemyCodexFilters() {
+    const buttons = Array.from(this.enemyCodexFilters.querySelectorAll<HTMLButtonElement>('[data-codex-filter]'))
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.codexFilter ?? 'all'
+        buttons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)))
+        this.enemyCodexGrid.querySelectorAll<HTMLElement>('[data-codex-tags]').forEach((card) => {
+          const tags = card.dataset.codexTags?.split(' ') ?? []
+          card.hidden = filter !== 'all' && !tags.includes(filter)
+        })
+      })
+    })
+  }
+
   private buildDifficultyButtons() {
     const difficulties: Difficulty[] = ['easy', 'normal', 'hard']
     difficulties.forEach((diff) => {
@@ -413,7 +531,7 @@ export class CommandCenterUI {
       card.className = 'growth-card'
       card.style.setProperty('--growth-accent', def.accent)
       card.innerHTML = `
-        <div class="growth-card__art"><img src="${def.image}" alt="${def.name}" /></div>
+        <div class="growth-card__art growth-card__art--animated">${growthAttackPreviewMarkup(def)}</div>
         <div class="growth-card__body">
           <small data-role="augment">AUGMENT // 00</small>
           <h3>${def.name}</h3>

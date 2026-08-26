@@ -798,3 +798,147 @@
   #game-root .combat-dock .skill-button__copy b { font-size: 11px; }
   #game-root .combat-dock .skill-button__copy small { font-size: 8px; }
 }
+
+/* ---------- Tower growth attack previews ---------- */
+.growth-card__art--animated {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--growth-accent) 18%, transparent), transparent 48%),
+    linear-gradient(180deg, rgba(3,12,17,.28), rgba(1,6,10,.86));
+}
+.growth-card__art--animated::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 8px, rgba(36,234,255,.025) 8px 9px);
+  pointer-events: none;
+}
+.growth-attack-preview {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.growth-card__art .growth-attack-preview > img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 7px 8px rgba(0,0,0,.62));
+}
+.growth-attack-preview--webp > img { transform: scale(1.08); }
+.growth-attack-preview__badge {
+  position: absolute;
+  z-index: 8;
+  left: 8px;
+  bottom: 7px;
+  padding: 4px 7px;
+  color: #061014;
+  background: var(--growth-accent, var(--neon-cyan));
+  box-shadow: 3px 3px 0 rgba(255,36,93,.72);
+  font: 950 7px/1 var(--font-mono);
+  letter-spacing: .12em;
+  pointer-events: none;
+}
+.growth-attack-preview__core,
+.growth-attack-preview__ring,
+.growth-attack-preview__particles { position: absolute; z-index: 4; left: 50%; top: 48%; pointer-events: none; }
+.growth-attack-preview__core {
+  width: 22px;
+  height: 22px;
+  margin: -11px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 9px 3px var(--growth-accent), 0 0 25px 8px color-mix(in srgb, var(--growth-accent) 58%, transparent);
+  animation: growth-attack-core 1.65s ease-in-out infinite;
+}
+.growth-attack-preview__ring {
+  width: 64px;
+  height: 64px;
+  margin: -32px;
+  border: 2px solid var(--growth-accent);
+  border-radius: 50%;
+  box-shadow: inset 0 0 12px var(--growth-accent), 0 0 12px color-mix(in srgb, var(--growth-accent) 65%, transparent);
+  animation: growth-attack-ring 1.65s ease-out infinite;
+}
+.growth-attack-preview__particles { width: 1px; height: 1px; }
+.growth-attack-preview__particles i {
+  --attack-angle: 0deg;
+  --attack-radius: 42px;
+  --attack-delay: 0ms;
+  --attack-size: 3px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--attack-size);
+  height: var(--attack-size);
+  margin: calc(var(--attack-size) * -.5);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 2px var(--growth-accent);
+  opacity: 0;
+  animation: growth-attack-particle 1.8s cubic-bezier(.25,.58,.34,1) infinite;
+  animation-delay: calc(var(--attack-delay) * -1);
+}
+.growth-attack-preview--gravity > img { animation: growth-gravity-tower 1.8s ease-in-out infinite; }
+.growth-attack-preview--gravity .growth-attack-preview__ring { border-style: dashed; animation-duration: 1.8s; }
+.growth-attack-preview--nano > img { animation: growth-nano-tower 1.65s ease-in-out infinite; }
+.growth-attack-preview--nano .growth-attack-preview__particles i { background: #caffd7; animation-direction: reverse; }
+.growth-attack-preview--trajectory > img { animation: growth-trajectory-tower 1.9s steps(2,end) infinite; }
+.growth-attack-preview--trajectory .growth-attack-preview__ring { border-radius: 18%; animation: growth-trajectory-ring 1.9s ease-in-out infinite; }
+.growth-attack-preview--trajectory .growth-attack-preview__particles i { border-radius: 1px; }
+.growth-card:hover .growth-attack-preview { filter: saturate(1.18) brightness(1.08); }
+
+@keyframes growth-attack-core {
+  0%,100% { opacity: .12; transform: scale(.45); }
+  40% { opacity: .95; transform: scale(1); }
+  72% { opacity: .35; transform: scale(.68); }
+}
+@keyframes growth-attack-ring {
+  0% { opacity: 0; transform: scale(.35) rotate(0deg); }
+  35% { opacity: .9; }
+  100% { opacity: 0; transform: scale(1.75) rotate(160deg); }
+}
+@keyframes growth-attack-particle {
+  0%,12% { opacity: 0; transform: rotate(var(--attack-angle)) translateX(calc(var(--attack-radius) * .35)) scale(.45); }
+  28% { opacity: 1; }
+  68% { opacity: .82; transform: rotate(calc(var(--attack-angle) + 175deg)) translateX(var(--attack-radius)) scale(1); }
+  100% { opacity: 0; transform: rotate(calc(var(--attack-angle) + 330deg)) translateX(calc(var(--attack-radius) * .22)) scale(.2); }
+}
+@keyframes growth-gravity-tower {
+  0%,100% { transform: scale(.78) translateY(2px); filter: drop-shadow(0 7px 8px rgba(0,0,0,.62)); }
+  38% { transform: scale(.84) translateY(-3px); filter: drop-shadow(0 0 13px var(--growth-accent)); }
+  62% { transform: scale(.8) translateY(1px); }
+}
+@keyframes growth-nano-tower {
+  0%,100% { transform: scale(.78); }
+  45% { transform: scale(.83); filter: drop-shadow(0 0 12px var(--growth-accent)) brightness(1.16); }
+  60% { transform: scale(.79); }
+}
+@keyframes growth-trajectory-tower {
+  0%,100% { transform: scale(.78) translateX(0); }
+  42% { transform: scale(.83) translateX(-2px); filter: drop-shadow(0 0 13px var(--growth-accent)); }
+  48% { transform: scale(.83) translateX(3px); }
+  55% { transform: scale(.8) translateX(0); }
+}
+@keyframes growth-trajectory-ring {
+  0%,100% { opacity: .08; transform: scale(.55) rotate(0deg); }
+  38% { opacity: .95; transform: scale(1) rotate(90deg); }
+  72% { opacity: .18; transform: scale(1.55) rotate(-35deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .growth-attack-preview--gravity > img,
+  .growth-attack-preview--nano > img,
+  .growth-attack-preview--trajectory > img,
+  .growth-attack-preview__core,
+  .growth-attack-preview__ring,
+  .growth-attack-preview__particles i { animation: none !important; }
+}

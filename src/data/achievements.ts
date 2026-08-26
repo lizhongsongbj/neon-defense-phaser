@@ -22,14 +22,14 @@ export const ACHIEVEMENT_CATEGORY_LABEL: Record<AchievementCategory, string> = {
  * 不再引用未接入运行时的扩展塔、特殊设施或不存在的敌人，因此每一项都能在实际游戏中完成。
  */
 export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
-  { id: 'campaign-map-01', name: '灯还亮着', category: 'campaign', condition: '完成“超级建筑4号”。' },
-  { id: 'campaign-map-02', name: '云层之上', category: 'campaign', condition: '完成“H8”。' },
-  { id: 'campaign-map-03', name: '请走正门', category: 'campaign', condition: '完成“绀碧大厦”。' },
-  { id: 'campaign-map-04', name: '全城通缉', category: 'campaign', condition: '完成“余烬”。' },
-  { id: 'campaign-map-05', name: '来生传奇', category: 'campaign', condition: '完成“来生酒吧”。' },
-  { id: 'campaign-map-06', name: '执法终止', category: 'campaign', condition: '完成“夜之城警察局总部”。' },
-  { id: 'campaign-map-07', name: '永久静默', category: 'campaign', condition: '完成“神舆”。' },
-  { id: 'campaign-map-08', name: '幽灵协议终止', category: 'campaign', condition: '完成“荒坂塔”。' },
+  { id: 'campaign-map-01', name: '灯还亮着', category: 'campaign', condition: '完成“H4·霓虹巨构”。' },
+  { id: 'campaign-map-02', name: '云层之上', category: 'campaign', condition: '完成“H8·云端禁区”。' },
+  { id: 'campaign-map-03', name: '请走正门', category: 'campaign', condition: '完成“绀碧·镜像穹顶”。' },
+  { id: 'campaign-map-04', name: '全城通缉', category: 'campaign', condition: '完成“余烬·赤红封锁”。' },
+  { id: 'campaign-map-05', name: '来生传奇', category: 'campaign', condition: '完成“来生·幽灵回路”。' },
+  { id: 'campaign-map-06', name: '执法终止', category: 'campaign', condition: '完成“NCPD·钢穹核心”。' },
+  { id: 'campaign-map-07', name: '永久静默', category: 'campaign', condition: '完成“神舆·黑冰矩阵”。' },
+  { id: 'campaign-map-08', name: '幽灵协议终止', category: 'campaign', condition: '完成“荒坂·终焉天塔”。' },
 
   { id: 'tower-first-shot', name: '开火协议', category: 'tower', condition: '让任意防御塔完成一次有效攻击。', target: 1, progressKey: 'attacks' },
   { id: 'tower-hundred-kills', name: '火力联网', category: 'tower', condition: '累计消灭100名敌人。', target: 100, progressKey: 'kills' },
@@ -45,8 +45,8 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
   { id: 'challenge-perfect-grid', name: '防线毫发无损', category: 'challenge', condition: '在3个不同关卡中取得基地满生命通关。', target: 3, progressKey: 'perfectMaps' },
   { id: 'challenge-night-city-legend', name: '夜之城传奇', category: 'challenge', condition: '在困难难度下完成3个不同关卡。', target: 3, progressKey: 'hardMaps' },
 
-  { id: 'hidden-enforcer', name: '铁拳碎重锤', category: 'hidden', hidden: true, condition: '完成“夜之城警察局总部”，并摧毁亚当·重锤的全部3个部件。' },
-  { id: 'hidden-arsaka', name: '幽灵终局', category: 'hidden', hidden: true, condition: '完成“荒坂塔”，结束最终战役。' },
+  { id: 'hidden-enforcer', name: '铁拳碎重锤', category: 'hidden', hidden: true, condition: '完成“NCPD·钢穹核心”，并摧毁亚当·重锤的全部3个部件。' },
+  { id: 'hidden-arsaka', name: '幽灵终局', category: 'hidden', hidden: true, condition: '完成“荒坂·终焉天塔”，结束最终战役。' },
 ] as const
 
 export const ACHIEVEMENT_BY_ID = Object.fromEntries(ACHIEVEMENTS.map((item) => [item.id, item])) as Record<string, AchievementDefinition>

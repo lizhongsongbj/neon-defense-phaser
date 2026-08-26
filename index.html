@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -72,6 +72,7 @@
         <nav class="command-tabs" role="tablist" aria-label="主界面分类">
           <button class="command-tab" type="button" role="tab" data-command-tab="missions" aria-selected="true">关卡选择</button>
           <button class="command-tab" type="button" role="tab" data-command-tab="growth" aria-selected="false">塔楼成长</button>
+          <button class="command-tab" type="button" role="tab" data-command-tab="codex" aria-selected="false">怪物图鉴</button>
           <button class="command-tab achievement-launch" id="achievement-command-button" type="button" aria-label="打开成就面板">成就</button>
         </nav>
 
@@ -128,6 +129,26 @@
             <button class="deploy-button" id="deploy-mission" type="button">DEPLOY // 进入战区</button>
           </div>
         </aside>
+      </section>
+
+      <section class="command-panel enemy-codex-panel" data-command-panel="codex" aria-label="怪物图鉴" hidden>
+        <header class="enemy-codex-header">
+          <div>
+            <span>HOSTILE DATABASE // THREAT ARCHIVE</span>
+            <h2>怪物图鉴</h2>
+            <p>读取夜之城敌对单位档案，分析装甲结构、行动方式与战术弱点。</p>
+          </div>
+          <div class="enemy-codex-filters" id="enemy-codex-filters" aria-label="怪物类型筛选">
+            <button type="button" data-codex-filter="all" aria-pressed="true">全部单位</button>
+            <button type="button" data-codex-filter="ground" aria-pressed="false">地面目标</button>
+            <button type="button" data-codex-filter="air" aria-pressed="false">空中目标</button>
+            <button type="button" data-codex-filter="heavy" aria-pressed="false">重型单位</button>
+            <button type="button" data-codex-filter="boss" aria-pressed="false">首领档案</button>
+          </div>
+        </header>
+        <div class="enemy-codex-scroll">
+          <div class="enemy-codex-grid" id="enemy-codex-grid"></div>
+        </div>
       </section>
 
       <section class="command-panel growth-panel" data-command-panel="growth" aria-label="塔楼成长" hidden>

@@ -19,6 +19,7 @@ import { TowerActor } from '../entities/TowerActor'
 import { MercenaryActor } from '../entities/MercenaryActor'
 import { DroneSquadActor } from '../entities/DroneSquadActor'
 import { EffectsLayer } from '../entities/EffectsLayer'
+import { MapLightParticles } from '../entities/MapLightParticles'
 import { CampaignState, REGISTRY_KEY } from '../state/CampaignState'
 import { EventBus, GameEvents, type BattleHudPayload } from '../state/EventBus'
 import { ENEMY_TYPES, consumeHeavyEnemyFirstAppearance, type EnemyId } from '../data/enemies'
@@ -61,6 +62,7 @@ export class BattleScene extends Phaser.Scene {
   private droneActors = new Map<string, DroneSquadActor>()
   private slotMarkers: Phaser.GameObjects.Zone[] = []
   private effects!: EffectsLayer
+  private mapLightParticles: MapLightParticles | null = null
 
   private selectedTowerId: string | null = null
   private waveActive = false
@@ -151,6 +153,7 @@ export class BattleScene extends Phaser.Scene {
     for (const eventId of eventHistory.usedIds) this.usedSpecialEventIds.add(eventId)
 
     this.drawMapBackground()
+    this.mapLightParticles = new MapLightParticles(this, `map-${this.campaign.mapIndex}`, GAME_WIDTH, GAME_HEIGHT)
 
     if (this.mapLevel.available) {
       this.drawPaths()
@@ -252,6 +255,8 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private teardown() {
+    this.mapLightParticles?.destroy()
+    this.mapLightParticles = null
     this.effects?.destroy()
     this.enemySpawnSfx?.destroy()
     this.sound.stopByKey('sfx-base-damage')
@@ -825,6 +830,7 @@ export class BattleScene extends Phaser.Scene {
     EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `${BOSS_TYPES[enemy.typeId as BossId].name} · ${stage.abilityName}` })
   }
   update(_time: number, deltaMs: number) {
+    this.mapLightParticles?.update(deltaMs)
     if (this.ended) return
     const speed = this.campaign.gameSpeed || 1
     const dt = Math.min(deltaMs, 50) * speed
