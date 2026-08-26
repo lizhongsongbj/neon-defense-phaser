@@ -4,7 +4,7 @@ import { TOWER_COMBAT } from '../../data/towers'
 import { applyDamage, canMercenaryIntercept, enemyPosition } from '../CombatSystem'
 import { findNearestRoutePoint, projectedDistance } from '../PathSystem'
 import type { MercenaryState, TowerState } from '../types'
-import { effectiveDamage, effectiveRange } from './common'
+import { activeTier4Branch, effectiveDamage, effectiveRange } from './common'
 import type { AttackEvent, TowerAttackContext } from './types'
 
 /** 确保集结点已初始化,并在超出射程时收回到最近路线点,原 `_0x26f0b3` */
@@ -21,21 +21,28 @@ function ensureRallyPoint(tower: TowerState, ctx: TowerAttackContext, range: num
 
 export function resolveStreetMercenary(tower: TowerState, ctx: TowerAttackContext): AttackEvent[] {
   const combat = TOWER_COMBAT['street-mercenary']
+  const branch = activeTier4Branch(tower)
   const range = effectiveRange(tower, 'street-mercenary', ctx.growth.range)
   ensureRallyPoint(tower, ctx, range)
 
-  const mercHp = combat.mercenaryHealth * combat.healthScale[tower.level - 1]
+  const mercHp = branch?.stats.unitHealth ?? combat.mercenaryHealth * combat.healthScale[Math.min(2, tower.level - 1)]
+  const unitCount = branch?.stats.unitCount ?? combat.mercenaryCount
+  const blockRange = branch?.stats.blockRange ?? combat.blockRange
+  const respawn = branch?.stats.respawn ?? combat.respawn
+  const cooldown = branch?.stats.cooldown ?? combat.cooldown
   if (!tower.mercs) {
     const mercs: MercenaryState[] = []
-    for (let i = 0; i < combat.mercenaryCount; i += 1) {
+    for (let i = 0; i < unitCount; i += 1) {
       mercs.push({ hp: mercHp, cooldown: 0, respawnAt: 0, targetId: null })
     }
     tower.mercs = mercs
   }
+  while (tower.mercs.length < unitCount) tower.mercs.push({ hp: mercHp, cooldown: 0, respawnAt: 0, targetId: null })
+  if (tower.mercs.length > unitCount) tower.mercs.length = unitCount
   const mercs = tower.mercs
 
   const blockable = ctx.enemies.filter(
-    (e) => canMercenaryIntercept(e, ctx.now) && projectedDistance(tower.rallyPoint!, enemyPosition(ctx.geometry, e)) <= combat.blockRange,
+    (e) => canMercenaryIntercept(e, ctx.now) && projectedDistance(tower.rallyPoint!, enemyPosition(ctx.geometry, e)) <= blockRange,
   )
 
   const events: AttackEvent[] = []
@@ -58,18 +65,18 @@ export function resolveStreetMercenary(tower: TowerState, ctx: TowerAttackContex
     merc.hp -= target.attack * attackScale * ctx.dt
     if (merc.hp <= 0) {
       merc.targetId = null
-      merc.respawnAt = ctx.now + combat.respawn * 1000
+      merc.respawnAt = ctx.now + respawn * 1000
       return
     }
 
     merc.cooldown -= ctx.dt
     if (merc.cooldown <= 0) {
-      const damage = effectiveDamage(combat.damage * combat.damageScale[tower.level - 1], ctx.growth.damage)
-      const result = applyDamage(ctx.geometry, target, damage, 'physical', { position: tower.source, typeId: 'street-mercenary' }, 0, ctx.now)
+      const damage = effectiveDamage(branch?.stats.damage ?? combat.damage * combat.damageScale[Math.min(2, tower.level - 1)], ctx.growth.damage)
+      const result = applyDamage(ctx.geometry, target, damage, 'physical', { position: tower.source, typeId: 'street-mercenary' }, branch?.stats.armorPenetration ?? 0, ctx.now)
       tower.damageDealt += result.dealt
       tower.attacks += 1
       events.push({ targetId: target.id, damage, kind: 'physical', result, effect: 'mercenary', unitIndex })
-      merc.cooldown += combat.cooldown
+      merc.cooldown += cooldown
     }
   })
 

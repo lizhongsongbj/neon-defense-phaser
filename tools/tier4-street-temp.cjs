@@ -1,0 +1,12 @@
+﻿const fs=require('fs'); const p='src/systems/towerBehaviors/StreetMercenary.ts'; let s=fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'').replace(/\r\n/g,'\n');
+s=s.replace("import { effectiveDamage, effectiveRange } from './common'", "import { activeTier4Branch, effectiveDamage, effectiveRange } from './common'");
+s=s.replace("  const combat = TOWER_COMBAT['street-mercenary']\n  const range", "  const combat = TOWER_COMBAT['street-mercenary']\n  const branch = activeTier4Branch(tower)\n  const range");
+s=s.replace("  const mercHp = combat.mercenaryHealth * combat.healthScale[tower.level - 1]", "  const mercHp = branch?.stats.unitHealth ?? combat.mercenaryHealth * combat.healthScale[Math.min(2, tower.level - 1)]\n  const unitCount = branch?.stats.unitCount ?? combat.mercenaryCount\n  const blockRange = branch?.stats.blockRange ?? combat.blockRange\n  const respawn = branch?.stats.respawn ?? combat.respawn\n  const cooldown = branch?.stats.cooldown ?? combat.cooldown");
+s=s.replace("    for (let i = 0; i < combat.mercenaryCount; i += 1)", "    for (let i = 0; i < unitCount; i += 1)");
+s=s.replace("  const mercs = tower.mercs", "  while (tower.mercs.length < unitCount) tower.mercs.push({ hp: mercHp, cooldown: 0, respawnAt: 0, targetId: null })\n  if (tower.mercs.length > unitCount) tower.mercs.length = unitCount\n  const mercs = tower.mercs");
+s=s.replace("<= combat.blockRange", "<= blockRange");
+s=s.replace("ctx.now + combat.respawn * 1000", "ctx.now + respawn * 1000");
+s=s.replace("combat.damage * combat.damageScale[tower.level - 1]", "branch?.stats.damage ?? combat.damage * combat.damageScale[Math.min(2, tower.level - 1)]");
+s=s.replace("}, 0, ctx.now)", "}, branch?.stats.armorPenetration ?? 0, ctx.now)");
+s=s.replace("merc.cooldown += combat.cooldown", "merc.cooldown += cooldown");
+fs.writeFileSync(p,s,'utf8');
