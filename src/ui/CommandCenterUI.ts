@@ -124,7 +124,7 @@ export class CommandCenterUI {
 
   show() {
     this.el.hidden = false
-    void this.music()?.start(this.selectedMapIndex)
+    this.music()?.startMenu()
     this.refresh()
   }
 
@@ -212,7 +212,6 @@ export class CommandCenterUI {
       row.addEventListener('click', () => {
         if (!this.campaign.isMapUnlocked(index)) return
         this.selectedMapIndex = index
-        void this.music()?.playMap(index)
         this.refresh()
       })
       this.missionList.appendChild(row)
@@ -457,4 +456,3 @@ export class CommandCenterUI {
     })
   }
 }
-

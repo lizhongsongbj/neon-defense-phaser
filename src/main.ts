@@ -1,4 +1,4 @@
-﻿import Phaser from 'phaser'
+import Phaser from 'phaser'
 import './styles/theme.css'
 import './styles/ui-polish.css'
 import './styles/hacker-pulse.css'
@@ -68,14 +68,18 @@ const titleScreen = new TitleScreen(() => {
 })
 
 if (game.registry.get('assetsReady')) commandCenterUI.markAssetsReady()
-EventBus.on(GameEvents.AssetsReady, () => commandCenterUI.markAssetsReady())
+EventBus.on(GameEvents.AssetsReady, () => {
+  commandCenterUI.markAssetsReady()
+  const music = game.registry.get('musicController') as { startMenu?: () => void } | undefined
+  music?.startMenu?.()
+})
 
 EventBus.on(GameEvents.ReturnToCommandCenter, () => {
   gameRoot.hidden = true
+  const music = game.registry.get('musicController') as { startMenu?: () => void } | undefined
+  music?.startMenu?.()
   commandCenterUI.show()
 })
 
 installWebGameGuards()
 signalWebGameReady()
-
-

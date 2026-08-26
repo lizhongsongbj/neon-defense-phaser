@@ -80,6 +80,11 @@ export class VoiceSystem {
     return true
   }
 
+  /** 离开战场时立即终止正在播放的角色语音。 */
+  stop() {
+    this.stopCurrent()
+  }
+
   private stopCurrent() {
     const instance = this.current
     const classId = this.currentClassId

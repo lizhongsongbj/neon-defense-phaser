@@ -83,6 +83,12 @@ export class MusicController {
     return dbToLinear(bus.gainDb - (ducking?.gainReductionDb ?? 0))
   }
 
+  /** 主界面只播放基础背景音乐，不跟随当前选中的地图切换。 */
+  startMenu() {
+    this.started = true
+    this.mapIndex = 0
+    void this.exitBoss({ resumeMap: false }).then(() => this.enterMap(MAP_SCENE_IDS[0]))
+  }
   /** 战役开局启动地图 BGM,原 `window.NeonBGM.start` */
   start(mapIndex = this.mapIndex) {
     this.started = true

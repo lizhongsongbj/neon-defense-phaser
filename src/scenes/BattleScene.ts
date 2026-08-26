@@ -7,7 +7,7 @@ import { scaleReward, towerGrowthBonuses, RANGE_PROJECTION_Y, MAX_HEALTH, type D
 import { COUNTDOWN_SECONDS, earlyWaveReward } from '../data/waveEconomy'
 import { buildMapGeometry, toBoardUnits, type MapGeometry } from '../systems/PathSystem'
 import { buildWavePlan, scheduleWave } from '../systems/WaveSpawner'
-import { spawnEnemy, enemyPosition, isEnemyPhasedAt, tickEnemyTraits } from '../systems/CombatSystem'
+import { applyDamage, spawnEnemy, enemyPosition, isEnemyPhasedAt, tickEnemyTraits } from '../systems/CombatSystem'
 import { resolveTowerAttack, effectiveRange } from '../systems/towerBehaviors'
 import { tickEnforcer } from '../systems/bossBehaviors/Enforcer'
 import { tickEve } from '../systems/bossBehaviors/Eve'
@@ -25,7 +25,7 @@ import { ENEMY_TYPES, consumeHeavyEnemyFirstAppearance, type EnemyId } from '../
 import { chooseSpecialEvent, specialEventHistory, specialEventTriggerDelay, type SpecialEventDefinition, type SpecialEventId } from '../data/specialEvents'
 import { BOSS_TYPES, type BossId } from '../data/bosses'
 import type { SavedTower } from '../systems/SaveGame'
-import { EnemySpawnSfx, MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
+import { EnemySpawnSfx, claimBattleSfx, MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
 import { PLAYER_SKILLS, PLAYER_SKILL_BY_ID, playerSkillCooldown, type PlayerSkillId } from '../data/playerSkills'
 
 function boardToScreen(p: Point2): Point2 {
@@ -254,6 +254,8 @@ export class BattleScene extends Phaser.Scene {
   private teardown() {
     this.effects?.destroy()
     this.enemySpawnSfx?.destroy()
+    this.voice?.stop()
+    this.sound.stopByKey('sfx-base-damage')
     this.cancelSkillTargeting()
     this.activeFirewalls.forEach((firewall) => { this.tweens.killTweensOf(firewall.graphic); firewall.graphic.destroy(); firewall.label.destroy() })
     this.activeFirewalls = []
@@ -294,7 +296,7 @@ export class BattleScene extends Phaser.Scene {
     this.cancelSkillTargeting(false)
     this.targetingSkill = id
     const accent = id === 'pulse-overload' ? 0x20f4e6 : 0xff3ea5
-    const radius = id === 'pulse-overload' ? 190 : 88
+    const radius = id === 'pulse-overload' ? 230 : 110
     this.targetingReticle = this.add.graphics().setDepth(101)
     const drawReticle = (x: number, y: number) => {
       this.targetingReticle?.clear()
@@ -336,28 +338,35 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private castPulseOverload(point: Point2) {
-    const radius = 190
+    const radius = 230
     let affected = 0
     let shieldsDisrupted = 0
+    let totalDamage = 0
     for (const enemy of this.battle.enemies) {
       if (enemy.dead) continue
       const screen = boardToScreen(enemyPosition(this.geometry, enemy))
       if (Phaser.Math.Distance.Between(point.x, point.y, screen.x, screen.y) > radius) continue
       affected += 1
-      const stunMs = enemy.isBoss ? 0 : enemy.elite ? 1000 : 2000
+      const stunMs = enemy.isBoss ? 350 : enemy.elite ? 1400 : 2500
       enemy.stunnedUntil = Math.max(enemy.stunnedUntil, this.battle.now + stunMs)
-      enemy.skillSlowAmount = Math.max(enemy.skillSlowAmount, enemy.isBoss ? 0.15 : enemy.elite ? 0.28 : 0.35)
-      enemy.skillSlowUntil = Math.max(enemy.skillSlowUntil, this.battle.now + 5500)
+      enemy.skillSlowAmount = Math.max(enemy.skillSlowAmount, enemy.isBoss ? 0.22 : enemy.elite ? 0.38 : 0.5)
+      enemy.skillSlowUntil = Math.max(enemy.skillSlowUntil, this.battle.now + 7000)
+      enemy.vulnerability = Math.max(enemy.vulnerability, enemy.isBoss ? 0.08 : enemy.elite ? 0.12 : 0.2)
+      enemy.vulnerableUntil = Math.max(enemy.vulnerableUntil, this.battle.now + 6000)
+      const shockDamage = enemy.isBoss ? enemy.maxHp * 0.01 : enemy.elite ? enemy.maxHp * 0.035 : enemy.maxHp * 0.07
+      totalDamage += applyDamage(this.geometry, enemy, Math.min(shockDamage, enemy.isBoss ? 650 : 420), 'energy', null, 0, this.battle.now).dealt
       if (enemy.shield > 0) {
-        enemy.shield = Math.max(0, enemy.shield - enemy.maxShield * 0.25)
-        enemy.shieldBlockedUntil = Math.max(enemy.shieldBlockedUntil, this.battle.now + 3500)
+        enemy.shield = Math.max(0, enemy.shield - enemy.maxShield * 0.5)
+        enemy.shieldBlockedUntil = Math.max(enemy.shieldBlockedUntil, this.battle.now + 5000)
         shieldsDisrupted += 1
       }
       this.playPulseTargetBurst(screen)
+      this.playPulseArc(point, screen)
     }
 
-    this.cameras.main.shake(260, 0.009, true)
-    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x8fffff, 0.16).setDepth(69)
+    this.cameras.main.shake(420, 0.015, true)
+    this.cameras.main.flash(180, 160, 255, 255, false)
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x8fffff, 0.26).setDepth(69)
     this.tweens.add({ targets: flash, alpha: 0, duration: 230, onComplete: () => flash.destroy() })
     ;[0, 90, 180].forEach((delay, index) => {
       const ring = this.add.graphics().setDepth(70)
@@ -374,7 +383,25 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.add({ targets: core, scale: 2.6, alpha: 0, duration: 420, onComplete: () => core.destroy() })
     const label = this.add.text(point.x, point.y - 34, 'PULSE OVERRIDE // SYSTEM SHOCK', { fontFamily: 'monospace', fontSize: '15px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#042126ee', padding: { x: 9, y: 5 } }).setOrigin(0.5).setDepth(72)
     this.tweens.add({ targets: label, y: label.y - 34, alpha: 0, duration: 1150, onComplete: () => label.destroy() })
-    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `脉冲过载爆发 · 控制 ${affected} 个目标${shieldsDisrupted ? ` · 击穿 ${shieldsDisrupted} 层护盾` : ''}` })
+    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `脉冲过载爆发 · 冲击 ${affected} 个目标 · ${Math.round(totalDamage)} 能量伤害${shieldsDisrupted ? ` · 击穿 ${shieldsDisrupted} 层护盾` : ''}` })
+  }
+
+  private playPulseArc(origin: Point2, target: Point2) {
+    const arc = this.add.graphics().setDepth(74)
+    arc.lineStyle(3, 0xffffff, 0.95)
+    const segments = 8
+    let previous = origin
+    for (let index = 1; index <= segments; index += 1) {
+      const t = index / segments
+      const next = {
+        x: Phaser.Math.Linear(origin.x, target.x, t) + (index === segments ? 0 : Phaser.Math.Between(-13, 13)),
+        y: Phaser.Math.Linear(origin.y, target.y, t) + (index === segments ? 0 : Phaser.Math.Between(-13, 13)),
+      }
+      arc.lineBetween(previous.x, previous.y, next.x, next.y)
+      previous = next
+    }
+    arc.lineStyle(7, 0x20f4e6, 0.26).lineBetween(origin.x, origin.y, target.x, target.y)
+    this.tweens.add({ targets: arc, alpha: 0, duration: 460, onComplete: () => arc.destroy() })
   }
 
   private playPulseTargetBurst(point: Point2) {
@@ -393,25 +420,26 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private castQuantumFirewall(point: Point2) {
-    const radius = 88
+    const radius = 110
     const graphic = this.add.graphics().setDepth(66)
-    graphic.fillStyle(0xff3ea5, 0.14).fillCircle(point.x, point.y, radius)
+    graphic.fillStyle(0xff3ea5, 0.22).fillCircle(point.x, point.y, radius)
     graphic.lineStyle(5, 0xff3ea5, 1).strokeCircle(point.x, point.y, radius)
     graphic.lineStyle(2, 0x20f4e6, 0.95).strokeCircle(point.x, point.y, radius - 12)
-    graphic.fillStyle(0x20f4e6, 0.18).fillRect(point.x - 76, point.y - 42, 152, 84)
+    graphic.fillStyle(0x20f4e6, 0.18).fillRect(point.x - 96, point.y - 54, 192, 108)
     graphic.lineStyle(4, 0xff78c1, 0.95)
-    graphic.lineBetween(point.x - 78, point.y - 42, point.x + 78, point.y - 42)
-    graphic.lineBetween(point.x - 78, point.y + 42, point.x + 78, point.y + 42)
-    for (let x = -66; x <= 66; x += 22) {
+    graphic.lineBetween(point.x - 98, point.y - 54, point.x + 98, point.y - 54)
+    graphic.lineBetween(point.x - 98, point.y + 54, point.x + 98, point.y + 54)
+    for (let x = -88; x <= 88; x += 22) {
       graphic.lineStyle(2, x % 44 === 0 ? 0xffffff : 0x20f4e6, 0.85)
-      graphic.strokeRect(point.x + x - 7, point.y - 36, 14, 72)
+      graphic.strokeRect(point.x + x - 7, point.y - 48, 14, 96)
     }
-    const label = this.add.text(point.x, point.y - 66, 'QUANTUM FIREWALL // 12', { fontFamily: 'monospace', fontSize: '12px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#2a0620e6', padding: { x: 8, y: 4 } }).setOrigin(0.5).setDepth(68)
+    const label = this.add.text(point.x, point.y - 66, 'QUANTUM FIREWALL // 16', { fontFamily: 'monospace', fontSize: '12px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#2a0620e6', padding: { x: 8, y: 4 } }).setOrigin(0.5).setDepth(68)
     this.tweens.add({ targets: graphic, alpha: 0.58, duration: 260, yoyo: true, repeat: -1 })
     this.tweens.add({ targets: label, scaleX: 1.05, scaleY: 1.05, duration: 360, yoyo: true, repeat: -1 })
-    this.cameras.main.shake(150, 0.004, true)
-    this.activeFirewalls.push({ point, expiresAt: this.battle.now + 8000, affected: new Set(), capacity: 12, graphic, label })
-    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '量子防火墙强化部署 · 容量 12 · 持续 8 秒' })
+    this.cameras.main.shake(240, 0.008, true)
+    this.cameras.main.flash(120, 255, 62, 165, false)
+    this.activeFirewalls.push({ point, expiresAt: this.battle.now + 10000, affected: new Set(), capacity: 16, graphic, label })
+    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '量子防火墙超载部署 · 容量 16 · 持续 10 秒' })
   }
 
   private tickQuantumFirewalls() {
@@ -428,18 +456,20 @@ export class BattleScene extends Phaser.Scene {
       for (const enemy of this.battle.enemies) {
         if (enemy.dead || firewall.affected.has(enemy.id)) continue
         const screen = boardToScreen(enemyPosition(this.geometry, enemy))
-        if (Phaser.Math.Distance.Between(firewall.point.x, firewall.point.y, screen.x, screen.y) > 88) continue
+        if (Phaser.Math.Distance.Between(firewall.point.x, firewall.point.y, screen.x, screen.y) > 110) continue
         firewall.affected.add(enemy.id)
         firewall.capacity -= 1
         firewall.label.setText(`QUANTUM FIREWALL // ${firewall.capacity}`)
-        enemy.distance = Math.max(0, enemy.distance - (enemy.isBoss ? 0 : enemy.elite ? 24 : 50))
-        enemy.attackSuppression = Math.max(enemy.attackSuppression, enemy.isBoss ? 0.08 : enemy.elite ? 0.18 : 0.35)
-        enemy.attackSuppressedUntil = Math.max(enemy.attackSuppressedUntil, this.battle.now + (enemy.isBoss ? 3500 : 6000))
-        enemy.skillSlowAmount = Math.max(enemy.skillSlowAmount, enemy.isBoss ? 0.05 : enemy.elite ? 0.1 : 0.2)
-        enemy.skillSlowUntil = Math.max(enemy.skillSlowUntil, this.battle.now + 3200)
+        enemy.distance = Math.max(0, enemy.distance - (enemy.isBoss ? 8 : enemy.elite ? 42 : 80))
+        enemy.attackSuppression = Math.max(enemy.attackSuppression, enemy.isBoss ? 0.12 : enemy.elite ? 0.25 : 0.45)
+        enemy.attackSuppressedUntil = Math.max(enemy.attackSuppressedUntil, this.battle.now + (enemy.isBoss ? 4500 : 7500))
+        enemy.skillSlowAmount = Math.max(enemy.skillSlowAmount, enemy.isBoss ? 0.12 : enemy.elite ? 0.22 : 0.35)
+        enemy.skillSlowUntil = Math.max(enemy.skillSlowUntil, this.battle.now + 4800)
+        const firewallDamage = enemy.isBoss ? enemy.maxHp * 0.006 : enemy.elite ? enemy.maxHp * 0.02 : enemy.maxHp * 0.04
+        applyDamage(this.geometry, enemy, Math.min(firewallDamage, enemy.isBoss ? 360 : 260), 'energy', null, 0, this.battle.now)
         const impact = this.add.graphics().setDepth(72)
-        impact.lineStyle(4, 0xff3ea5, 1).strokeRect(screen.x - 28, screen.y - 28, 56, 56)
-        impact.lineStyle(2, 0x20f4e6, 0.9).strokeCircle(screen.x, screen.y, 38)
+        impact.lineStyle(4, 0xff3ea5, 1).strokeRect(screen.x - 38, screen.y - 38, 76, 76)
+        impact.lineStyle(2, 0x20f4e6, 0.9).strokeCircle(screen.x, screen.y, 52)
         this.tweens.add({ targets: impact, scale: 1.45, alpha: 0, duration: 560, onComplete: () => impact.destroy() })
         const denied = this.add.text(screen.x, screen.y - 34, 'ACCESS DENIED // ROLLBACK', { fontFamily: 'monospace', fontSize: '11px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#5a083be8', padding: { x: 6, y: 4 } }).setOrigin(0.5).setDepth(73)
         this.tweens.add({ targets: denied, y: denied.y - 24, alpha: 0, duration: 900, onComplete: () => denied.destroy() })
@@ -1009,7 +1039,7 @@ export class BattleScene extends Phaser.Scene {
 
     // 同一瞬间多个敌人突破时只播放一次，避免音效叠加爆音。
     const now = this.time.now
-    if (now - this.lastBaseDamageSfxAt >= 240 && this.cache.audio.exists('sfx-base-damage')) {
+    if (now - this.lastBaseDamageSfxAt >= 240 && this.cache.audio.exists('sfx-base-damage') && claimBattleSfx(performance.now())) {
       this.sound.play('sfx-base-damage', { volume: 0.9 })
       this.lastBaseDamageSfxAt = now
     }

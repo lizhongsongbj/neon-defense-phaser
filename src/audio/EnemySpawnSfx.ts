@@ -1,3 +1,5 @@
+import { claimBattleSfx } from './SfxCooldown'
+
 export type MechanicalSpawnEnemy = 'gang' | 'riot' | 'ninja'
 
 /**
@@ -17,6 +19,7 @@ export class EnemySpawnSfx {
     if (type !== 'gang' && type !== 'riot' && type !== 'ninja') return
     const now = performance.now()
     if (now - (this.lastPlayedAt.get(type) ?? -Infinity) < this.minimumGapMs[type]) return
+    if (!claimBattleSfx(now)) return
 
     const context = this.ensureContext()
     if (!context) return
