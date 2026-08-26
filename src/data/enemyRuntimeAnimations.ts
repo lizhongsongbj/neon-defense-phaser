@@ -10,6 +10,9 @@ export interface EnemyRuntimeAnimationSpec {
 export type EnemyRuntimeAnimationSet = Partial<Record<EnemyAnimationMotion, EnemyRuntimeAnimationSpec>>
 
 export const ENEMY_RUNTIME_ANIMATIONS: Record<string, EnemyRuntimeAnimationSet> = {
+  eve: {
+    move: { source: 'boss-eve-9-move.webp', frames: 12, frameRate: 15, repeat: -1 },
+  },
   enforcer: {
     move: { source: 'boss-adam-smasher-move.webp', frames: 8, frameRate: 9, repeat: -1 },
     attack: { source: 'boss-adam-smasher-attack.webp', frames: 8, frameRate: 8, repeat: -1 },
@@ -79,5 +82,6 @@ export function enemyAnimationFramePath(typeId: string, motion: EnemyAnimationMo
   const root = cleanDeath ? 'runtime-clean-v3' : 'runtime'
   return `assets/animations/enemies/${root}/${typeId}/${motion}/frame-${String(frame).padStart(2, '0')}.webp`
 }
+
 
 
