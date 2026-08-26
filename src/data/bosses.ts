@@ -1,7 +1,7 @@
 ﻿/** Boss combat definitions, phase thresholds, component durability, and ability cadence. */
 
 export type BossId = 'enforcer' | 'eve'
-export type BossStage = 1 | 2 | 3 | 4
+export type BossStage = 1 | 2 | 3
 export type BossAbilityId =
   | 'shield-wave'
   | 'missile-salvo'

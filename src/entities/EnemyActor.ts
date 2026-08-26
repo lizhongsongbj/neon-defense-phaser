@@ -142,7 +142,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     } else if (this.enemy.isBoss) {
       const phaseColors = this.enemy.typeId === 'eve'
         ? [0x92f6ff, 0xc084ff, 0xff5dcc]
-        : [0xffd089, 0xff9368, 0xff4968, 0xff45bb]
+        : [0xffd089, 0xff394f, 0xff45bb]
       const color = phaseColors[Math.max(0, this.enemy.stage - 1)] ?? 0xffffff
       this.sprite.setTint(color)
       this.statusRing.lineStyle(2, color, 0.66).strokeCircle(0, 0, this.sprite.displayWidth * 0.62)

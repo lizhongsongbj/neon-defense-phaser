@@ -19,7 +19,7 @@ test('两个Boss均定义完整基础数值、基地伤害和阶段技能', () =
   const eve = BOSS_TYPES.eve
   assert.deepEqual([enforcer.hp, enforcer.reward, enforcer.baseDamage], [22000, 1250, 4])
   assert.deepEqual([eve.hp, eve.shield, eve.reward, eve.baseDamage], [30000, 3600, 1600, 5])
-  assert.equal(enforcer.stages.length, 4)
+  assert.equal(enforcer.stages.length, 3)
   assert.equal(eve.stages.length, 3)
   for (const boss of [enforcer, eve]) {
     assert.ok(boss.stages.every((stage) => stage.abilityCooldown > 0))
@@ -63,11 +63,16 @@ test('亚当·重锤可由生命阈值或部件摧毁进入四个阶段', () => 
 
 test('亚当·重锤生命阈值可以在部件尚存时强制切换阶段', () => {
   const enemy = spawnBoss('enforcer')
-  enemy.hp = enemy.maxHp * 0.4
-  const result = tickEnforcer(enemy, 0, 1000)
-  assert.equal(enemy.stage, 3)
+  enemy.hp = enemy.maxHp * 0.69
+  let result = tickEnforcer(enemy, 0, 1000)
+  assert.equal(enemy.stage, 2)
   assert.equal(result.voiceEvent, 'enraged')
   assert.ok(enemy.speed > enemy.baseSpeed)
+
+  enemy.hp = enemy.maxHp * 0.21
+  result = tickEnforcer(enemy, 0, 2000)
+  assert.equal(enemy.stage, 3)
+  assert.equal(result.voiceEvent, 'core')
 })
 
 test('夏娃-9节点形态会周期迁移并触发节点劫持', () => {
