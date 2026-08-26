@@ -43,5 +43,21 @@
   "dependencies": {
     "phaser": "3.90.0",
     "sharp": "^0.34.3"
-  }
+  },
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lizhongsongbj/neon-defense-phaser.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lizhongsongbj/neon-defense-phaser/issues"
+  },
+  "homepage": "https://github.com/lizhongsongbj/neon-defense-phaser#readme"
 }
