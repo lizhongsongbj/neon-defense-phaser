@@ -33,6 +33,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
   private readonly barWidth: number
   private readonly baseSize: number
   private currentMotion: EnemyAnimationMotion | 'static' = 'static'
+  private currentAnimationTypeId = ''
   private bossVisualStage = 0
   private finishing = false
 
@@ -81,34 +82,50 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     scene.add.existing(this)
   }
 
-  private ensureRuntimeAnimations() {
-    const set = ENEMY_RUNTIME_ANIMATIONS[this.enemy.typeId]
+  private animationTypeId() {
+    const stagedId = `${this.enemy.typeId}-stage-${this.enemy.stage}`
+    return ENEMY_RUNTIME_ANIMATIONS[stagedId] ? stagedId : this.enemy.typeId
+  }
+
+  private ensureAnimationSet(typeId: string) {
+    const set = ENEMY_RUNTIME_ANIMATIONS[typeId]
     if (!set) return
     for (const motion of ['move', 'attack', 'death'] as const) {
       const spec = set[motion]
       if (!spec) continue
-      const key = enemyAnimationKey(this.enemy.typeId, motion)
+      const key = enemyAnimationKey(typeId, motion)
       if (this.scene.anims.exists(key)) continue
       const frames = Array.from({ length: spec.frames }, (_, index) => ({
-        key: enemyAnimationTextureKey(this.enemy.typeId, motion, index + 1),
+        key: enemyAnimationTextureKey(typeId, motion, index + 1),
       })).filter((frame) => this.scene.textures.exists(frame.key))
       if (!frames.length) continue
       this.scene.anims.create({ key, frames, frameRate: spec.frameRate, repeat: spec.repeat })
     }
   }
 
+  private ensureRuntimeAnimations() {
+    this.ensureAnimationSet(this.enemy.typeId)
+    if (this.enemy.isBoss) {
+      for (const stage of [1, 2, 3, 4]) this.ensureAnimationSet(`${this.enemy.typeId}-stage-${stage}`)
+    }
+  }
+
   private hasMotion(motion: EnemyAnimationMotion) {
-    return this.scene.anims.exists(enemyAnimationKey(this.enemy.typeId, motion))
+    return this.scene.anims.exists(enemyAnimationKey(this.animationTypeId(), motion))
   }
 
   private playMotion(motion: EnemyAnimationMotion) {
-    if (this.finishing || this.currentMotion === motion || !this.hasMotion(motion)) return
+    const typeId = this.animationTypeId()
+    if (this.finishing || (this.currentMotion === motion && this.currentAnimationTypeId === typeId) || !this.hasMotion(motion)) return
     this.currentMotion = motion
-    this.sprite.play(enemyAnimationKey(this.enemy.typeId, motion), true)
+    this.currentAnimationTypeId = typeId
+    this.bossVisualStage = this.enemy.stage
+    this.sprite.play(enemyAnimationKey(typeId, motion), true)
   }
 
   private syncBossStageVisual(): boolean {
     if (!this.enemy.isBoss) return false
+    if (ENEMY_RUNTIME_ANIMATIONS[`${this.enemy.typeId}-stage-${this.enemy.stage}`]) return false
     const definition = BOSS_TYPES[this.enemy.typeId as keyof typeof BOSS_TYPES]
     if (!definition.stageImages?.[this.enemy.stage as BossStage]) return false
     const key = bossStageTextureKey(definition.id, this.enemy.stage)
@@ -117,6 +134,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
       this.sprite.stop()
       this.sprite.setTexture(key).setDisplaySize(this.baseSize, this.baseSize)
       this.currentMotion = 'static'
+      this.currentAnimationTypeId = ''
       this.bossVisualStage = this.enemy.stage
     }
     return true
