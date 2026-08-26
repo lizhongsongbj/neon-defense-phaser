@@ -142,6 +142,8 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     this.tag.setVisible(false)
 
     if (!leaked && !this.enemy.isBoss && CLEAN_FALL_DEATH_IDS.has(this.enemy.typeId)) {
+      const cleanTexture = textureKeyFor(this.enemy)
+      if (this.scene.textures.exists(cleanTexture)) this.sprite.setTexture(cleanTexture)
       // 四种新增单位使用干净整图作为底帧，倒下动作由 Phaser 做整体旋转、下坠和淡出，避免彩色扫描线。
       this.scene.tweens.add({
         targets: this.sprite,
