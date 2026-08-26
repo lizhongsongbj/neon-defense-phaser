@@ -735,6 +735,14 @@ html, body {
 .intel-enemy__stats span { color: var(--text-dim); font: 700 7px/1 var(--font-mono); }
 .intel-enemy__stats b { margin-top: 4px; color: #e8ffff; font: 900 10px/1 var(--font-mono); }
 .intel-enemy__components { margin: 8px 0 0; color: #c7a8bd; font-size: 8px; line-height: 1.4; }
+.intel-boss-stages { display: grid; gap: 5px; margin-top: 8px; }
+.intel-boss-stages article { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 3px 8px; padding: 6px 7px; border-left: 2px solid rgba(255,62,165,.72); background: rgba(255,62,165,.055); }
+.intel-boss-stages strong,.intel-boss-stages span,.intel-boss-stages small,.intel-boss-stages b,.intel-boss-stages em { display: block; }
+.intel-boss-stages strong { color: #ffe6f5; font: 900 8px/1.2 var(--font-mono); }
+.intel-boss-stages span { grid-column: 1 / -1; color: #bca9b7; font-size: 8px; line-height: 1.35; }
+.intel-boss-stages small { color: #78e9ff; font: 700 7px/1.25 var(--font-mono); }
+.intel-boss-stages b { color: #ff76bf; font: 900 7px/1.25 var(--font-mono); }
+.intel-boss-stages em { grid-column: 1 / -1; color: #8fa6ac; font: normal 7px/1.35 var(--font-mono); }
 .intel-enemy__matchup { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 0; font: 800 8px/1 var(--font-mono); }
 .intel-enemy__matchup span, .intel-enemy__matchup b { padding: 4px 5px; border: 1px solid currentColor; font-weight: 800; }
 .intel-enemy__matchup span { color: #ff8ac5; }
