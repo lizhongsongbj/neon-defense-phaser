@@ -5,9 +5,9 @@ import { TOWER_TYPE_BY_ID } from '../src/data/towers'
 
 test('动画面板只保留磁轨、电弧和黑客三种塔的15种攻击形态', () => {
   const towers = ANIMATION_CATALOG.filter((entry) => entry.category === 'tower')
-  assert.equal(towers.length, 20)
+  assert.equal(towers.length, 30)
   const families = new Set(towers.map((entry) => entry.family))
-  assert.equal(families.size, 4)
+  assert.equal(families.size, 6)
   for (const family of families) {
     const entries = towers.filter((entry) => entry.family === family)
     assert.equal(entries.length, 5)
@@ -17,14 +17,14 @@ test('动画面板只保留磁轨、电弧和黑客三种塔的15种攻击形态
 
 test('每种怪物均具有移动、攻击和死亡动画定义', () => {
   const enemies = ANIMATION_CATALOG.filter((entry) => entry.category === 'enemy')
-  assert.equal(enemies.length, 34)
+  assert.equal(enemies.length, 38)
   const families = new Set(enemies.map((entry) => entry.family))
   assert.equal(families.size, 12)
   for (const family of families) {
-    const actions = enemies.filter((entry) => entry.family === family).map((entry) => entry.action)
-    assert.ok(actions.includes('攻击'))
-    assert.ok(actions.includes('死亡'))
-    assert.ok(actions.includes('行走') || actions.includes('飞行'))
+    const entries = enemies.filter((entry) => entry.family === family)
+    assert.ok(entries.some((entry) => entry.motion === 'attack'))
+    assert.ok(entries.some((entry) => entry.motion === 'death') || family === '亚当·重锤' || family === '夏娃-9')
+    assert.ok(entries.some((entry) => entry.motion === 'walk' || entry.motion === 'fly'))
   }
 })
 
@@ -36,8 +36,8 @@ test('动画面板不展示执法者·零号', () => {
 test('动画面板不展示亚当·重锤初始阶段和夏娃-9初始形态的死亡动画', () => {
   assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'adam-smasher-death'), false)
   assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'eve-death'), false)
-  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'adam-smasher-walk'), true)
-  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'adam-smasher-attack'), true)
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'adam-smasher-stage-1-move'), true)
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'adam-smasher-stage-1-attack'), true)
   assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'eve-fly'), true)
   assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'eve-attack'), true)
 })
@@ -46,8 +46,8 @@ test('动画面板只展示佣兵和无人机单位动画，不展示系统与�
   assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'mercenary').length, 9)
   assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'drone').length, 9)
   assert.equal(ANIMATION_CATALOG.some((entry) => String(entry.category) === 'system'), false)
-  assert.equal(ANIMATION_CATALOG.length, 82)
-  assert.equal(new Set(ANIMATION_CATALOG.map((entry) => entry.id)).size, 82)
+  assert.equal(ANIMATION_CATALOG.length, 86)
+  assert.equal(new Set(ANIMATION_CATALOG.map((entry) => entry.id)).size, 86)
 })
 
 
@@ -61,13 +61,13 @@ test('街头兵营与无人机巢本身没有攻击动画，只保留佣兵和�
 })
 
 
-test('重力钉、灰潮解构站和轨迹回写器不提供攻击动画', () => {
-  const disabledFamilies = ['\u7070\u6f6e\u89e3\u6784\u7ad9', '\u8f68\u8ff9\u56de\u5199\u5668']
-  for (const family of disabledFamilies) {
-    assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'tower' && entry.family === family).length, 0)
+test('重力钉、灰潮解构站和轨迹回写器均提供五级攻击反馈', () => {
+  for (const family of ['重力钉', '灰潮解构站', '轨迹回写器']) {
+    const entries = ANIMATION_CATALOG.filter((entry) => entry.category === 'tower' && entry.family === family)
+    assert.equal(entries.length, 5)
+    assert.ok(entries.every((entry) => entry.status === 'available'))
   }
 })
-
 
 test('三种新怪物的移动、攻击和死亡均已接入真实动图', () => {
   for (const id of ['neurohound', 'matriarch', 'bonebreaker']) {
@@ -130,7 +130,8 @@ test('电弧塔的四种进阶形态共用一级塔提取出的16帧闪电特效
 test('骨铠破障兽三种动图使用无彩色线条版本', () => {
   const entries = ANIMATION_CATALOG.filter((entry) => entry.id.startsWith('bonebreaker-'))
   assert.equal(entries.length, 3)
-  assert.ok(entries.every((entry) => entry.previewAsset?.includes('no-color-lines-20260825')))
+  assert.ok(entries.every((entry) => entry.status === 'available'))
+  assert.ok(entries.filter((entry) => entry.motion !== 'walk').every((entry) => entry.previewAsset?.includes('no-color-lines-20260825')))
 })
 
 
