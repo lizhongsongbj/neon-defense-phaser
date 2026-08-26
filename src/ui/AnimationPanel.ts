@@ -62,7 +62,7 @@ export class AnimationPanel {
     this.applyHeadPulseStyle(button, entry)
     button.innerHTML = `
       <span class="animation-card__preview">
-        <img src="${entry.previewAsset ?? entry.referenceImage}" alt="${entry.name}${entry.action}鍔ㄧ敾棰勮" loading="lazy" />
+        <img src="${entry.previewAsset ?? entry.referenceImage}" alt="${entry.name}${entry.action}动画预览" loading="lazy" />
         <i class="animation-card__fx" aria-hidden="true"></i>
         ${this.headPulseMarkup(entry)}
         ${this.attackEffectMarkup(entry)}
@@ -197,4 +197,5 @@ export class AnimationPanel {
     preview.className = className
   }
 }
+
 
