@@ -34,3 +34,5 @@ public/assets/generated/cutout/*
 # GitHub auto-sync runtime log
 .github-auto-sync.log
 .github-auto-sync.pid
+
+.vite/

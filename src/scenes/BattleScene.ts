@@ -179,10 +179,10 @@ export class BattleScene extends Phaser.Scene {
 
     if (!this.mapLevel.available) {
       const grid = this.add.graphics()
-      grid.lineStyle(1, 0x17313a, 0.55)
+      grid.lineStyle(1, 0x101827, 0.62)
       for (let x = 0; x <= GAME_WIDTH; x += 64) grid.lineBetween(x, 0, x, GAME_HEIGHT)
       for (let y = 0; y <= GAME_HEIGHT; y += 64) grid.lineBetween(0, y, GAME_WIDTH, y)
-      grid.lineStyle(2, 0x20f4e6, 0.2)
+      grid.lineStyle(2, 0x05c7ff, 0.22)
       grid.strokeRect(24, 24, GAME_WIDTH - 48, GAME_HEIGHT - 48)
 
       this.add
@@ -190,14 +190,14 @@ export class BattleScene extends Phaser.Scene {
           fontFamily: 'sans-serif',
           fontSize: '34px',
           fontStyle: 'bold',
-          color: '#20f4e6',
+          color: '#05c7ff',
         })
         .setOrigin(0.5)
       this.add
         .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 28, '等待接入新版地图、美术、路线与防御节点', {
           fontFamily: 'sans-serif',
           fontSize: '16px',
-          color: '#7c9aa3',
+          color: '#8ca8b0',
         })
         .setOrigin(0.5)
     }
@@ -447,22 +447,22 @@ export class BattleScene extends Phaser.Scene {
   private castQuantumFirewall(point: Point2) {
     const radius = 110
     const graphic = this.add.graphics().setDepth(66)
-    graphic.fillStyle(0xff3ea5, 0.22).fillCircle(point.x, point.y, radius)
-    graphic.lineStyle(5, 0xff3ea5, 1).strokeCircle(point.x, point.y, radius)
-    graphic.lineStyle(2, 0x20f4e6, 0.95).strokeCircle(point.x, point.y, radius - 12)
-    graphic.fillStyle(0x20f4e6, 0.18).fillRect(point.x - 96, point.y - 54, 192, 108)
-    graphic.lineStyle(4, 0xff78c1, 0.95)
+    graphic.fillStyle(0x6435ff, 0.24).fillCircle(point.x, point.y, radius)
+    graphic.lineStyle(5, 0x6435ff, 1).strokeCircle(point.x, point.y, radius)
+    graphic.lineStyle(2, 0x05c7ff, 0.95).strokeCircle(point.x, point.y, radius - 12)
+    graphic.fillStyle(0x05c7ff, 0.16).fillRect(point.x - 96, point.y - 54, 192, 108)
+    graphic.lineStyle(4, 0xff245d, 0.92)
     graphic.lineBetween(point.x - 98, point.y - 54, point.x + 98, point.y - 54)
     graphic.lineBetween(point.x - 98, point.y + 54, point.x + 98, point.y + 54)
     for (let x = -88; x <= 88; x += 22) {
-      graphic.lineStyle(2, x % 44 === 0 ? 0xffffff : 0x20f4e6, 0.85)
+      graphic.lineStyle(2, x % 44 === 0 ? 0xf4ffff : 0x7aeeff, 0.85)
       graphic.strokeRect(point.x + x - 7, point.y - 48, 14, 96)
     }
-    const label = this.add.text(point.x, point.y - 66, 'QUANTUM FIREWALL // 16', { fontFamily: 'monospace', fontSize: '12px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#2a0620e6', padding: { x: 8, y: 4 } }).setOrigin(0.5).setDepth(68)
+    const label = this.add.text(point.x, point.y - 66, 'QUANTUM FIREWALL // 16', { fontFamily: 'monospace', fontSize: '12px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#160b3be8', padding: { x: 8, y: 4 } }).setOrigin(0.5).setDepth(68)
     this.tweens.add({ targets: graphic, alpha: 0.58, duration: 260, yoyo: true, repeat: -1 })
     this.tweens.add({ targets: label, scaleX: 1.05, scaleY: 1.05, duration: 360, yoyo: true, repeat: -1 })
     this.cameras.main.shake(240, 0.008, true)
-    this.cameras.main.flash(120, 255, 62, 165, false)
+    this.cameras.main.flash(140, 100, 53, 255, false)
     this.activeFirewalls.push({ point, expiresAt: this.battle.now + 10000, affected: new Set(), capacity: 16, graphic, label })
     EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '量子防火墙超载部署 · 容量 16 · 持续 10 秒' })
   }
@@ -493,10 +493,10 @@ export class BattleScene extends Phaser.Scene {
         const firewallDamage = enemy.isBoss ? enemy.maxHp * 0.006 : enemy.elite ? enemy.maxHp * 0.02 : enemy.maxHp * 0.04
         applyDamage(this.geometry, enemy, Math.min(firewallDamage, enemy.isBoss ? 360 : 260), 'energy', null, 0, this.battle.now)
         const impact = this.add.graphics().setDepth(72)
-        impact.lineStyle(4, 0xff3ea5, 1).strokeRect(screen.x - 38, screen.y - 38, 76, 76)
-        impact.lineStyle(2, 0x20f4e6, 0.9).strokeCircle(screen.x, screen.y, 52)
+        impact.lineStyle(4, 0x6435ff, 1).strokeRect(screen.x - 38, screen.y - 38, 76, 76)
+        impact.lineStyle(2, 0x05c7ff, 0.92).strokeCircle(screen.x, screen.y, 52)
         this.tweens.add({ targets: impact, scale: 1.45, alpha: 0, duration: 560, onComplete: () => impact.destroy() })
-        const denied = this.add.text(screen.x, screen.y - 34, 'ACCESS DENIED // ROLLBACK', { fontFamily: 'monospace', fontSize: '11px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#5a083be8', padding: { x: 6, y: 4 } }).setOrigin(0.5).setDepth(73)
+        const denied = this.add.text(screen.x, screen.y - 34, 'ACCESS DENIED // ROLLBACK', { fontFamily: 'monospace', fontSize: '11px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#210b57e8', padding: { x: 6, y: 4 } }).setOrigin(0.5).setDepth(73)
         this.tweens.add({ targets: denied, y: denied.y - 24, alpha: 0, duration: 900, onComplete: () => denied.destroy() })
         if (firewall.capacity <= 0) break
       }

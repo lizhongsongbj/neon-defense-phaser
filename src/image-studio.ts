@@ -13,6 +13,7 @@ interface AssetItem {
   referenceAsset: string
   targetFile: string
   prompt: string
+  referenceAvailable?: boolean
 }
 
 interface StudioConfig {
@@ -70,7 +71,7 @@ function setStatus(message: string, tone: 'ready' | 'working' | 'error' | 'succe
 }
 
 function setWorking(working: boolean) {
-  generateButton.disabled = working || !selectedItem || !config?.keyConfigured
+  generateButton.disabled = working || !selectedItem || !config?.keyConfigured || selectedItem.referenceAvailable === false
   generationScan.hidden = !working
   if (working) {
     resultPlaceholder.hidden = true
@@ -107,7 +108,11 @@ function selectItem(item: AssetItem) {
   document.querySelectorAll<HTMLButtonElement>('.asset-item').forEach((button) => {
     button.classList.toggle('is-active', button.dataset.assetId === item.id)
   })
-  setStatus(`READY // 已载入 ${item.towerName} · ${item.name}`, 'ready')
+  if (item.referenceAvailable === false) {
+    setStatus(`ERROR // ${item.name} 的参考素材不存在，请先修复素材路径`, 'error')
+  } else {
+    setStatus(`READY // 已载入 ${item.towerName} · ${item.name}`, 'ready')
+  }
   setWorking(false)
 }
 
@@ -130,8 +135,9 @@ function renderAssetList(items: AssetItem[]) {
       const button = document.createElement('button')
       button.type = 'button'
       button.className = generatedAssets.has(item.id) ? 'asset-item has-generated' : 'asset-item'
+      if (item.referenceAvailable === false) button.classList.add('has-error')
       button.dataset.assetId = item.id
-      button.innerHTML = `<span>${item.kind === 'unit' ? 'UNIT // 独立单位' : `TIER ${item.tier}${item.branch ? ` // BRANCH ${item.branch}` : ''}`} ${generatedAssets.has(item.id) ? '// 已生成' : ''}</span><strong>${item.name}</strong><small>${item.id}</small>`
+      button.innerHTML = `<span>${item.kind === 'unit' ? 'UNIT // 独立单位' : `TIER ${item.tier}${item.branch ? ` // BRANCH ${item.branch}` : ''}`} ${item.referenceAvailable === false ? '// 参考图缺失' : generatedAssets.has(item.id) ? '// 已生成' : ''}</span><strong>${item.name}</strong><small>${item.id}</small>`
       button.addEventListener('click', () => selectItem(item))
       group.append(button)
     })

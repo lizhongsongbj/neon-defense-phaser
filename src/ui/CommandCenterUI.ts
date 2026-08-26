@@ -1,4 +1,4 @@
-﻿import type Phaser from 'phaser'
+import type Phaser from 'phaser'
 import { MAP_LEVELS, CAMPAIGN_THREAT_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_ENEMY_COUNTS, CAMPAIGN_STARTING_COINS } from '../data/maps'
 import { TOWER_TYPES } from '../data/towers'
 import { EXPANSION_TOWERS, GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
@@ -6,16 +6,21 @@ import type { Difficulty } from '../data/balance'
 import { growthUpgradeCost } from '../systems/Economy'
 import { CampaignState } from '../state/CampaignState'
 import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceSystem } from '../audio'
-import { BalancePanel } from './BalancePanel'
-import { AnimationPanel } from './AnimationPanel'
-import { EffectPanel } from './EffectPanel'
-import { AudioStudio } from './AudioStudio'
-import { UIArtStudio } from './UIArtStudio'
 import { MAX_PLAYER_SKILL_LEVEL, PLAYER_SKILLS, playerSkillCooldown, playerSkillUpgradeCost, type PlayerSkillId } from '../data/playerSkills'
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = { easy: '简单', normal: '标准', hard: '困难' }
 const STATUS_LABEL: Record<'cleared' | 'online' | 'locked', string> = { cleared: 'CLEARED', online: 'ONLINE', locked: 'LOCKED' }
 const MAX_GROWTH_LEVEL = 3
+const CAMPAIGN_NODE_POSITIONS = [
+  { x: 11, y: 31 },
+  { x: 27, y: 25 },
+  { x: 45, y: 23 },
+  { x: 22, y: 53 },
+  { x: 47, y: 54 },
+  { x: 71, y: 25 },
+  { x: 76, y: 48 },
+  { x: 89, y: 49 },
+] as const
 const GROWTH_TOWER_TYPES = [
   ...TOWER_TYPES,
   ...EXPANSION_TOWERS.map((tower) => ({
@@ -51,14 +56,6 @@ export class CommandCenterUI {
   private readonly musicToggle: HTMLButtonElement
   private readonly tabs: HTMLButtonElement[]
   private readonly panels: Record<string, HTMLElement>
-  private readonly assetTabs: HTMLButtonElement[]
-  private readonly assetPanels: Record<string, HTMLElement>
-  private readonly balancePanel: BalancePanel
-  private readonly animationPanel: AnimationPanel
-  private readonly effectPanel: EffectPanel
-  private readonly audioStudio: AudioStudio
-  private readonly uiArtStudio: UIArtStudio
-  private previousAssetTab = 'animations'
 
   private selectedMapIndex = 0
   private selectedDifficulty: Difficulty = 'normal'
@@ -93,26 +90,11 @@ export class CommandCenterUI {
     this.panels = {
       missions: this.el.querySelector('[data-command-panel="missions"]') as HTMLElement,
       growth: this.el.querySelector('[data-command-panel="growth"]') as HTMLElement,
-      balance: this.el.querySelector('[data-command-panel="balance"]') as HTMLElement,
-      assets: this.el.querySelector('[data-command-panel="assets"]') as HTMLElement,
-    }
-    this.assetTabs = Array.from(this.el.querySelectorAll('[data-asset-tab]'))
-    this.assetPanels = {
-      animations: this.el.querySelector('[data-asset-panel="animations"]') as HTMLElement,
-      effects: this.el.querySelector('[data-asset-panel="effects"]') as HTMLElement,
-      studio: this.el.querySelector('[data-asset-panel="studio"]') as HTMLElement,
-      'ui-art': this.el.querySelector('[data-asset-panel="ui-art"]') as HTMLElement,
-      audio: this.el.querySelector('[data-asset-panel="audio"]') as HTMLElement,
     }
 
     // 新进入游戏时始终从第一个地图开始显示，存档进度不会改变默认选中项。
     this.selectedMapIndex = 0
     this.selectedDifficulty = campaign.difficulty
-    this.balancePanel = new BalancePanel(campaign, () => this.selectedMapIndex)
-    this.animationPanel = new AnimationPanel()
-    this.effectPanel = new EffectPanel()
-    this.audioStudio = new AudioStudio()
-    this.uiArtStudio = new UIArtStudio()
     this.buildLoadoutDialog()
 
     this.buildMissionList()
@@ -120,8 +102,6 @@ export class CommandCenterUI {
     this.buildGrowthGrid()
     this.buildSkillGrowthGrid()
     this.bindTabs()
-    this.bindAssetTabs()
-    this.bindImageStudioReturn()
     this.bindDeploy()
     this.bindClose()
     this.bindAudioToggles()
@@ -174,46 +154,8 @@ export class CommandCenterUI {
         Object.entries(this.panels).forEach(([key, panel]) => {
           panel.hidden = key !== target
         })
-        if (target === 'balance') this.balancePanel.onTabActivated()
-        if (target === 'assets') this.activateAssetPanel(this.activeAssetTab())
       })
     })
-  }
-
-  private bindImageStudioReturn() {
-    window.addEventListener('message', (event) => {
-      if (event.origin !== window.location.origin) return
-      if (event.data?.type !== 'neon-defense:return-from-image-studio') return
-      this.activateAssetPanel(this.previousAssetTab)
-    })
-  }
-
-  private bindAssetTabs() {
-    this.assetTabs.forEach((tab) => {
-      tab.addEventListener('click', () => this.activateAssetPanel(tab.dataset.assetTab as string))
-    })
-  }
-
-  private activeAssetTab() {
-    return this.assetTabs.find((tab) => tab.getAttribute('aria-selected') === 'true')?.dataset.assetTab ?? 'animations'
-  }
-
-  private activateAssetPanel(target: string) {
-    const current = this.activeAssetTab()
-    if (target === 'studio' && current !== 'studio') this.previousAssetTab = current
-    if (target !== 'studio') this.previousAssetTab = target
-    this.assetTabs.forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.assetTab === target)))
-    Object.entries(this.assetPanels).forEach(([key, panel]) => {
-      panel.hidden = key !== target
-    })
-    if (target === 'animations') this.animationPanel.activate()
-    if (target === 'effects') this.effectPanel.activate()
-    if (target === 'audio') this.audioStudio.activate()
-    if (target === 'ui-art') this.uiArtStudio.activate()
-    if (target === 'studio') {
-      const frame = this.assetPanels.studio.querySelector<HTMLIFrameElement>('.image-studio-frame')
-      if (frame && !frame.src) frame.src = frame.dataset.src ?? '/image-studio.html'
-    }
   }
 
   private bindClose() {
@@ -223,14 +165,22 @@ export class CommandCenterUI {
   private buildMissionList() {
     MAP_LEVELS.forEach((map, index) => {
       const row = document.createElement('button')
+      const position = CAMPAIGN_NODE_POSITIONS[index] ?? { x: 50, y: 50 }
       row.type = 'button'
       row.className = 'mission-row'
+      row.style.setProperty('--node-x', `${position.x}%`)
+      row.style.setProperty('--node-y', `${position.y}%`)
+      row.setAttribute('aria-label', `关卡 ${index + 1}：${map.name}`)
       const code = String(index + 1).padStart(2, '0')
       row.innerHTML = `
-        ${map.available ? `<img src="${map.image}" alt="${map.name}" />` : '<span class="mission-row__empty" aria-hidden="true">EMPTY</span>'}
+        <span class="mission-row__crest" aria-hidden="true">
+          <span class="mission-row__number">${code}</span>
+          <span class="mission-row__lock">◆</span>
+        </span>
+        <span class="mission-row__stars" aria-hidden="true"><i>★</i><i>★</i><i>★</i></span>
         <span class="mission-row__copy">
-          <b>${code} · ${map.name}</b>
-          <small>${map.available ? `${CAMPAIGN_WAVE_COUNTS[index]} 波 · ${CAMPAIGN_ENEMY_COUNTS[index]} 种敌军 · THREAT ${CAMPAIGN_THREAT_LEVELS[index].toFixed(2)}` : '等待新版地图数据'}</small>
+          <b>${map.name}</b>
+          <small>${map.available ? `${CAMPAIGN_WAVE_COUNTS[index]} 波防御` : '等待地图数据'}</small>
         </span>
         <em data-role="status"></em>
       `
@@ -482,5 +432,6 @@ export class CommandCenterUI {
     })
   }
 }
+
 
 

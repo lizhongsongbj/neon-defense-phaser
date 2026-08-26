@@ -224,7 +224,7 @@
       "categoryId": "street-mercenary",
       "towerName": "街头兵营",
       "name": "铬街战术佣兵",
-      "referenceAsset": "/assets/generated/cutout/mercenary-tier-3-2026-08-23T12-04-52-610Z.png",
+      "referenceAsset": "/assets/towers/generated-raw-cutouts/street-mercenary.png",
       "targetFile": "street-mercenary-unit.png",
       "prompt": "从参考建筑中单独设计一名街头佣兵单位。全身站姿，约45度等距俯视角，身体朝右上方警戒，双手持紧凑型未来突击步枪；穿模块化黑灰战术装甲、黄铜护肩和护膝、封闭式头盔与青色单眼战术目镜。轮廓简洁、坚毅、易于小尺寸辨认，与街头兵营的深灰枪铁、黄铜和青色能源灯完全协调。只生成一个完整人物，真实透明或纯白背景，不要建筑、地面、场景、文字、Logo、UI边框或水印，脚部和武器不得裁切。"
     },

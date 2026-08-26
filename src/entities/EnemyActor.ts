@@ -46,15 +46,15 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     this.ensureRuntimeAnimations()
     this.playMotion('move')
 
-    this.hpBarBg = scene.add.rectangle(0, -baseSize / 2 - 10, this.barWidth, 5, 0x1a1a1a, 0.85)
-    this.shieldBarFill = scene.add.rectangle(-this.barWidth / 2, -baseSize / 2 - 10, this.barWidth, 5, 0x79e8ff, 0.9).setOrigin(0, 0.5)
-    this.hpBarFill = scene.add.rectangle(-this.barWidth / 2, -baseSize / 2 - 10, this.barWidth, 5, 0xff3b6b, 1).setOrigin(0, 0.5)
+    this.hpBarBg = scene.add.rectangle(0, -baseSize / 2 - 10, this.barWidth, 5, 0x02050a, 0.9)
+    this.shieldBarFill = scene.add.rectangle(-this.barWidth / 2, -baseSize / 2 - 10, this.barWidth, 5, 0x7aeeff, 0.92).setOrigin(0, 0.5)
+    this.hpBarFill = scene.add.rectangle(-this.barWidth / 2, -baseSize / 2 - 10, this.barWidth, 5, 0xff245d, 1).setOrigin(0, 0.5)
 
     this.tag = scene.add
       .text(0, -baseSize / 2 - 20, displayName(state), {
         fontFamily: 'sans-serif',
         fontSize: state.isBoss ? '13px' : '10px',
-        color: '#e8ffff',
+        color: '#f4ffff',
       })
       .setOrigin(0.5, 1)
 
@@ -112,15 +112,15 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     this.statusRing.clear()
     if (now < this.enemy.stunnedUntil) {
       const pulse = 0.65 + Math.sin(this.scene.time.now * 0.03) * 0.25
-      this.sprite.setTint(0x7fffff)
-      this.statusRing.lineStyle(3, 0x20f4e6, pulse).strokeCircle(0, 0, this.sprite.displayWidth * 0.54)
+      this.sprite.setTint(0x7aeeff)
+      this.statusRing.lineStyle(3, 0x05c7ff, pulse).strokeCircle(0, 0, this.sprite.displayWidth * 0.54)
       this.statusRing.lineStyle(1, 0xffffff, 0.8).strokeCircle(0, 0, this.sprite.displayWidth * 0.68)
     } else if (now < this.enemy.attackSuppressedUntil) {
-      this.sprite.setTint(0xff78c1)
-      this.statusRing.lineStyle(3, 0xff3ea5, 0.85).strokeRect(-this.sprite.displayWidth * 0.56, -this.sprite.displayHeight * 0.56, this.sprite.displayWidth * 1.12, this.sprite.displayHeight * 1.12)
+      this.sprite.setTint(0xb39bff)
+      this.statusRing.lineStyle(3, 0x6435ff, 0.85).strokeRect(-this.sprite.displayWidth * 0.56, -this.sprite.displayHeight * 0.56, this.sprite.displayWidth * 1.12, this.sprite.displayHeight * 1.12)
     } else if (now < this.enemy.skillSlowUntil) {
-      this.sprite.setTint(0x83eaff)
-      this.statusRing.lineStyle(2, 0x20f4e6, 0.55).strokeCircle(0, 0, this.sprite.displayWidth * 0.58)
+      this.sprite.setTint(0x7aeeff)
+      this.statusRing.lineStyle(2, 0x05c7ff, 0.55).strokeCircle(0, 0, this.sprite.displayWidth * 0.58)
     } else {
       this.sprite.clearTint()
     }

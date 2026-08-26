@@ -101,6 +101,15 @@ async function extractImageBytes(payload: Record<string, any>): Promise<Buffer> 
   throw new Error('图像服务既没有返回 b64_json，也没有返回 url。')
 }
 
+function imageRequestRetryable(status: number, message: string): boolean {
+  return status === 408 || status === 409 || status === 429 || status >= 500
+    || /retry|temporar|timeout|timed out|渠道不存在|暂无可用渠道|服务繁忙|稍后重试/i.test(message)
+}
+
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds))
+}
+
 async function requestOriginImage(
   environment: ImageEnvironment,
   prompt: string,
@@ -108,48 +117,78 @@ async function requestOriginImage(
   referencePath: string | null,
 ): Promise<Buffer> {
   const apiKey = environment.OG_API_KEY?.trim()
-  if (!apiKey) throw new Error('OG_API_KEY 尚未配置，请在 .env.local 中设置。')
+  if (!apiKey) throw new Error('OG_API_KEY 尚未配置，请复制 .env.example 为 .env.local，填入有效密钥后重启服务。')
 
-  let upstream: Response
-  if (!referencePath) {
-    const host = (environment.OG_HOST || 'https://origingame.dev').replace(/\/$/, '')
-    upstream = await fetch(`${host}/gw/v1/images/generations`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-image-2',
-        prompt,
-        size,
-        response_format: 'b64_json',
-      }),
-    })
-  } else {
-    const referenceBytes = await readFile(referencePath)
-    const form = new FormData()
-    form.set('model', 'gpt-image-2')
-    form.set('prompt', prompt)
-    form.set('size', size)
-    form.set('response_format', 'b64_json')
-    form.append(
-      'image[]',
-      new Blob([new Uint8Array(referenceBytes)], { type: imageMime(referencePath) }),
-      `reference${extname(referencePath) || '.png'}`,
-    )
-    upstream = await fetch(environment.OG_IMAGE_EDIT_URL || 'https://api.origingame.dev/v1/images/edits', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}` },
-      body: form,
-    })
+  let referenceBytes: Buffer | null = null
+  if (referencePath) {
+    try {
+      referenceBytes = await readFile(referencePath)
+    } catch {
+      const displayPath = referencePath.replace(publicDirectory, '/public').replaceAll('\\', '/')
+      throw new Error(`参考素材不存在：${displayPath}`)
+    }
   }
 
-  const payload = await upstream.json().catch(() => ({})) as Record<string, any>
-  if (!upstream.ok) {
-    throw new Error(payload.error?.message || payload.message || `图像接口请求失败：HTTP ${upstream.status}`)
+  const maximumAttempts = 3
+  let lastMessage = '未知错误'
+  for (let attempt = 1; attempt <= maximumAttempts; attempt += 1) {
+    let upstream: Response
+    try {
+      if (!referencePath || !referenceBytes) {
+        const host = (environment.OG_HOST || 'https://origingame.dev').replace(/\/$/, '')
+        upstream = await fetch(`${host}/gw/v1/images/generations`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-image-2',
+            prompt,
+            size,
+            response_format: 'b64_json',
+          }),
+          signal: AbortSignal.timeout(600_000),
+        })
+      } else {
+        const form = new FormData()
+        form.set('model', 'gpt-image-2')
+        form.set('prompt', prompt)
+        form.set('size', size)
+        form.set('response_format', 'b64_json')
+        form.append(
+          'image[]',
+          new Blob([new Uint8Array(referenceBytes)], { type: imageMime(referencePath) }),
+          `reference${extname(referencePath) || '.png'}`,
+        )
+        upstream = await fetch(environment.OG_IMAGE_EDIT_URL || 'https://api.origingame.dev/v1/images/edits', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${apiKey}` },
+          body: form,
+          signal: AbortSignal.timeout(600_000),
+        })
+      }
+    } catch (error) {
+      lastMessage = error instanceof Error ? error.message : '无法连接图像生成服务'
+      if (attempt < maximumAttempts) {
+        await wait(attempt * 4_000)
+        continue
+      }
+      throw new Error(`图像生成服务连接失败，已自动重试 ${maximumAttempts} 次：${lastMessage}`)
+    }
+
+    const payload = await upstream.json().catch(() => ({})) as Record<string, any>
+    if (upstream.ok) return extractImageBytes(payload)
+
+    lastMessage = payload.error?.message || payload.message || `图像接口请求失败：HTTP ${upstream.status}`
+    if (attempt < maximumAttempts && imageRequestRetryable(upstream.status, lastMessage)) {
+      await wait(attempt * 4_000)
+      continue
+    }
+    throw new Error(lastMessage)
   }
-  return extractImageBytes(payload)
+
+  throw new Error(`图像生成失败：${lastMessage}`)
 }
 
 interface TransparencyResult {
@@ -315,15 +354,22 @@ function imageStudioPlugin(environment: ImageEnvironment): Plugin {
             return
           }
           if (request.method === 'GET' && pathname === '/api/image-studio/config') {
+            const items = await Promise.all(specification.items.map(async (item) => {
+              try {
+                await stat(localPublicPath(item.referenceAsset))
+                return { ...item, referenceAvailable: true }
+              } catch {
+                return { ...item, referenceAvailable: false }
+              }
+            }))
             sendJson(response, 200, {
               keyConfigured: Boolean(environment.OG_API_KEY?.trim()),
               sizes: specification.sizes.filter((size) => allowedSizes.has(size)),
               stylePrompt: specification.stylePrompt,
-              items: specification.items,
+              items,
             })
             return
           }
-
           if (request.method === 'POST' && pathname === '/api/generate-asset') {
             const body = await readJsonBody(request)
             const id = String(body.id || '')
@@ -628,6 +674,14 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'es2020',
+      rollupOptions: {
+        input: {
+          game: resolve(workspaceRoot, 'index.html'),
+          assets: resolve(workspaceRoot, 'asset-forge.html'),
+          balance: resolve(workspaceRoot, 'balance-workbench.html'),
+          imageStudio: resolve(workspaceRoot, 'image-studio.html'),
+        },
+      },
     },
   }
 })

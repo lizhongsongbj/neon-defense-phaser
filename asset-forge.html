@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <title>霓虹防线 · 素材工作台</title>
+</head>
+<body>
+  <main class="asset-forge-page">
+    <header class="asset-forge-page__header">
+      <div class="asset-forge-page__brand">
+        <span aria-hidden="true">//</span>
+        <div><small>NEON DEFENSE // PRODUCTION TOOLS</small><h1>素材工作台</h1></div>
+      </div>
+      <div class="asset-forge-page__actions">
+        <span>独立制作页面</span>
+        <a href="./index.html">返回游戏</a>
+      </div>
+    </header>
+      <section class="asset-forge-panel asset-forge-page__panel" aria-label="素材工作区">
+        <nav class="asset-forge-tabs" role="tablist" aria-label="素材生图分类">
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="animations" aria-selected="true">动画面板</button>
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="effects" aria-selected="false">特效面板</button>
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="studio" aria-selected="false">生图工作台</button>
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="ui-art" aria-selected="false">UI美术台</button>
+          <button class="asset-forge-tab" type="button" role="tab" data-asset-tab="audio" aria-selected="false">音效工作台</button>
+        </nav>
+        <div class="asset-forge-content">
+      <section class="asset-forge-section animation-panel" data-asset-panel="animations" aria-label="游戏动画面板">
+        <header class="animation-panel__header">
+          <div><span>ANIMATION MATRIX // COMPLETE MOTION LIBRARY</span><h2>全单位动画面板</h2><p>收录保留攻击表现的防御塔动画、全部怪物行走/攻击/死亡，以及佣兵和无人机单位动作。</p></div>
+          <output id="animation-count">正在建立动画索引…</output>
+        </header>
+        <div class="animation-toolbar">
+          <div class="animation-filters" role="group" aria-label="动画分类">
+            <button type="button" data-animation-filter="all" aria-pressed="true">全部</button><button type="button" data-animation-filter="tower" aria-pressed="false">防御塔攻击</button><button type="button" data-animation-filter="enemy" aria-pressed="false">怪物</button><button type="button" data-animation-filter="mercenary" aria-pressed="false">佣兵</button><button type="button" data-animation-filter="drone" aria-pressed="false">无人机</button>
+          </div>
+          <label class="animation-search"><span>SEARCH</span><input id="animation-search" type="search" placeholder="搜索名称、等级或动作…" autocomplete="off" /></label>
+        </div>
+        <div class="animation-grid" id="animation-grid"></div>
+        <aside class="animation-detail" id="animation-detail" hidden><div class="animation-detail__panel">
+          <button class="picker-close animation-detail__close" id="animation-detail-close" type="button" aria-label="关闭动画详情">×</button>
+          <div class="animation-detail__preview" id="animation-detail-preview"></div>
+          <div class="animation-detail__copy"><span id="animation-detail-code"></span><h3 id="animation-detail-name"></h3><p id="animation-detail-description"></p><dl><div><dt>动作时间线</dt><dd id="animation-detail-timeline"></dd></div><div><dt>素材状态</dt><dd id="animation-detail-status"></dd></div></dl><button class="animation-replay" id="animation-replay" type="button">REPLAY // 重新播放</button></div>
+        </div></aside>
+      </section>
+      <section class="asset-forge-section effect-panel" data-asset-panel="effects" aria-label="全素材特效面板" hidden>
+        <header class="effect-panel__header">
+          <div><span>VFX FORGE // UNIVERSAL EFFECT LIBRARY</span><h2>全素材特效面板</h2><p>包括通用粒子、光束、冲击波、状态效果、全部连携特效，以及怪物、佣兵和无人机死亡特效。</p></div>
+          <output id="effect-count">正在建立特效索引…</output>
+        </header>
+        <div class="effect-toolbar">
+          <div class="effect-filters" role="group" aria-label="特效分类">
+            <button type="button" data-effect-filter="all" aria-pressed="true">全部</button>
+            <button type="button" data-effect-filter="core" aria-pressed="false">粒子/光束</button>
+            <button type="button" data-effect-filter="synergy" aria-pressed="false">连携</button>
+            <button type="button" data-effect-filter="enemy-death" aria-pressed="false">怪物死亡</button>
+            <button type="button" data-effect-filter="mercenary-death" aria-pressed="false">佣兵死亡</button>
+            <button type="button" data-effect-filter="drone-death" aria-pressed="false">无人机死亡</button>
+          </div>
+          <label class="effect-search"><span>SEARCH</span><input id="effect-search" type="search" placeholder="搜索粒子、光束、单位或连携…" autocomplete="off" /></label>
+        </div>
+        <div class="effect-grid" id="effect-grid"></div>
+        <aside class="effect-detail" id="effect-detail" hidden><div class="effect-detail__panel">
+          <button class="picker-close effect-detail__close" id="effect-detail-close" type="button" aria-label="关闭特效详情">×</button>
+          <div class="effect-detail__preview" id="effect-detail-preview"></div>
+          <div class="effect-detail__copy"><span id="effect-detail-code"></span><h3 id="effect-detail-name"></h3><p id="effect-detail-description"></p><dl><div><dt>特效时间线</dt><dd id="effect-detail-timeline"></dd></div><div><dt>合成层级</dt><dd id="effect-detail-layers"></dd></div></dl><button class="effect-replay" id="effect-replay" type="button">REPLAY // 重新播放</button></div>
+        </div></aside>
+      </section>
+      <section class="asset-forge-section image-studio-panel" data-asset-panel="studio" aria-label="素材生图工作台" hidden>
+        <iframe class="image-studio-frame" data-src="./image-studio.html" title="素材生图工作台"></iframe>
+      </section>
+      <section class="asset-forge-section ui-art-studio-panel" id="ui-art-studio" data-asset-panel="ui-art" aria-label="UI美术设计工作台" hidden>
+        <header class="ui-art-studio__header">
+          <div><span>INTERFACE ART LAB // NIGHT CITY SYSTEM</span><h2>UI美术设计工作台</h2><p>设计指挥中心、战斗HUD、防御塔卡片、战术警报与结算界面，并导出统一的颜色和组件规范。</p></div>
+          <output>5 套界面模板 · 4 套视觉主题</output>
+        </header>
+        <div class="ui-art-studio__layout">
+          <aside class="ui-art-library" aria-label="界面模板">
+            <div class="ui-art-section-title"><span>01</span><div><b>界面模板</b><small>SCREEN BLUEPRINTS</small></div></div>
+            <div class="ui-art-preset-list">
+              <button type="button" data-ui-preset="command" aria-pressed="true"><i>CMD-01</i><b>指挥中心</b><small>关卡、难度与部署</small></button>
+              <button type="button" data-ui-preset="battle" aria-pressed="false"><i>HUD-02</i><b>战斗 HUD</b><small>资源、波次与基地状态</small></button>
+              <button type="button" data-ui-preset="tower" aria-pressed="false"><i>TWR-03</i><b>防御塔卡片</b><small>等级、数值与建造操作</small></button>
+              <button type="button" data-ui-preset="alert" aria-pressed="false"><i>ALT-04</i><b>战术警报</b><small>Boss、受损与紧急提示</small></button>
+              <button type="button" data-ui-preset="result" aria-pressed="false"><i>RSL-05</i><b>战斗结算</b><small>评分、奖励与继续推进</small></button>
+            </div>
+            <button class="ui-art-randomize" id="ui-art-randomize" type="button">生成随机设计方案</button>
+          </aside>
+          <section class="ui-art-workspace" aria-label="UI实时预览">
+            <header><div><span>LIVE PREVIEW</span><h3 id="ui-art-preview-title">指挥中心</h3></div><code id="ui-art-preview-meta">CMD-01 // 夜城防线 // 密度 88%</code></header>
+            <div class="ui-art-viewport"><div class="ui-art-preview has-grid has-scanlines" id="ui-art-preview"></div></div>
+            <footer><span><i></i>实时组件预览</span><em>1440 × 900 / RESPONSIVE SAFE AREA</em></footer>
+          </section>
+          <aside class="ui-art-inspector" aria-label="视觉参数">
+            <div class="ui-art-section-title"><span>02</span><div><b>视觉参数</b><small>ART DIRECTION</small></div></div>
+            <div class="ui-art-theme-list" role="group" aria-label="视觉主题">
+              <button type="button" data-ui-theme="night" aria-pressed="true"><i style="--swatch:#20f4e6"></i>夜城防线</button>
+              <button type="button" data-ui-theme="corporate" aria-pressed="false"><i style="--swatch:#75bfff"></i>企业战术</button>
+              <button type="button" data-ui-theme="street" aria-pressed="false"><i style="--swatch:#ff5b55"></i>街头佣兵</button>
+              <button type="button" data-ui-theme="biotech" aria-pressed="false"><i style="--swatch:#74ff9f"></i>生体协议</button>
+            </div>
+            <div class="ui-art-controls">
+              <label><span>主强调色</span><input id="ui-art-accent" type="color" value="#20f4e6"></label>
+              <label><span>信息密度</span><input id="ui-art-density" type="range" min="70" max="100" value="88"></label>
+              <label><span>边角语言</span><select id="ui-art-corners"><option value="sharp">工业直角</option><option value="tech" selected>科技切角</option><option value="soft">柔和圆角</option></select></label>
+              <label class="ui-art-check"><input id="ui-art-grid" type="checkbox" checked><span>显示战术网格</span></label>
+              <label class="ui-art-check"><input id="ui-art-scanlines" type="checkbox" checked><span>显示扫描线</span></label>
+            </div>
+            <div class="ui-art-actions"><button id="ui-art-copy" type="button">复制 CSS 变量</button><button id="ui-art-export" type="button">导出设计规范</button><button id="ui-art-reset" type="button">恢复默认</button></div>
+            <output class="ui-art-status" id="ui-art-status" data-state="ready">指挥中心已应用 · 夜城防线 · #20F4E6</output>
+          </aside>
+        </div>
+      </section>      <section class="asset-forge-section audio-studio-panel" data-asset-panel="audio" aria-label="音效工作台" hidden>
+        <header class="audio-studio__header">
+          <div><span>音效素材库 // 声音制作工作区</span><h2>音效工作台</h2><p>集中试听已有音乐与角色语音，并用自然语言描述生成新的游戏音效。</p></div>
+          <output id="audio-library-count">正在扫描音频素材…</output>
+        </header>
+        <div class="audio-studio__layout">
+          <section class="audio-library" aria-label="已有音频素材库">
+            <div class="audio-library__toolbar">
+              <div class="audio-library__filters" role="group" aria-label="音频分类">
+                <button type="button" data-audio-filter="all" aria-pressed="true">全部</button>
+                <button type="button" data-audio-filter="music" aria-pressed="false">音乐</button>
+                <button type="button" data-audio-filter="voice" aria-pressed="false">角色语音</button>
+                <button type="button" data-audio-filter="generated" aria-pressed="false">生成音效</button>
+              </div>
+              <label class="audio-library__search"><span>搜索</span><input id="audio-library-search" type="search" placeholder="搜索名称、角色或文件…" autocomplete="off" /></label>
+            </div>
+            <div class="audio-library__grid" id="audio-library-grid" aria-live="polite"></div>
+          </section>
+          <aside class="audio-generator" aria-label="文字生成音效">
+            <div class="audio-generator__eyebrow">文字生成音效 // 智能声音合成</div>
+            <h3>用文字描述你想要的音效</h3>
+            <p>描述声音来源、材质、力度、空间感和结尾方式。生成结果会自动保存到本地素材库。</p>
+            <div class="audio-template-buttons" id="audio-template-buttons" aria-label="快速描述模板">
+              <button type="button" data-audio-template="短促有力的赛博朋克磁轨炮开火，电容充能后金属炮闩闭锁，高速弹芯破空，无人声，无背景音乐，音头清晰，尾音快速收束。">防御塔开火</button>
+              <button type="button" data-audio-template="重型机械单位爆炸，金属外壳撕裂、炽热火花喷溅、低沉冲击和零件落地，无人声，无背景音乐。">机械爆炸</button>
+              <button type="button" data-audio-template="大型生物怪物倒地死亡，沉重肉体撞击、湿润血雾喷散和低沉气息消失，无人声，无背景音乐。">生物死亡</button>
+              <button type="button" data-audio-template="高能量脉冲从核心聚集后瞬间释放，明亮电子谐振、空气震颤和干净短尾音，无人声，无背景音乐。">能量脉冲</button>
+              <button type="button" data-audio-template="干净利落的未来科技界面确认点击，微弱机械触感和明亮数字提示音，极短，无人声，无背景音乐。">UI 点击</button>
+            </div>
+            <form id="audio-generator-form" class="audio-generator__form">
+              <label><span>音效描述</span><textarea id="audio-prompt" maxlength="4000" rows="7" required placeholder="例如：短促有力的赛博朋克磁轨炮开火音效，包含电容充能、金属炮闩闭锁和高速弹芯破空声……"></textarea></label>
+              <label><span>持续时间</span><select id="audio-duration"><option value="1">1 秒</option><option value="2">2 秒</option><option value="3" selected>3 秒</option><option value="5">5 秒</option><option value="8">8 秒</option></select></label>
+              <button class="audio-generate-button" id="audio-generate-button" type="submit">生成音效</button>
+            </form>
+            <output class="audio-generator__status" id="audio-generator-status" aria-live="polite">正在连接音效生成服务…</output>
+            <div class="audio-generator__result" id="audio-generator-result" hidden></div>
+          </aside>
+        </div>
+      </section>
+        </div>
+      </section>
+
+  </main>
+  <script type="module" src="/src/asset-forge.ts"></script>
+</body>
+</html>
+

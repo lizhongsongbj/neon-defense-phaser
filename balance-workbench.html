@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <title>霓虹防线 · 数值工作台</title>
+</head>
+<body>
+  <main class="balance-workbench">
+    <header class="balance-workbench__header">
+      <div class="balance-workbench__brand">
+        <span aria-hidden="true">//</span>
+        <div><small>NEON DEFENSE // BALANCE LAB</small><h1>数值工作台</h1></div>
+      </div>
+      <div class="balance-workbench__actions">
+        <span>独立策划测试页面</span>
+        <a href="./index.html">返回游戏</a>
+      </div>
+    </header>
+      <section class="balance-panel balance-workbench__panel" aria-label="数值测试工作台">
+        <div class="balance-heading">
+          <div><span>AUTONOMOUS BALANCE LAB</span><h2>玩家代理测试矩阵</h2></div>
+          <output id="balance-status">READY // 等待任务</output>
+        </div>
+        <form class="balance-controls" id="balance-controls">
+          <label class="balance-control">关卡
+            <select id="balance-map" aria-label="测试关卡"></select>
+          </label>
+          <label class="balance-control">难度
+            <select id="balance-difficulty" aria-label="测试难度">
+              <option value="all">全部难度</option>
+              <option value="easy">简单</option>
+              <option value="normal" selected>普通</option>
+              <option value="hard">困难</option>
+            </select>
+          </label>
+          <label class="balance-control">代理策略
+            <select id="balance-strategy" aria-label="代理策略">
+              <option value="adaptive" selected>自适应</option>
+              <option value="offense">输出优先</option>
+              <option value="defense">防守优先</option>
+            </select>
+          </label>
+          <label class="balance-control">测试波数
+            <input id="balance-waves" type="number" min="1" max="30" value="10" inputmode="numeric">
+          </label>
+          <label class="balance-control">样本数
+            <select id="balance-runs" aria-label="测试样本数">
+              <option value="10">10</option>
+              <option value="30" selected>30</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+          <button class="balance-run" id="balance-run" type="submit">运行代理测试</button>
+        </form>
+        <div class="balance-progress" aria-hidden="true"><i id="balance-progress"></i></div>
+        <div class="balance-results" id="balance-results" aria-live="polite">
+          <div class="balance-empty">NO REPORT // 尚无测试报告</div>
+        </div>
+      </section>
+  </main>
+  <script type="module" src="/src/balance-workbench.ts"></script>
+</body>
+</html>

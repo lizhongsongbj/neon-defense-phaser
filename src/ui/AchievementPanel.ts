@@ -86,10 +86,10 @@ export class AchievementPanel {
     const progressText = target > 0 && !unlocked ? `<span>${Math.min(progress, target).toFixed(Number.isInteger(progress) ? 0 : 1)} / ${target}</span>` : `<span>${unlocked ? '已完成' : '未完成'}</span>`
 
     return `
-      <article class="achievement-card${unlocked ? ' is-unlocked' : ''}${concealed ? ' is-hidden' : ''}">
-        <div class="achievement-card__icon" aria-hidden="true">${unlocked ? '✓' : concealed ? '?' : sequence}</div>
+      <article class="achievement-card achievement-card--${definition.category}${unlocked ? ' is-unlocked' : ''}${concealed ? ' is-hidden' : ''}" data-achievement-id="${escapeHtml(definition.id)}">
+        <div class="achievement-card__icon" aria-hidden="true"><span>${unlocked ? '✓' : concealed ? '?' : sequence}</span></div>
         <div class="achievement-card__body">
-          <div class="achievement-card__meta"><span>${escapeHtml(category)}</span><em>${unlocked ? escapeHtml(unlockedDate) : 'LOCKED'}</em></div>
+          <div class="achievement-card__meta"><span>${escapeHtml(category)} // ${sequence}</span><em>${unlocked ? `UNLOCKED · ${escapeHtml(unlockedDate)}` : 'ACCESS LOCKED'}</em></div>
           <h3>${escapeHtml(name)}</h3>
           <p><b>完成条件</b>${escapeHtml(condition)}</p>
           <div class="achievement-card__progress"><i><b style="width:${percent}%"></b></i>${progressText}</div>
@@ -142,9 +142,9 @@ export class AchievementPanel {
     const banner = document.createElement('article')
     banner.className = 'achievement-notification'
     banner.innerHTML = `
-      <div class="achievement-notification__icon">✓</div>
+      <div class="achievement-notification__icon"><span>✓</span></div>
       <div class="achievement-notification__copy">
-        <span>成就已完成</span>
+        <span>ACHIEVEMENT // DATA UNLOCKED</span>
         <strong>${escapeHtml(definition.name)}</strong>
         <p><b>完成条件：</b>${escapeHtml(definition.condition)}</p>
       </div>
