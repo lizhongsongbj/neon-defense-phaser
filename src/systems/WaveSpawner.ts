@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 波次生成 —— 原样迁移自 霓虹防线/gameplay.js 中的 `_0x5a1326` (buildWavePlan)。
  */
 
@@ -54,14 +54,18 @@ export function buildWavePlan(wave: number, mapIndex: number): WaveRosterEntry[]
     })
   }
 
-  const bossPeriod = mapIndex >= 5 ? 5 : 10
-  if (wave % bossPeriod === 0) {
-    const bossId: BossId = Math.floor(wave / bossPeriod) % 2 === 1 ? 'enforcer' : 'eve'
+  // Campaign bosses are exclusive finales: Adam Smasher on stage 7, Eve-9 on stage 8.
+  const bossId: BossId | null = wave === 10 && mapIndex === 6
+    ? 'enforcer'
+    : wave === 10 && mapIndex === 7
+      ? 'eve'
+      : null
+  if (bossId) {
     roster.push({
       type: bossId,
       boss: true,
-      lane: (wave % 2 === 0 ? 'right' : 'left') as Lane,
-      routeIndex: (wave + 1) % Math.max(1, MAP_LEVELS[mapIndex]?.entranceRoutes.length ?? 2),
+      lane: 'right' as Lane,
+      routeIndex: (mapIndex + wave) % Math.max(1, MAP_LEVELS[mapIndex]?.entranceRoutes.length ?? 2),
       delay: 2.2,
     })
   }
@@ -79,3 +83,4 @@ export function scheduleWave(roster: WaveRosterEntry[]): Array<WaveRosterEntry &
   }
   return scheduled
 }
+
