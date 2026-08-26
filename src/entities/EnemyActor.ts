@@ -9,6 +9,8 @@ import {
   type EnemyAnimationMotion,
 } from '../data/enemyRuntimeAnimations'
 
+const CLEAN_FALL_DEATH_IDS = new Set(['aerostat', 'devourer', 'faraday', 'hijacker'])
+
 function textureKeyFor(state: EnemyState): string {
   return `enemy-${state.typeId}`
 }
@@ -138,6 +140,21 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     this.hpBarFill.setVisible(false)
     this.shieldBarFill.setVisible(false)
     this.tag.setVisible(false)
+
+    if (!leaked && !this.enemy.isBoss && CLEAN_FALL_DEATH_IDS.has(this.enemy.typeId)) {
+      // 四种新增单位使用干净整图作为底帧，倒下动作由 Phaser 做整体旋转、下坠和淡出，避免彩色扫描线。
+      this.scene.tweens.add({
+        targets: this.sprite,
+        angle: { from: 0, to: this.enemy.air ? 62 : 78 },
+        y: { from: 0, to: this.baseSize * 0.22 },
+        scaleY: { from: 1, to: 0.72 },
+        alpha: { from: 1, to: 0 },
+        duration: 560,
+        ease: 'Cubic.easeIn',
+        onComplete,
+      })
+      return
+    }
 
     const motion: EnemyAnimationMotion = leaked && this.hasMotion('attack') ? 'attack' : 'death'
     if (!this.hasMotion(motion)) {
