@@ -1827,3 +1827,14 @@ html, body {
 .skill-button i { position: absolute; right: 7px; bottom: 5px; color: var(--skill-accent); font: normal 900 10px/1 var(--font-mono); }
 @media (max-width: 900px) { .skill-growth-grid { grid-template-columns: 1fr; } }
 
+
+/* 四种新增机械/浮游敌人的死亡预览：整体倒下、淡出，不叠加彩色扫描线。 */
+.animation-card.motion-death .animation-card__preview img,
+.animation-detail__preview.motion-death img {
+  transform-origin: 50% 78%;
+  animation: clean-enemy-fall-preview 560ms cubic-bezier(.32,.72,.35,1) infinite alternate;
+}
+@keyframes clean-enemy-fall-preview {
+  from { transform: rotate(0deg) translateY(0) scaleY(1); opacity: 1; }
+  to { transform: rotate(68deg) translateY(16px) scaleY(.72); opacity: .08; }
+}
