@@ -1,4 +1,4 @@
-﻿import Phaser from 'phaser'
+import Phaser from 'phaser'
 import type { EnemyState } from '../systems/types'
 import { ENEMY_TYPES } from '../data/enemies'
 import { BOSS_TYPES, bossStageDefinition, bossStageTextureKey, type BossStage } from '../data/bosses'
@@ -33,6 +33,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
   private readonly barWidth = 54
   private readonly baseSize: number
   private currentMotion: EnemyAnimationMotion | 'static' = 'static'
+  private bossVisualStage = 0
   private finishing = false
 
   constructor(scene: Phaser.Scene, state: EnemyState, baseSize: number) {
@@ -42,10 +43,22 @@ export class EnemyActor extends Phaser.GameObjects.Container {
 
     const moveTexture = enemyAnimationTextureKey(state.typeId, 'move', 1)
     const key = textureKeyFor(state)
-    this.sprite = scene.add.sprite(0, 0, scene.textures.exists(moveTexture) ? moveTexture : scene.textures.exists(key) ? key : '__MISSING')
+    const bossStageTexture = state.isBoss ? bossStageTextureKey(state.typeId as keyof typeof BOSS_TYPES, state.stage) : ''
+    this.sprite = scene.add.sprite(
+      0,
+      0,
+      bossStageTexture && scene.textures.exists(bossStageTexture)
+        ? bossStageTexture
+        : scene.textures.exists(moveTexture)
+          ? moveTexture
+          : scene.textures.exists(key)
+            ? key
+            : '__MISSING',
+    )
     this.sprite.setDisplaySize(baseSize, baseSize)
     this.ensureRuntimeAnimations()
-    this.playMotion('move')
+    if (bossStageTexture && scene.textures.exists(bossStageTexture)) this.bossVisualStage = state.stage
+    else this.playMotion('move')
 
     this.hpBarBg = scene.add.rectangle(0, -baseSize / 2 - 10, this.barWidth, 5, 0x02050a, 0.9)
     this.shieldBarFill = scene.add.rectangle(-this.barWidth / 2, -baseSize / 2 - 10, this.barWidth, 5, 0x7aeeff, 0.92).setOrigin(0, 0.5)
@@ -93,6 +106,20 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     this.sprite.play(enemyAnimationKey(this.enemy.typeId, motion), true)
   }
 
+  private syncBossStageVisual(): boolean {
+    if (!this.enemy.isBoss) return false
+    const definition = BOSS_TYPES[this.enemy.typeId as keyof typeof BOSS_TYPES]
+    if (!definition.stageImages?.[this.enemy.stage as BossStage]) return false
+    const key = bossStageTextureKey(definition.id, this.enemy.stage)
+    if (!this.scene.textures.exists(key)) return false
+    if (this.bossVisualStage !== this.enemy.stage || this.sprite.texture.key !== key) {
+      this.sprite.stop()
+      this.sprite.setTexture(key).setDisplaySize(this.baseSize, this.baseSize)
+      this.currentMotion = 'static'
+      this.bossVisualStage = this.enemy.stage
+    }
+    return true
+  }
   /** 每帧根据 enemy 状态同步位置、动作、血量、护盾和异常状态。 */
   syncVisual(screenX: number, screenY: number, now: number) {
     if (this.finishing) return
@@ -100,7 +127,8 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     // 敌人没有独立的攻击状态字段；用短促的周期攻击窗口让已接入的攻击动图在战斗中真正可见。被佣兵/无人机拦截时优先播放攻击动作。
     const attackPulse = this.hasMotion('attack') && ((now + this.enemy.id * 317) % 1800) < 1000
     const attackActive = this.enemy.blocked || attackPulse
-    this.playMotion(SOLID_ATTACK_IDS.has(this.enemy.typeId) ? 'move' : attackActive ? 'attack' : 'move')
+    const usesBossStageVisual = this.syncBossStageVisual()
+    if (!usesBossStageVisual) this.playMotion(SOLID_ATTACK_IDS.has(this.enemy.typeId) ? 'move' : attackActive ? 'attack' : 'move')
     if (SOLID_ATTACK_IDS.has(this.enemy.typeId) && attackActive) {
       const phase = ((now + this.enemy.id * 317) % 1000) / 1000
       const recoil = Math.sin(phase * Math.PI * 2)
@@ -144,7 +172,8 @@ export class EnemyActor extends Phaser.GameObjects.Container {
         ? [0x92f6ff, 0xc084ff, 0xff5dcc]
         : [0xffd089, 0xff394f, 0xff45bb]
       const color = phaseColors[Math.max(0, this.enemy.stage - 1)] ?? 0xffffff
-      this.sprite.setTint(color)
+      if (usesBossStageVisual) this.sprite.clearTint()
+      else this.sprite.setTint(color)
       this.statusRing.lineStyle(2, color, 0.66).strokeCircle(0, 0, this.sprite.displayWidth * 0.62)
     } else {
       this.sprite.clearTint()

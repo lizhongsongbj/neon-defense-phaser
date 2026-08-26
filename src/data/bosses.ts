@@ -46,7 +46,7 @@ export interface BossDefinition {
   components?: string[]
   componentHp?: number | Record<string, number>
   trait: string
-  stages: readonly BossStageDefinition[]
+  stages: readonly BossStageDefinition[]`r`n  stageImages?: Partial<Record<BossStage, string>>
 }
 
 export const BOSS_TYPES: Record<BossId, BossDefinition> = {
@@ -67,7 +67,11 @@ export const BOSS_TYPES: Record<BossId, BossDefinition> = {
     boss: true,
     components: ['盾牌', '导弹舱', '推进器'],
     componentHp: { 盾牌: 4200, 导弹舱: 3200, 推进器: 2800 },
-    trait: '三种战斗形态依次切换：堡垒镇压负责正面防御，攻城超载合并导弹火力与赤红推进，核心暴露进入最终决战。',
+    stageImages: {
+      1: 'assets/enemies/boss-forms/adam-smasher-stage-1-fortress.png',
+      2: 'assets/enemies/boss-forms/adam-smasher-stage-2-siege-overload.png',
+      3: 'assets/enemies/boss-forms/adam-smasher-stage-3-core.png',
+    },    trait: '三种战斗形态依次切换：堡垒镇压负责正面防御，攻城超载合并导弹火力与赤红推进，核心暴露进入最终决战。',
     stages: [
       { stage: 1, name: '堡垒镇压', hpThreshold: 1, enterCondition: '初始形态；重型封闭装甲与胸前六边形能量盾保持完整，生命高于70%', armor: 0.36, speed: 9.5, attack: 85, energyResistance: 0.12, railVulnerability: 0, ability: 'shield-wave', abilityName: '镇压冲击', abilityCooldown: 8, abilityDescription: '释放近距离装甲冲击，使附近防御塔的下一次攻击延迟0.8秒。' },
       { stage: 2, name: '攻城超载', hpThreshold: 0.7, enterCondition: '盾牌被摧毁、任一部件失效，或生命降至70%；双肩导弹舱与手臂重武器展开，全身进入赤红能量过载并启动推进冲锋', armor: 0.17, speed: 13.2, attack: 135, energyResistance: 0.01, railVulnerability: 0.14, ability: 'overdrive-salvo', abilityName: '赤红攻城弹幕', abilityCooldown: 5.8, abilityDescription: '导弹与手臂重武器同时压制三座防御塔，并借助推进器进入高速突进。' },
