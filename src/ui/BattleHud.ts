@@ -511,7 +511,7 @@ export class BattleHud {
     this.specialEventSource.textContent = payload.enemyType.toUpperCase()
     this.specialEventTitle.textContent = payload.title
     this.specialEventDescription.textContent = payload.description
-    this.specialEventEffect.textContent = '优先锁定 · 重型敌人'
+    this.specialEventEffect.textContent = payload.effect
     this.specialEventBanner.hidden = false
     this.tacticalAlertTimer = window.setTimeout(() => {
       this.specialEventBanner.hidden = true
