@@ -5,12 +5,15 @@ export class MercenaryActor extends Phaser.GameObjects.Container {
   private readonly units: Phaser.GameObjects.Image[]
   private readonly homeX: number[]
   private readonly wasDown: boolean[]
+  private readonly walkTweens: Phaser.Tweens.Tween[]
+  private deploying = false
 
   constructor(scene: Phaser.Scene, count: number) {
     super(scene, 0, 0)
     this.units = []
     this.homeX = []
     this.wasDown = []
+    this.walkTweens = []
     for (let i = 0; i < count; i += 1) {
       const key = i === 0 ? 'unit-mercenary-shield' : 'unit-mercenary-rifle'
       const x = (i - (count - 1) / 2) * 16
@@ -64,7 +67,7 @@ export class MercenaryActor extends Phaser.GameObjects.Container {
   }
 
   sync(x: number, y: number, downFlags: boolean[], onDeath?: (at: { x: number; y: number }) => void) {
-    this.setPosition(x, y)
+    if (!this.deploying) this.setPosition(x, y)
     this.units.forEach((img, i) => {
       const down = Boolean(downFlags[i])
       if (down && !this.wasDown[i]) {

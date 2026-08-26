@@ -1005,11 +1005,12 @@ export class BattleScene extends Phaser.Scene {
   private syncMercenaryActor(tower: TowerState) {
     if (tower.typeId !== 'street-mercenary' || !tower.mercs || !tower.rallyPoint) return
     let actor = this.mercActors.get(tower.id)
+    const screen = boardToScreen(tower.rallyPoint)
     if (!actor) {
       actor = new MercenaryActor(this, tower.mercs.length).setDepth(25)
       this.mercActors.set(tower.id, actor)
+      actor.deployFrom(boardToScreen(tower.source), screen)
     }
-    const screen = boardToScreen(tower.rallyPoint)
     actor.sync(screen.x, screen.y, tower.mercs.map((m) => Boolean(m.respawnAt)), (at) => {
       this.effects.playMercenaryDeath(at)
       this.voice?.play('street-mercenary', 'down', { chance: 0.45 })
