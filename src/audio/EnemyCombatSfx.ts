@@ -1,4 +1,4 @@
-﻿export type SpecialCombatEnemy = 'faraday' | 'hijacker' | 'neurohound' | 'matriarch' | 'bonebreaker' | 'enforcer' | 'eve'
+export type SpecialCombatEnemy = 'faraday' | 'hijacker' | 'neurohound' | 'matriarch' | 'bonebreaker' | 'enforcer' | 'eve'
 
 const SPECIAL_COMBAT_ENEMIES = new Set<SpecialCombatEnemy>([
   'faraday',
@@ -186,7 +186,7 @@ export class EnemyCombatSfx {
       this.tone(context, output, start, 0.42, 1480, 74, 0.64, 'sine')
       this.tone(context, output, start + 0.04, 0.32, 740, 92, 0.46, 'square')
       this.noise(context, output, start + 0.18, 0.2, 0.28, 'highpass', 1800)
-    } else {
+    } else if (profile === 'eve:death') {
       this.tone(context, output, start, 1.35, 1900, 28, 0.78, 'sine')
       this.tone(context, output, start + 0.2, 1.05, 630, 35, 0.62, 'sawtooth')
       this.noise(context, output, start + 0.36, 0.92, 0.5, 'highpass', 720)
