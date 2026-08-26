@@ -1,0 +1,2 @@
+﻿const sharp=require('sharp');
+(async()=>{const b=await sharp('public/assets/animations/enemies/runtime/aerostat/attack/frame-01.webp').png().toBuffer(); const c=sharp({create:{width:512,height:1024,channels:4,background:{r:0,g:0,b:0,alpha:0}}}); const strip=await c.composite([{input:b,top:0,left:0},{input:b,top:512,left:0}]).png().toBuffer(); await sharp(strip,{pageHeight:512}).webp({lossless:true}).toFile('tools/test-anim.webp'); console.log(await sharp('tools/test-anim.webp',{animated:true}).metadata())})()
