@@ -1,4 +1,4 @@
-﻿export type AnimationCategory = 'tower' | 'enemy' | 'mercenary' | 'drone'
+export type AnimationCategory = 'tower' | 'enemy' | 'mercenary' | 'drone'
 export type AnimationStatus = 'available' | 'planned'
 export type AnimationMotion = 'pulse' | 'recoil' | 'arc' | 'scan' | 'scan-dual' | 'scan-deep' | 'scan-wide' | 'scan-focused' | 'launch' | 'gravity' | 'nano' | 'rewrite' | 'walk' | 'fly' | 'attack' | 'bomb' | 'death' | 'glitch' | 'burst'
 
@@ -100,6 +100,3 @@ const units:AnimationCatalogEntry[]=[
 ]
 export const ANIMATION_CATALOG:readonly AnimationCatalogEntry[]=[...towers,...enemies,...units]
 export const ANIMATION_CATEGORY_LABEL:Record<AnimationCategory,string>={tower:'防御塔攻击',enemy:'怪物动画',mercenary:'佣兵动画',drone:'无人机动画'}
-
-
-
