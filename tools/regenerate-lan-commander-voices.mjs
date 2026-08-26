@@ -26,7 +26,10 @@ for (const line of fs.readFileSync(sessionPath, 'utf8').trim().split('\n')) {
     const args = JSON.parse(payload.arguments)
     calls.set(payload.call_id, args.prompt)
   }
-  if (record.type === 'response_item' && payload?.type === 'function_call_output') outputs.set(payload.call_id, payload.output)
+  if (record.type === 'event_msg' && payload?.type === 'mcp_tool_call_end') {
+    const text = payload.result?.Ok?.content?.find?.((item) => item.type === 'text')?.text
+    if (text) outputs.set(payload.call_id, text)
+  }
 }
 
 const sources = []
@@ -34,11 +37,12 @@ for (const [prompt, name] of jobs) {
   const callId = [...calls].reverse().find(([, candidate]) => candidate === prompt)?.[0]
   if (!callId) throw new Error(`Missing generated speech call for: ${prompt}`)
   const rawOutput = outputs.get(callId)
-  const jsonStart = rawOutput.indexOf('{')
-  const result = JSON.parse(rawOutput.slice(jsonStart))
+  const result = JSON.parse(rawOutput)
   if (!result.base64 || result.contentType !== 'audio/mpeg') throw new Error(`Invalid generated speech output: ${name}`)
+  const decoded = Buffer.from(result.base64, 'base64')
+  if (decoded.length !== result.byteLength) throw new Error(`Truncated speech output: ${name} (${decoded.length}/${result.byteLength})`)
   const sourcePath = path.join(voiceRoot, `${name}.regenerated.mp3`)
-  fs.writeFileSync(sourcePath, Buffer.from(result.base64, 'base64'))
+  fs.writeFileSync(sourcePath, decoded)
   sources.push({ prompt, name, sourcePath })
 }
 
