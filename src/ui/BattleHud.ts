@@ -440,8 +440,11 @@ export class BattleHud {
   }
 
   private renderTier4Branches(payload: TowerInfoPayload) {
-    this.tier4BranchesEl.replaceChildren()
     const choices = payload.level === 3 ? payload.tier4Branches : []
+    const signature = `${payload.towerId}:${choices.map((choice) => choice.id).join(',')}`
+    if (this.tier4BranchesEl.dataset.signature === signature) return
+    this.tier4BranchesEl.dataset.signature = signature
+    this.tier4BranchesEl.replaceChildren()
     this.tier4BranchesEl.hidden = choices.length === 0
     this.upgradeBtn.hidden = choices.length > 0
     for (const choice of choices) {
