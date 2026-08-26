@@ -10,7 +10,6 @@ import {
 } from '../data/enemyRuntimeAnimations'
 
 const CLEAN_FALL_DEATH_IDS = new Set(['aerostat', 'devourer', 'faraday', 'hijacker'])
-const SOLID_ATTACK_IDS = new Set(['aerostat', 'devourer', 'faraday', 'hijacker'])
 
 function textureKeyFor(state: EnemyState): string {
   return `enemy-${state.typeId}`
@@ -147,18 +146,8 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     const attackPulse = this.hasMotion('attack') && ((now + this.enemy.id * 317) % 1800) < 1000
     const attackActive = this.enemy.blocked || attackPulse
     const usesBossStageVisual = this.syncBossStageVisual()
-    if (!usesBossStageVisual) this.playMotion(SOLID_ATTACK_IDS.has(this.enemy.typeId) ? 'move' : attackActive ? 'attack' : 'move')
-    if (SOLID_ATTACK_IDS.has(this.enemy.typeId) && attackActive) {
-      const phase = ((now + this.enemy.id * 317) % 1000) / 1000
-      const recoil = Math.sin(phase * Math.PI * 2)
-      this.sprite.setDisplaySize(
-        this.baseSize * (1 + Math.max(0, recoil) * 0.035),
-        this.baseSize * (1 - Math.max(0, recoil) * 0.02),
-      )
-      this.sprite.setAngle(recoil * (this.enemy.air ? 1.2 : 2.2))
-    } else {
-      this.sprite.setDisplaySize(this.baseSize, this.baseSize)
-    }
+    if (!usesBossStageVisual) this.playMotion(attackActive ? 'attack' : 'move')
+    this.sprite.setDisplaySize(this.baseSize, this.baseSize)
 
     if (this.enemy.air) {
       const hoverPhase = this.scene.time.now * 0.0022 + this.enemy.id * 0.73
