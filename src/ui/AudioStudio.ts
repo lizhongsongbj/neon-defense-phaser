@@ -1,4 +1,6 @@
-﻿interface AudioLibraryItem {
+﻿import { VOICE_PLAYBACK_RATE } from '../audio/voiceManifest'
+
+interface AudioLibraryItem {
   id: string
   name: string
   category: 'music' | 'voice' | 'generated'
@@ -60,8 +62,6 @@ export class AudioStudio {
       event.preventDefault()
       void this.generate()
     })
-    this.grid.addEventListener('play', (event) => this.pauseOtherPlayers(event.target), true)
-    this.result.addEventListener('play', (event) => this.pauseOtherPlayers(event.target), true)
   }
 
   activate() {
@@ -144,6 +144,8 @@ export class AudioStudio {
     player.controls = true
     player.preload = 'none'
     player.src = item.url
+    player.playbackRate = item.category === 'voice' ? VOICE_PLAYBACK_RATE : 1
+    player.defaultPlaybackRate = player.playbackRate
     player.setAttribute('aria-label', `播放 ${item.name}`)
 
     card.append(header, title, group, player)
@@ -203,16 +205,11 @@ export class AudioStudio {
     player.controls = true
     player.preload = 'metadata'
     player.src = item.url
+    player.playbackRate = item.category === 'voice' ? VOICE_PLAYBACK_RATE : 1
+    player.defaultPlaybackRate = player.playbackRate
     player.setAttribute('aria-label', `播放最新生成音效 ${item.name}`)
     this.result.replaceChildren(title, name, player)
     this.result.hidden = false
-  }
-
-  private pauseOtherPlayers(target: EventTarget | null) {
-    if (!(target instanceof HTMLAudioElement)) return
-    document.querySelectorAll<HTMLAudioElement>('.audio-studio-panel audio').forEach((player) => {
-      if (player !== target) player.pause()
-    })
   }
 
   private emptyState(message: string): HTMLElement {
@@ -233,3 +230,4 @@ export class AudioStudio {
     return payload
   }
 }
+

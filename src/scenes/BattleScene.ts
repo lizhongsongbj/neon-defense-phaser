@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+﻿import Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { MAP_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_STARTING_COINS, type MapLevel, type Point2 } from '../data/maps'
 import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
@@ -254,7 +254,6 @@ export class BattleScene extends Phaser.Scene {
   private teardown() {
     this.effects?.destroy()
     this.enemySpawnSfx?.destroy()
-    this.voice?.stop()
     this.sound.stopByKey('sfx-base-damage')
     this.cancelSkillTargeting()
     this.activeFirewalls.forEach((firewall) => { this.tweens.killTweensOf(firewall.graphic); firewall.graphic.destroy(); firewall.label.destroy() })
@@ -1110,3 +1109,4 @@ export class BattleScene extends Phaser.Scene {
     EventBus.emit(GameEvents.GameOver, {})
   }
 }
+

@@ -1,9 +1,9 @@
-/**
+﻿/**
  * 璇煶鎾姤绯荤粺 鈥斺€?鍘熸牱杩佺Щ鑷?闇撹櫣闃茬嚎/voice-system.js 鐨勮涓鸿涔?
  * 搴曞眰闊抽鎾斁鎹㈡垚 Phaser Sound Manager,浣嗗喎鍗?浼樺厛绾?杞崲閫夊彇閫昏緫淇濇寔涓€鑷淬€? */
 
 import Phaser from 'phaser'
-import { VOICE_CATALOG, VOICE_COOLDOWN_MS, voiceClassId, type VoiceCategory } from './voiceManifest'
+import { VOICE_CATALOG, VOICE_COOLDOWN_MS, VOICE_PLAYBACK_RATE, voiceClassId, type VoiceCategory } from './voiceManifest'
 import { EventBus, GameEvents } from '../state/EventBus'
 
 const MUTE_KEY = 'neon-defense-voice-muted'
@@ -71,7 +71,7 @@ export class VoiceSystem {
     this.lastPlayedAt = now
     this.currentClassId = voiceClassId(category, event)
 
-    const instance = this.sound.add(key, { volume: 0.82 })
+    const instance = this.sound.add(key, { volume: 0.82, rate: VOICE_PLAYBACK_RATE })
     instance.once('complete', () => this.onCurrentEnded(instance))
     instance.once('stop', () => this.onCurrentEnded(instance))
     this.current = instance
@@ -105,3 +105,4 @@ export class VoiceSystem {
     if (classId) EventBus.emit(GameEvents.VoiceEnd, { classId })
   }
 }
+

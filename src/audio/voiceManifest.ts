@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 语音播报清单 —— 原样迁移自 霓虹防线/voice-system.js 中的 catalog 常量。
  * 路径相对 `assets/audio/voices/`。
  */
@@ -25,6 +25,9 @@ export type VoiceCategory =
 
 // Voice playback cooldown: 20 seconds
 export const VOICE_COOLDOWN_MS = 20_000
+
+// Keep speech brisk but intelligible across gameplay and the audio workbench.
+export const VOICE_PLAYBACK_RATE = 1.2
 
 export const VOICE_CATALOG: Record<VoiceCategory, Record<string, string[]>> = {
   lan: {
@@ -137,3 +140,4 @@ export function allVoiceFiles(): Array<{ key: string; path: string }> {
   }
   return files
 }
+
