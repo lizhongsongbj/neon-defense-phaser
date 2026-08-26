@@ -1,36 +1,64 @@
-/**
- * 夏娃-9 三阶段机制 —— 原样迁移自 霓虹防线/gameplay.js `_0x4f0989` 中
- * `typeId === "eve"` 分支。阶段完全由当前血量比例驱动:
- * >2/3 节点转移阶段、>1/3 载体阶段(速度12)、其余为固定核心阶段。
- */
+﻿/** EVE-9: three explicit forms with HP thresholds, transition shields, and active abilities. */
 
+import { bossStageDefinition, type BossAbilityId } from '../../data/bosses'
 import { mapSpeedBonus } from '../../data/balance'
 import type { EnemyState } from '../types'
 
 export type EveVoiceEvent = 'node' | 'transfer' | 'final'
 
-/** 每帧按当前血量比例刷新夏娃-9 的阶段与移动数值,返回本帧触发的语音事件(如果有) */
-export function tickEve(enemy: EnemyState, mapIndex: number, now: number): EveVoiceEvent | null {
+export interface EveTickResult {
+  voiceEvent: EveVoiceEvent | null
+  stageChanged: boolean
+  stageName: string
+  ability: BossAbilityId | null
+  baseDamage: number
+}
+
+function resolveStage(enemy: EnemyState): 1 | 2 | 3 {
+  const ratio = enemy.hp / Math.max(1, enemy.maxHp)
+  if (ratio <= 0.35) return 3
+  if (ratio <= 0.7) return 2
+  return 1
+}
+
+export function tickEve(enemy: EnemyState, mapIndex: number, now: number): EveTickResult {
   const previousStage = enemy.stage
-  const ratio = enemy.hp / enemy.maxHp
-  enemy.stage = ratio > 2 / 3 ? 1 : ratio > 1 / 3 ? 2 : 3
+  enemy.stage = resolveStage(enemy)
+  const stage = bossStageDefinition('eve', enemy.stage)
+  const stageChanged = enemy.stage !== previousStage
+  let voiceEvent: EveVoiceEvent | null = null
 
-  let event: EveVoiceEvent | null = null
-
-  if (enemy.stage === 1 && now - enemy.lastTeleport >= 4000) {
-    enemy.distance = Math.min(1000, enemy.distance + 55)
-    enemy.lastTeleport = now
-    event = 'node'
+  if (stageChanged) {
+    enemy.bossStageEnteredAt = now
+    enemy.nextBossAbilityAt = now + 1500
+    if (stage.transitionShieldRatio) {
+      const transitionShield = enemy.maxHp * stage.transitionShieldRatio
+      enemy.shield = Math.max(enemy.shield, transitionShield)
+      enemy.maxShield = Math.max(enemy.maxShield, transitionShield)
+    }
+    voiceEvent = enemy.stage === 2 ? 'transfer' : 'final'
   }
 
-  if (enemy.stage !== previousStage) {
-    event = enemy.stage === 2 ? 'transfer' : 'final'
+  enemy.armor = stage.armor
+  enemy.energyResistance = stage.energyResistance
+  enemy.railVulnerability = stage.railVulnerability
+  enemy.attack = stage.attack
+  enemy.speed = stage.speed * mapSpeedBonus(mapIndex)
+  if (enemy.stage === 3) enemy.distance = Math.max(enemy.distance, 760)
+
+  let ability: BossAbilityId | null = null
+  let baseDamage = 0
+  if (now >= enemy.nextBossAbilityAt) {
+    ability = stage.ability
+    enemy.nextBossAbilityAt = now + stage.abilityCooldown * 1000
+    if (ability === 'node-lock') {
+      enemy.distance = Math.min(680, enemy.distance + 45)
+      enemy.lastTeleport = now
+      voiceEvent = 'node'
+    } else if (ability === 'core-pulse') {
+      baseDamage = 1
+    }
   }
 
-  enemy.speed = enemy.stage === 1 ? 0 : enemy.stage === 2 ? mapSpeedBonus(mapIndex) * 12 : 0
-  if (enemy.stage === 3) {
-    enemy.distance = Math.max(enemy.distance, 720)
-  }
-
-  return event
+  return { voiceEvent, stageChanged, stageName: stage.name, ability, baseDamage }
 }
