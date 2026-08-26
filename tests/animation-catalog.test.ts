@@ -1,4 +1,4 @@
-import test from 'node:test'
+﻿import test from 'node:test'
 import assert from 'node:assert/strict'
 import { ANIMATION_CATALOG } from '../src/data/animationCatalog'
 import { TOWER_TYPE_BY_ID } from '../src/data/towers'
@@ -17,9 +17,9 @@ test('动画面板只保留磁轨、电弧和黑客三种塔的15种攻击形态
 
 test('每种怪物均具有移动、攻击和死亡动画定义', () => {
   const enemies = ANIMATION_CATALOG.filter((entry) => entry.category === 'enemy')
-  assert.equal(enemies.length, 39)
+  assert.equal(enemies.length, 36)
   const families = new Set(enemies.map((entry) => entry.family))
-  assert.equal(families.size, 13)
+  assert.equal(families.size, 12)
   for (const family of families) {
     const actions = enemies.filter((entry) => entry.family === family).map((entry) => entry.action)
     assert.ok(actions.includes('攻击'))
@@ -28,12 +28,17 @@ test('每种怪物均具有移动、攻击和死亡动画定义', () => {
   }
 })
 
+test('动画面板不展示执法者·零号', () => {
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id.startsWith('enforcer-')), false)
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.family === '执法者·零号'), false)
+})
+
 test('动画面板只展示佣兵和无人机单位动画，不展示系统与连携', () => {
   assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'mercenary').length, 9)
   assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'drone').length, 9)
   assert.equal(ANIMATION_CATALOG.some((entry) => String(entry.category) === 'system'), false)
-  assert.equal(ANIMATION_CATALOG.length, 77)
-  assert.equal(new Set(ANIMATION_CATALOG.map((entry) => entry.id)).size, 77)
+  assert.equal(ANIMATION_CATALOG.length, 74)
+  assert.equal(new Set(ANIMATION_CATALOG.map((entry) => entry.id)).size, 74)
 })
 
 
@@ -129,3 +134,4 @@ test('gravity nail attack synchronizes tower and target purple particle entangle
   assert.ok(entries.every((entry) => entry.attackEffectKind === 'gravity-entangle'))
   assert.ok(entries.every((entry) => entry.timeline.includes('\u5b8c\u6210\u4e00\u6b21\u653b\u51fb')))
 })
+

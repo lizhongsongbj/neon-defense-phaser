@@ -1,4 +1,4 @@
-export type AnimationCategory = 'tower' | 'enemy' | 'mercenary' | 'drone'
+﻿export type AnimationCategory = 'tower' | 'enemy' | 'mercenary' | 'drone'
 export type AnimationStatus = 'available' | 'planned'
 export type AnimationMotion = 'pulse' | 'recoil' | 'arc' | 'scan' | 'scan-dual' | 'scan-deep' | 'scan-wide' | 'scan-focused' | 'launch' | 'gravity' | 'nano' | 'rewrite' | 'walk' | 'fly' | 'attack' | 'bomb' | 'death' | 'glitch' | 'burst'
 
@@ -76,7 +76,6 @@ const enemySeeds:EnemySeed[]=[
  ['neurohound','神经猎犬','/assets/enemies/new/enemy-08-neuro-hound.png','#ff4f73','痛觉超频疾走','扑咬与神经电弧'],
  ['matriarch','育质母体','/assets/enemies/new/enemy-09-tissue-matriarch.png','#78ff8e','组织脉动爬行','组织灌注脉冲'],
  ['bonebreaker','骨铠破障兽','/assets/enemies/new/enemy-10-bonebreaker.png','#66e8ff','骨铠重踏','破障冲撞'],
- ['enforcer','执法者·零号','/assets/enemies/boss-01-enforcer-zero-cutout.png','#ff4f74','重型推进','盾牌导弹齐射'],
  ['adam-smasher','亚当·重锤','/assets/enemies/adam-smasher.png','#ff684f','重装突进','义体重炮'],
  ['eve','夏娃-9','/assets/enemies/mother-city-eve-9-clean-no-white.png','#ff62d3','节点迁移','核心城市脉冲'],
 ].map(([id,family,image,accent,move,attack])=>({id,family,image,accent,move,attack}))
@@ -101,5 +100,6 @@ const units:AnimationCatalogEntry[]=[
 ]
 export const ANIMATION_CATALOG:readonly AnimationCatalogEntry[]=[...towers,...enemies,...units]
 export const ANIMATION_CATEGORY_LABEL:Record<AnimationCategory,string>={tower:'防御塔攻击',enemy:'怪物动画',mercenary:'佣兵动画',drone:'无人机动画'}
+
 
 
