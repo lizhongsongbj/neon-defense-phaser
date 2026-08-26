@@ -147,6 +147,25 @@ export class CommandCenterUI {
     return this.game.registry.get(MUSIC_REGISTRY_KEY) as MusicController | undefined
   }
 
+  private voice(): VoiceSystem | undefined {
+    return this.game.registry.get(VOICE_REGISTRY_KEY) as VoiceSystem | undefined
+  }
+
+  private bindAudioToggles() {
+    this.voiceToggle.addEventListener('click', () => {
+      this.voice()?.toggle()
+      this.syncAudioLabels()
+    })
+    this.musicToggle.addEventListener('click', () => {
+      this.music()?.toggle()
+      this.syncAudioLabels()
+    })
+  }
+
+  private syncAudioLabels() {
+    this.voiceToggle.setAttribute('aria-pressed', String(!this.voice()?.muted))
+    this.musicToggle.setAttribute('aria-pressed', String(!this.music()?.muted))
+  }
   private bindTabs() {
     this.tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
@@ -463,4 +482,5 @@ export class CommandCenterUI {
     })
   }
 }
+
 
