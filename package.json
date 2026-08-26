@@ -23,7 +23,8 @@
                     "assets:alpha:check":  "node tools/transparent-assets.mjs --check",
                     "animations:bio:generate":  "node tools/generate-biological-enemy-animations.mjs",
                     "animations:rail:generate":  "node tools/generate-mag-rail-upgrade-animations.mjs",
-                    "animations:enemy:extract":  "node tools/extract-enemy-runtime-animations.mjs"
+                    "animations:enemy:extract":  "node tools/extract-enemy-runtime-animations.mjs",
+                    "animations:adam:build":  "node tools/build-adam-smasher-animations.mjs"
                 },
     "devDependencies":  {
                             "@types/node":  "^26.2.0",
