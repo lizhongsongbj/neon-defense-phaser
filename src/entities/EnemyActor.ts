@@ -94,7 +94,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     if (this.finishing) return
     this.setPosition(screenX, screenY)
     // 敌人没有独立的攻击状态字段；用短促的周期攻击窗口让已接入的攻击动图在战斗中真正可见。被佣兵/无人机拦截时优先播放攻击动作。
-    const attackPulse = this.hasMotion('attack') && ((now + this.enemy.id * 317) % 2400) < 520
+    const attackPulse = this.hasMotion('attack') && ((now + this.enemy.id * 317) % 1800) < 1000
     this.playMotion(this.enemy.blocked || attackPulse ? 'attack' : 'move')
 
     if (this.enemy.air) {
