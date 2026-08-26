@@ -1,0 +1,2 @@
+﻿const sharp=require('sharp');
+(async()=>{for(const p of ['public/assets/animations/enemies/runtime-clean/faraday/death/frame-07.webp','public/assets/animations/enemies/runtime-clean/hijacker/death/frame-12.webp']){const {data,info}=await sharp(p).raw().toBuffer({resolveWithObject:true});let maxA=0,count=0;for(let y=0;y<512;y++)for(let x=390;x<512;x++){let i=(y*512+x)*info.channels;if(data[i+3]>maxA)maxA=data[i+3];if(data[i+3]>10)count++}console.log(p,{maxA,count})}})()
