@@ -1,10 +1,9 @@
-﻿/** Boss combat definitions, phase thresholds, component durability, and ability cadence. */
+/** Boss combat definitions, phase thresholds, component durability, and ability cadence. */
 
 export type BossId = 'enforcer' | 'eve'
 export type BossStage = 1 | 2 | 3
 export type BossAbilityId =
   | 'shield-wave'
-  | 'missile-salvo'
   | 'overdrive-salvo'
   | 'core-burst'
   | 'node-lock'
@@ -68,12 +67,11 @@ export const BOSS_TYPES: Record<BossId, BossDefinition> = {
     boss: true,
     components: ['盾牌', '导弹舱', '推进器'],
     componentHp: { 盾牌: 4200, 导弹舱: 3200, 推进器: 2800 },
-    trait: '三处独立部件会改变阶段条件；盾牌负责减伤，导弹舱负责压制塔楼，推进器决定冲锋速度。',
+    trait: '三种战斗形态依次切换：堡垒镇压负责正面防御，攻城超载合并导弹火力与赤红推进，核心暴露进入最终决战。',
     stages: [
-      { stage: 1, name: '堡垒镇压', hpThreshold: 1, enterCondition: '初始形态；盾牌存活且生命高于72%', armor: 0.36, speed: 9.5, attack: 85, energyResistance: 0.12, railVulnerability: 0, ability: 'shield-wave', abilityName: '镇压冲击', abilityCooldown: 8, abilityDescription: '释放近距离装甲冲击，使附近防御塔的下一次攻击延迟0.8秒。' },
-      { stage: 2, name: '攻城火力', hpThreshold: 0.72, enterCondition: '盾牌被摧毁，或生命降至72%', armor: 0.24, speed: 10.5, attack: 112, energyResistance: 0.08, railVulnerability: 0.08, ability: 'missile-salvo', abilityName: '导弹齐射', abilityCooldown: 7, abilityDescription: '锁定两座防御塔，使其攻击冷却增加1.6秒。' },
-      { stage: 3, name: '赤红超载', hpThreshold: 0.42, enterCondition: '至少两个部件被摧毁，或生命降至42%', armor: 0.14, speed: 14, attack: 138, energyResistance: 0, railVulnerability: 0.15, ability: 'overdrive-salvo', abilityName: '超载弹幕', abilityCooldown: 5.5, abilityDescription: '同时压制三座防御塔，并进入高速突进状态。' },
-      { stage: 4, name: '核心暴露', hpThreshold: 0.18, enterCondition: '全部部件被摧毁，或生命降至18%', armor: 0.04, speed: 11, attack: 165, energyResistance: -0.15, railVulnerability: 0.3, ability: 'core-burst', abilityName: '核心爆震', abilityCooldown: 4.5, abilityDescription: '核心周期性爆震，短暂扰乱全部防御塔；自身承受更多能量与磁轨伤害。' },
+      { stage: 1, name: '堡垒镇压', hpThreshold: 1, enterCondition: '初始形态；重型封闭装甲与胸前六边形能量盾保持完整，生命高于70%', armor: 0.36, speed: 9.5, attack: 85, energyResistance: 0.12, railVulnerability: 0, ability: 'shield-wave', abilityName: '镇压冲击', abilityCooldown: 8, abilityDescription: '释放近距离装甲冲击，使附近防御塔的下一次攻击延迟0.8秒。' },
+      { stage: 2, name: '攻城超载', hpThreshold: 0.7, enterCondition: '盾牌被摧毁、任一部件失效，或生命降至70%；双肩导弹舱与手臂重武器展开，全身进入赤红能量过载并启动推进冲锋', armor: 0.17, speed: 13.2, attack: 135, energyResistance: 0.01, railVulnerability: 0.14, ability: 'overdrive-salvo', abilityName: '赤红攻城弹幕', abilityCooldown: 5.8, abilityDescription: '导弹与手臂重武器同时压制三座防御塔，并借助推进器进入高速突进。' },
+      { stage: 3, name: '核心暴露', hpThreshold: 0.22, enterCondition: '全部部件被摧毁，或生命降至22%；大面积装甲破损，胸口反应堆完全暴露', armor: 0.04, speed: 11, attack: 165, energyResistance: -0.15, railVulnerability: 0.3, ability: 'core-burst', abilityName: '核心爆震', abilityCooldown: 4.5, abilityDescription: '核心周期性爆震，短暂扰乱全部防御塔；自身承受更多能量与磁轨伤害。' },
     ],
   },
   eve: {

@@ -806,8 +806,6 @@ export class BattleScene extends Phaser.Scene {
     if (ability === 'shield-wave') {
       const nearby = this.battle.towers.filter((tower) => Phaser.Math.Distance.Between(enemyBoard.x, enemyBoard.y, tower.source.x, tower.source.y) <= 180)
       delayTowers(nearby, 0.8, 0xff765d)
-    } else if (ability === 'missile-salvo') {
-      delayTowers(nearestTowers(2), 1.6, 0xff5a45)
     } else if (ability === 'overdrive-salvo') {
       delayTowers(nearestTowers(3), 1.25, 0xff244f)
     } else if (ability === 'core-burst') {

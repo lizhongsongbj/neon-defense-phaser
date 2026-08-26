@@ -1,4 +1,4 @@
-﻿import test from 'node:test'
+import test from 'node:test'
 import assert from 'node:assert/strict'
 import { BOSS_TYPES, bossComponentHp, bossStageDefinition } from '../src/data/bosses'
 import { spawnEnemy } from '../src/systems/CombatSystem'
@@ -38,7 +38,7 @@ test('亚当·重锤三个部件拥有不同耐久值', () => {
   assert.ok(enemy.components[1].maxHp > enemy.components[2].maxHp)
 })
 
-test('亚当·重锤可由生命阈值或部件摧毁进入四个阶段', () => {
+test('亚当·重锤可由生命阈值或部件摧毁进入三个阶段', () => {
   const enemy = spawnBoss('enforcer')
   assert.equal(tickEnforcer(enemy, 0, 100).stageName, '堡垒镇压')
 
@@ -46,16 +46,17 @@ test('亚当·重锤可由生命阈值或部件摧毁进入四个阶段', () => 
   let result = tickEnforcer(enemy, 0, 200)
   assert.equal(enemy.stage, 2)
   assert.equal(result.stageChanged, true)
+  assert.equal(result.voiceEvent, 'enraged')
   assert.equal(enemy.armor, bossStageDefinition('enforcer', 2).armor)
 
   enemy.components.find((component) => component.name === '导弹舱')!.hp = 0
   result = tickEnforcer(enemy, 0, 400)
-  assert.equal(enemy.stage, 3)
-  assert.equal(enemy.attack, bossStageDefinition('enforcer', 3).attack * 0.62)
+  assert.equal(enemy.stage, 2)
+  assert.equal(enemy.attack, bossStageDefinition('enforcer', 2).attack * 0.62)
 
   enemy.components.find((component) => component.name === '推进器')!.hp = 0
   result = tickEnforcer(enemy, 0, 600)
-  assert.equal(enemy.stage, 4)
+  assert.equal(enemy.stage, 3)
   assert.equal(result.voiceEvent, 'core')
   assert.ok(enemy.energyResistance < 0)
   assert.ok(enemy.railVulnerability >= 0.3)
