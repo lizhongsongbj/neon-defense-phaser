@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+﻿import Phaser from 'phaser'
 import type { EnemyState } from '../systems/types'
 import { ENEMY_TYPES } from '../data/enemies'
 import { BOSS_TYPES, bossStageDefinition, bossStageTextureKey, type BossStage } from '../data/bosses'
@@ -249,7 +249,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     }
 
     this.currentMotion = motion
-    const animationKey = enemyAnimationKey(this.enemy.typeId, motion)
+    const animationKey = enemyAnimationKey(this.animationTypeId(), motion)
     this.sprite.play(animationKey, true)
     if (leaked) {
       const animation = this.scene.anims.get(animationKey)
@@ -259,3 +259,4 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     }
   }
 }
+
