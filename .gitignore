@@ -1,4 +1,4 @@
-node_modules/
+﻿node_modules/
 dist/
 tools/smoke-shots/
 tools/frames/
@@ -8,10 +8,6 @@ balance-reports/
 *.log
 .env.local
 .env.*.local
-public/assets/generated/raw/*
-public/assets/generated/cutout/*
-!public/assets/generated/raw/.gitkeep
-!public/assets/generated/cutout/.gitkeep
 
 # Local asset-generation scratch files and backups
 .tmp-*
