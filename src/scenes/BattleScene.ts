@@ -1,4 +1,4 @@
-﻿import Phaser from 'phaser'
+import Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { MAP_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_STARTING_COINS, type MapLevel, type Point2 } from '../data/maps'
 import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
@@ -908,9 +908,15 @@ export class BattleScene extends Phaser.Scene {
       const enemy = this.battle.enemies[i]
       if (!enemy.dead) continue
       const leaked = enemy.distance >= 1000
+      const exitPosition = boardToScreen(enemyPosition(this.geometry, enemy))
+      const actor = this.enemyActors.get(enemy.id)
+      const finishExitVisual = () => {
+        if (!leaked) this.effects.playEnemyDeathRemnant(exitPosition, enemy.mechanical, enemy.isBoss)
+        actor?.destroy()
+      }
+      if (actor) actor.playExitAnimation(exitPosition.x, exitPosition.y, leaked, finishExitVisual)
+      else finishExitVisual()
       if (!leaked) {
-        const deathPosition = boardToScreen(enemyPosition(this.geometry, enemy))
-        this.effects.playEnemyDeathRemnant(deathPosition, enemy.mechanical, enemy.isBoss)
         const bountyMultiplier = this.activeSpecialEvent?.modifiers.bountyMultiplier ?? 1
         const reward = Math.round(scaleReward(enemy.reward, this.battle.mapIndex) * bountyMultiplier)
         this.battle.coins += reward
@@ -921,7 +927,6 @@ export class BattleScene extends Phaser.Scene {
         }
       }
       this.battle.enemies.splice(i, 1)
-      this.enemyActors.get(enemy.id)?.destroy()
       this.enemyActors.delete(enemy.id)
     }
 
