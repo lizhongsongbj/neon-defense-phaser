@@ -27,7 +27,7 @@ export type VoiceCategory =
 export const VOICE_COOLDOWN_MS = 20_000
 
 // Keep speech brisk but intelligible across gameplay and the audio workbench.
-export const VOICE_PLAYBACK_RATE = 1.2
+export const VOICE_PLAYBACK_RATE = 1.12
 
 export const VOICE_CATALOG: Record<VoiceCategory, Record<string, string[]>> = {
   lan: {
@@ -40,20 +40,20 @@ export const VOICE_CATALOG: Record<VoiceCategory, Record<string, string[]>> = {
     defeat: ['lan/defeat.wav'],
   },
   gang: {
-    spawn: ['gang_cyborg/charge.mp3', 'gang_cyborg/weak_firepower.mp3', 'gang_cyborg/bounty.mp3'],
+    spawn: ['gang_cyborg/charge.wav', 'gang_cyborg/weak_firepower.wav', 'gang_cyborg/bounty.wav'],
   },
   riot: {
-    spawn: ['riot_machine/lockdown.mp3', 'riot_machine/suppression_mode.mp3', 'riot_machine/get_down.mp3'],
+    spawn: ['riot_machine/lockdown.wav', 'riot_machine/suppression_mode.wav', 'riot_machine/get_down.wav'],
   },
   ninja: {
-    spawn: ['phase_ninja/target_ahead.mp3', 'phase_ninja/vision_cut.mp3'],
-    phase: ['phase_ninja/invisible.mp3'],
+    spawn: ['phase_ninja/target_ahead.wav', 'phase_ninja/vision_cut.wav'],
+    phase: ['phase_ninja/invisible.wav'],
   },
   aerostat: {
     spawn: ['corp_airship/area_locked.wav', 'corp_airship/clear_resistance.wav', 'corp_airship/drop_countdown.wav'],
   },
   devourer: {
-    spawn: ['data_devourer/open_port.mp3', 'data_devourer/strip_access.mp3', 'data_devourer/memory_belongs.mp3'],
+    spawn: ['data_devourer/open_port.wav', 'data_devourer/strip_access.wav', 'data_devourer/memory_belongs.wav'],
   },
   faraday: { spawn: ['faraday/alert.wav'] },
   hijacker: { spawn: ['hijacker/lock_on.wav'] },
@@ -61,13 +61,13 @@ export const VOICE_CATALOG: Record<VoiceCategory, Record<string, string[]>> = {
   matriarch: { spawn: ['matriarch/roar.wav'] },
   bonebreaker: { spawn: ['bonebreaker/roar.wav'] },
   enforcer: {
-    entrance: ['enforcer_zero/entrance.mp3'],
-    shield: ['enforcer_zero/shield_broken.mp3'],
-    missiles: ['enforcer_zero/missile_destroyed.mp3'],
-    thruster: ['enforcer_zero/thruster_destroyed.mp3'],
-    enraged: ['enforcer_zero/enraged.mp3'],
-    core: ['enforcer_zero/core_exposed.mp3'],
-    defeated: ['enforcer_zero/defeated.mp3'],
+    entrance: ['enforcer_zero/entrance.wav'],
+    shield: ['enforcer_zero/shield_broken.wav'],
+    missiles: ['enforcer_zero/missile_destroyed.wav'],
+    thruster: ['enforcer_zero/thruster_destroyed.wav'],
+    enraged: ['enforcer_zero/enraged.wav'],
+    core: ['enforcer_zero/core_exposed.wav'],
+    defeated: ['enforcer_zero/defeated.wav'],
   },
   eve: {
     entrance: ['eve_9/entrance.wav'],
@@ -86,12 +86,12 @@ export const VOICE_CATALOG: Record<VoiceCategory, Record<string, string[]>> = {
     blocked: ['gray_falcon/jammed.wav'],
   },
   'street-mercenary': {
-    build: ['iron_fist/build.mp3'],
-    select: ['iron_fist/select.mp3'],
-    upgrade: ['iron_fist/shield_mode.mp3', 'iron_fist/blade_mode.mp3'],
-    combat: ['iron_fist/intercept_elite.mp3', 'iron_fist/skill.mp3'],
-    down: ['iron_fist/teammate_down.mp3'],
-    dismantle: ['iron_fist/retreat.mp3'],
+    build: ['iron_fist/build.wav'],
+    select: ['iron_fist/select.wav'],
+    upgrade: ['iron_fist/shield_mode.wav', 'iron_fist/blade_mode.wav'],
+    combat: ['iron_fist/intercept_elite.wav', 'iron_fist/skill.wav'],
+    down: ['iron_fist/teammate_down.wav'],
+    dismantle: ['iron_fist/retreat.wav'],
   },
   'drone-hive': {
     build: ['queen_bee/build.wav'],

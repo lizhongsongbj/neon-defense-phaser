@@ -1,0 +1,2 @@
+﻿const sharp=require('sharp');
+(async()=>{const src='public/assets/enemies/new/enemy-07-hijack-hovercraft.png';const {data,info}=await sharp(src).ensureAlpha().raw().toBuffer({resolveWithObject:true});for(let i=0;i<data.length;i+=info.channels){const a=data[i+3]/255;data[i]=Math.round(data[i]*a);data[i+1]=Math.round(data[i+1]*a);data[i+2]=Math.round(data[i+2]*a)}await sharp(data,{raw:info}).png().toFile('tools/test-base-premul.png')})()

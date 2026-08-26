@@ -11,6 +11,10 @@ const voiceFiles = [...new Set([...manifest.matchAll(/'([^']+\.(?:wav|mp3))'/gi)
 const mime = (file) => file.endsWith('.wav') ? 'audio/wav' : file.endsWith('.mp3') ? 'audio/mpeg' : 'application/octet-stream'
 const server = http.createServer((request, response) => {
   const pathname = decodeURIComponent(new URL(request.url ?? '/', 'http://127.0.0.1').pathname)
+  if (pathname === '/' || pathname === '/index.html') {
+    response.writeHead(200, { 'Content-Type': 'text/html' }).end('<!doctype html><title>Voice repair</title>')
+    return
+  }
   const target = path.resolve(root, `.${pathname}`)
   if (!target.startsWith(root) || !fs.existsSync(target) || fs.statSync(target).isDirectory()) {
     response.writeHead(404).end()
