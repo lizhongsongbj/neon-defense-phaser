@@ -1,11 +1,11 @@
-import type Phaser from 'phaser'
+﻿import type Phaser from 'phaser'
 import { MAP_LEVELS, CAMPAIGN_THREAT_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_ENEMY_COUNTS, CAMPAIGN_STARTING_COINS } from '../data/maps'
 import { TOWER_TYPES } from '../data/towers'
 import { EXPANSION_TOWERS, GROWTH_TOWER_IDS, type AllTowerId } from '../data/towerExpansion'
 import type { Difficulty } from '../data/balance'
 import { growthUpgradeCost } from '../systems/Economy'
 import { CampaignState } from '../state/CampaignState'
-import { MUSIC_REGISTRY_KEY, type MusicController } from '../audio'
+import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceSystem } from '../audio'
 import { BalancePanel } from './BalancePanel'
 import { AnimationPanel } from './AnimationPanel'
 import { EffectPanel } from './EffectPanel'
@@ -47,6 +47,8 @@ export class CommandCenterUI {
   private readonly growthGrid: HTMLElement
   private readonly skillGrowthGrid: HTMLElement
   private readonly closeButton: HTMLButtonElement
+  private readonly voiceToggle: HTMLButtonElement
+  private readonly musicToggle: HTMLButtonElement
   private readonly tabs: HTMLButtonElement[]
   private readonly panels: Record<string, HTMLElement>
   private readonly assetTabs: HTMLButtonElement[]
@@ -85,6 +87,8 @@ export class CommandCenterUI {
     this.growthGrid = document.getElementById('growth-grid') as HTMLElement
     this.skillGrowthGrid = document.getElementById('skill-growth-grid') as HTMLElement
     this.closeButton = document.getElementById('command-close') as HTMLButtonElement
+    this.voiceToggle = document.getElementById('hud-toggle-voice') as HTMLButtonElement
+    this.musicToggle = document.getElementById('hud-toggle-music') as HTMLButtonElement
     this.tabs = Array.from(this.el.querySelectorAll('[data-command-tab]'))
     this.panels = {
       missions: this.el.querySelector('[data-command-panel="missions"]') as HTMLElement,
@@ -120,11 +124,13 @@ export class CommandCenterUI {
     this.bindImageStudioReturn()
     this.bindDeploy()
     this.bindClose()
+    this.bindAudioToggles()
   }
 
   show() {
     this.el.hidden = false
     this.music()?.startMenu()
+    this.syncAudioLabels()
     this.refresh()
   }
 
@@ -457,3 +463,4 @@ export class CommandCenterUI {
     })
   }
 }
+

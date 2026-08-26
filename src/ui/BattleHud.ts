@@ -1,4 +1,4 @@
-import type Phaser from 'phaser'
+﻿import type Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { ALL_TOWER_TYPES, type AllTowerId } from '../data/towerExpansion'
 import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
@@ -6,7 +6,6 @@ import { BOSS_TYPES, type BossDefinition } from '../data/bosses'
 import { SPECIAL_EVENTS } from '../data/specialEvents'
 import { EventBus, GameEvents, type BattleHudPayload, type SlotSelectedPayload, type SpecialEventPayload, type TacticalAlertPayload, type WaveClearedPayload } from '../state/EventBus'
 import { REGISTRY_KEY, type CampaignState } from '../state/CampaignState'
-import { MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceSystem } from '../audio'
 import type { PlayerSkillId } from '../data/playerSkills'
 
 interface TowerInfoPayload {
@@ -59,8 +58,6 @@ export class BattleHud {
   private readonly endOverlay: HTMLElement
   private readonly endTitle: HTMLElement
   private readonly endSubtitle: HTMLElement
-  private readonly voiceToggle: HTMLButtonElement
-  private readonly musicToggle: HTMLButtonElement
   private readonly resetButton: HTMLButtonElement
   private readonly intelPanel: HTMLElement
   private readonly intelContent: HTMLElement
@@ -102,8 +99,6 @@ export class BattleHud {
     this.endOverlay = document.getElementById('end-overlay') as HTMLElement
     this.endTitle = document.getElementById('end-title') as HTMLElement
     this.endSubtitle = document.getElementById('end-subtitle') as HTMLElement
-    this.voiceToggle = document.getElementById('hud-toggle-voice') as HTMLButtonElement
-    this.musicToggle = document.getElementById('hud-toggle-music') as HTMLButtonElement
     this.resetButton = document.getElementById('reset-deployment') as HTMLButtonElement
     this.intelPanel = document.getElementById('intel-panel') as HTMLElement
     this.intelContent = document.getElementById('intel-content') as HTMLElement
@@ -115,7 +110,6 @@ export class BattleHud {
     this.bindSpeedButtons()
     this.bindStartWave()
     this.bindActionButtons()
-    this.bindAudioToggles()
     this.bindReturnButtons()
     this.bindResetButton()
     this.bindPickerClose()
@@ -158,15 +152,6 @@ export class BattleHud {
     const campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState | undefined
     this.currentSpeed = campaign?.gameSpeed ?? 1
     this.refreshSpeedButtons()
-    this.syncAudioLabels()
-  }
-
-  private voice(): VoiceSystem | undefined {
-    return this.game.registry.get(VOICE_REGISTRY_KEY) as VoiceSystem | undefined
-  }
-
-  private music(): MusicController | undefined {
-    return this.game.registry.get(MUSIC_REGISTRY_KEY) as MusicController | undefined
   }
 
   private setHint(text: string) {
@@ -218,22 +203,6 @@ export class BattleHud {
     this.startWaveButton.addEventListener('click', () => {
       EventBus.emit(GameEvents.StartNextWave)
     })
-  }
-
-  private bindAudioToggles() {
-    this.voiceToggle.addEventListener('click', () => {
-      this.voice()?.toggle()
-      this.syncAudioLabels()
-    })
-    this.musicToggle.addEventListener('click', () => {
-      this.music()?.toggle()
-      this.syncAudioLabels()
-    })
-  }
-
-  private syncAudioLabels() {
-    this.voiceToggle.setAttribute('aria-pressed', String(!this.voice()?.muted))
-    this.musicToggle.setAttribute('aria-pressed', String(!this.music()?.muted))
   }
 
   private bindReturnButtons() {
@@ -547,5 +516,6 @@ export class BattleHud {
     this.endOverlay.hidden = false
   }
 }
+
 
 
