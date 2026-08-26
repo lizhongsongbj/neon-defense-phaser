@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import { ALL_TOWER_TYPES } from '../data/towerExpansion'
 import { ENEMY_TYPES } from '../data/enemies'
-import { BOSS_TYPES } from '../data/bosses'
+import { BOSS_TYPES, bossStageTextureKey } from '../data/bosses'
 import { MAP_LEVELS } from '../data/maps'
 import { GAME_HEIGHT, GAME_WIDTH } from '../config/gameConfig'
 import { allVoiceFiles } from '../audio/voiceManifest'

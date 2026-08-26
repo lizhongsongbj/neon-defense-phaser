@@ -1,7 +1,7 @@
 ﻿import Phaser from 'phaser'
 import type { EnemyState } from '../systems/types'
 import { ENEMY_TYPES } from '../data/enemies'
-import { BOSS_TYPES, bossStageDefinition } from '../data/bosses'
+import { BOSS_TYPES, bossStageDefinition, bossStageTextureKey, type BossStage } from '../data/bosses'
 import {
   ENEMY_RUNTIME_ANIMATIONS,
   enemyAnimationKey,

@@ -99,6 +99,10 @@ export const BOSS_TYPES: Record<BossId, BossDefinition> = {
   },
 }
 
+export function bossStageTextureKey(id: BossId, stage: number): string {
+  return `boss-${id}-stage-${stage}`
+}
+
 export function bossStageDefinition(id: BossId, stage: number): BossStageDefinition {
   const stages = BOSS_TYPES[id].stages
   return stages.find((entry) => entry.stage === stage) ?? stages[stages.length - 1]
