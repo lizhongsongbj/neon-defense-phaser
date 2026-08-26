@@ -238,7 +238,8 @@ export class BattleScene extends Phaser.Scene {
     const saved = this.campaign.savedTowers ?? []
     for (const s of saved) {
       this.instantiateTower(s.slot, s.type, {
-        level: s.level as 1 | 2 | 3,
+        level: Math.max(1, Math.min(4, s.level)) as 1 | 2 | 3 | 4,
+        tier4BranchId: s.tier4BranchId ?? null,
         spent: s.spent,
         rallyPoint: s.rallyX != null && s.rallyY != null ? { x: s.rallyX, y: s.rallyY } : null,
       })
@@ -564,6 +565,7 @@ export class BattleScene extends Phaser.Scene {
       source: toBoardUnits(slot),
       rangeScale: slot.rangeScale ?? 1,
       level: opts.level,
+      tier4BranchId: opts.tier4BranchId ?? null,
       spent: opts.spent,
       cooldown: 0,
       targetId: null,
@@ -623,8 +625,10 @@ export class BattleScene extends Phaser.Scene {
       name: def.name,
       role: def.role,
       level: tower.level,
-      maxLevel: 3,
+      maxLevel: 4,
       upgradeCost: tower.level < 3 ? towerUpgradeCost(tower.typeId, tower.level) : null,
+      tier4BranchId: tower.tier4BranchId,
+      tier4Branches: tower.level === 3 ? tier4BranchesForTower(tower.typeId).map((branch) => ({ id: branch.id, branch: branch.branch, name: branch.name, role: branch.role, cost: branch.upgradeCost, notes: branch.notes })) : [],
       sellValue: towerRefundValue(tower.typeId, tower.spent),
       damageDealt: Math.round(tower.damageDealt),
       attacks: tower.attacks,
@@ -638,12 +642,18 @@ export class BattleScene extends Phaser.Scene {
       EventBus.emit(GameEvents.TowerActionFeedback, { message: '升级失败 · 未找到目标塔楼' })
       return
     }
-    if (tower.level >= 3) {
+    if (tower.level >= 4) {
       EventBus.emit(GameEvents.TowerActionFeedback, { message: '该塔已达到当前最高等级' })
       this.emitTowerInfo(tower)
       return
     }
-    const cost = towerUpgradeCost(tower.typeId, tower.level)
+    const branch = tower.level === 3 ? TIER4_BRANCH_BY_ID[payload.branchId ?? ''] : null
+    if (tower.level === 3 && (!branch || branch.towerId !== tower.typeId)) {
+      EventBus.emit(GameEvents.TowerActionFeedback, { message: '请选择一条第四级升级路线' })
+      this.emitTowerInfo(tower)
+      return
+    }
+    const cost = branch?.upgradeCost ?? towerUpgradeCost(tower.typeId, tower.level)
     if (this.battle.coins < cost) {
       EventBus.emit(GameEvents.TowerActionFeedback, { message: `金币不足 · 还差 ${Math.ceil(cost - this.battle.coins)} 币` })
       this.emitHud()
@@ -651,9 +661,10 @@ export class BattleScene extends Phaser.Scene {
       return
     }
     this.battle.coins -= cost
-    tower.level = (tower.level + 1) as 1 | 2 | 3
+    tower.level = (tower.level + 1) as 1 | 2 | 3 | 4
+    tower.tier4BranchId = branch?.id ?? tower.tier4BranchId
     tower.spent += cost
-    this.towerActors.get(tower.id)?.setLevel(tower.level)
+    this.towerActors.get(tower.id)?.setLevel(tower.level, tower.tier4BranchId)
     if (tower.typeId in TOWER_TYPE_BY_ID) this.voice?.play(tower.typeId as TowerId, 'upgrade')
     this.persistProgress()
     this.emitHud()
@@ -1159,6 +1170,7 @@ export class BattleScene extends Phaser.Scene {
       slot: t.slotIndex,
       type: t.typeId,
       level: t.level,
+      tier4BranchId: t.tier4BranchId,
       spent: t.spent,
       rallyX: t.rallyPoint?.x ?? null,
       rallyY: t.rallyPoint?.y ?? null,
