@@ -104,10 +104,13 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     if (SOLID_ATTACK_IDS.has(this.enemy.typeId) && attackActive) {
       const phase = ((now + this.enemy.id * 317) % 1000) / 1000
       const recoil = Math.sin(phase * Math.PI * 2)
-      this.sprite.setScale(1 + Math.max(0, recoil) * 0.035, 1 - Math.max(0, recoil) * 0.02)
+      this.sprite.setDisplaySize(
+        this.baseSize * (1 + Math.max(0, recoil) * 0.035),
+        this.baseSize * (1 - Math.max(0, recoil) * 0.02),
+      )
       this.sprite.setAngle(recoil * (this.enemy.air ? 1.2 : 2.2))
     } else {
-      this.sprite.setScale(1)
+      this.sprite.setDisplaySize(this.baseSize, this.baseSize)
     }
 
     if (this.enemy.air) {
@@ -168,12 +171,14 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     if (!leaked && !this.enemy.isBoss && CLEAN_FALL_DEATH_IDS.has(this.enemy.typeId)) {
       const cleanTexture = textureKeyFor(this.enemy)
       if (this.scene.textures.exists(cleanTexture)) this.sprite.setTexture(cleanTexture)
+      this.sprite.setDisplaySize(this.baseSize, this.baseSize)
+      const exitScaleY = this.sprite.scaleY
       // 四种新增单位使用干净整图作为底帧，倒下动作由 Phaser 做整体旋转、下坠和淡出，避免彩色扫描线。
       this.scene.tweens.add({
         targets: this.sprite,
         angle: { from: 0, to: this.enemy.air ? 62 : 78 },
         y: { from: 0, to: this.baseSize * 0.22 },
-        scaleY: { from: 1, to: 0.72 },
+        scaleY: { from: exitScaleY, to: exitScaleY * 0.72 },
         alpha: { from: 1, to: 0 },
         duration: 560,
         ease: 'Cubic.easeIn',
