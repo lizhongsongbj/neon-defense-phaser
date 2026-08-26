@@ -2,18 +2,10 @@
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
-const scripts = {
-  build: '蜂群控制核心已上线。无人机编队准备部署。',
-  select: '蜂后系统在线。等待新的战术指令。',
-  anti_air_mode: '切换防空模式。截击无人机，锁定所有空中目标。',
-  bomb_mode: '切换轰炸模式。爆破无人机，装载重型弹药。',
-  repair_mode: '切换维修模式。回收受损单位，并执行快速修复。',
-  skill: '蜂群协议启动。所有无人机立即集中火力！',
-  drone_destroyed: '警告，一架无人机已经失去连接。正在准备替补单位。',
-  return: '任务结束。无人机编队脱离战区，返回母巢。',
-} as const
-
-const normalize = (text: string) => text.normalize('NFKC').replace(/[^\p{L}\p{N}]/gu, '')
+interface VoiceJob { group: string; name: string; script: string }
+const jobs = JSON.parse(readFileSync(new URL('../tools/english-voice-scripts.json', import.meta.url), 'utf8').replace(/^\uFEFF/, '')) as VoiceJob[]
+const scripts = jobs.filter((job) => job.group === 'queen_bee')
+const normalize = (text: string) => text.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')
 
 function wavDurationSeconds(buffer: Buffer): number {
   assert.equal(buffer.toString('ascii', 0, 4), 'RIFF')
@@ -25,8 +17,9 @@ function wavDurationSeconds(buffer: Buffer): number {
   return dataBytes / (sampleRate * channels * (bitsPerSample / 8))
 }
 
-test('all drone lines include the complete intended subtitle script and a clean release tail', () => {
-  for (const [name, script] of Object.entries(scripts)) {
+test('all drone lines include the complete English subtitle script and a clean release tail', () => {
+  assert.equal(scripts.length, 8)
+  for (const { name, script } of scripts) {
     const base = new URL(`../public/assets/audio/voices/queen_bee/${name}`, import.meta.url)
     assert.equal(readFileSync(new URL(`${base.href}.txt`), 'utf8').trim(), script)
     const subtitles = JSON.parse(readFileSync(new URL(`${base.href}.mp3.json`), 'utf8')) as Array<{ part: string }>

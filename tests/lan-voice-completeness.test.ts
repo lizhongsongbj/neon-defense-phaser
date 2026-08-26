@@ -2,18 +2,10 @@
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
-const scripts = {
-  opening: '指挥官，防线已部署。敌军正在接近，准备迎战！',
-  enemy_incoming: '警告！侦测到敌军正在接近，请立即做好战斗准备！',
-  final_wave: '注意！最终波次已经抵达。坚守阵地，不要让任何敌人通过！',
-  fortress_damaged: '警告！大本营正在遭受攻击，请立即拦截突破防线的敌人！',
-  node_attacked: '警告！防御节点正在遭受攻击，立刻增援该区域！',
-  route_split: '敌军正在分流，多条路线同时出现目标。请重新部署防御力量！',
-  victory: '任务完成！敌军攻势已经瓦解，防线成功守住！',
-  defeat: '防线已经失守。保存作战数据，重新整备后再次部署。',
-} as const
-
-const normalize = (text: string) => text.normalize('NFKC').replace(/[^\p{L}\p{N}]/gu, '')
+interface VoiceJob { group: string; name: string; script: string }
+const jobs = JSON.parse(readFileSync(new URL('../tools/english-voice-scripts.json', import.meta.url), 'utf8').replace(/^\uFEFF/, '')) as VoiceJob[]
+const scripts = jobs.filter((job) => job.group === 'lan')
+const normalize = (text: string) => text.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')
 
 function wavDurationSeconds(buffer: Buffer): number {
   assert.equal(buffer.toString('ascii', 0, 4), 'RIFF')
@@ -25,8 +17,9 @@ function wavDurationSeconds(buffer: Buffer): number {
   return dataBytes / (sampleRate * channels * (bitsPerSample / 8))
 }
 
-test('all battlefield commander lines contain the complete intended script and release tail', () => {
-  for (const [name, script] of Object.entries(scripts)) {
+test('all battlefield commander lines contain the complete English script and release tail', () => {
+  assert.equal(scripts.length, 8)
+  for (const { name, script } of scripts) {
     const base = new URL(`../public/assets/audio/voices/lan/${name}`, import.meta.url)
     assert.equal(readFileSync(new URL(`${base.href}.txt`), 'utf8').trim(), script)
     const subtitles = JSON.parse(readFileSync(new URL(`${base.href}.mp3.json`), 'utf8')) as Array<{ part: string }>
