@@ -38,13 +38,14 @@ export class MercenaryActor extends Phaser.GameObjects.Container {
     this.walkTweens.splice(0).forEach((tween) => tween.stop())
     this.units.forEach((unit, index) => {
       unit.setAlpha(1).setRotation(0)
-      const phase = index % 2 === 0 ? 0 : Math.PI
+      const stride = index % 2 === 0 ? 2 : -2
+      const lift = index % 2 === 0 ? -1.5 : 1.5
       const homeX = this.homeX[index]
       const walkTween = this.scene.tweens.add({
         targets: unit,
-        x: homeX + Math.sin(phase) * 1.5,
-        y: Math.sin(phase) * 1.2,
-        angle: Math.sin(phase) * 2,
+        x: homeX + stride,
+        y: lift,
+        angle: index % 2 === 0 ? -3 : 3,
         duration: 230,
         yoyo: true,
         repeat: Math.ceil(duration / 460),
