@@ -7,6 +7,7 @@ const actor = readFileSync(new URL('../src/entities/EnemyActor.ts', import.meta.
 test('怪物动画始终保持配置尺寸，不会重置为素材原始大小', () => {
   assert.doesNotMatch(actor, /this\.sprite\.setScale\(1\)/)
   assert.match(actor, /this\.sprite\.setDisplaySize\(this\.baseSize, this\.baseSize\)/)
-  assert.match(actor, /this\.baseSize \* \(1 \+ Math\.max\(0, recoil\) \* 0\.035\)/)
+  assert.doesNotMatch(actor, /SOLID_ATTACK_IDS/)
   assert.match(actor, /scaleY: \{ from: exitScaleY, to: exitScaleY \* 0\.72 \}/)
 })
+
