@@ -40,10 +40,100 @@ export class EffectsLayer {
       this.playRailLaser(from, to)
     } else if (effect === 'mercenary') {
       this.playBallisticTracer(from, to)
+    } else if (effect === 'gravity' || effect === 'grey-tide' || effect === 'trajectory') {
+      this.playExpansionAttack(from, to, effect)
     } else {
       this.playIndustrialTracer(from, to, EFFECT_COLORS[effect] ?? 0xffffff)
     }
     this.playImpact(to, effect)
+  }
+
+  private playExpansionAttack(from: { x: number; y: number }, to: { x: number; y: number }, effect: 'gravity' | 'grey-tide' | 'trajectory') {
+    const color = EFFECT_COLORS[effect]
+    const hot = effect === 'gravity' ? 0xf1d8ff : effect === 'grey-tide' ? 0xc9ffda : 0xe5fbff
+    const orbit = this.scene.add.container(from.x, from.y).setDepth(91).setBlendMode(Phaser.BlendModes.ADD)
+    const particleCount = effect === 'grey-tide' ? 22 : 17
+    for (let index = 0; index < particleCount; index += 1) {
+      const angle = (index / particleCount) * Math.PI * 2
+      const radius = 8 + (index % 5) * 3.4
+      const particle = effect === 'grey-tide'
+        ? this.scene.add.rectangle(Math.cos(angle) * radius, Math.sin(angle) * radius * .56, index % 4 === 0 ? 3.5 : 2, index % 4 === 0 ? 1.4 : 2, index % 5 === 0 ? hot : color, .9)
+        : this.scene.add.circle(Math.cos(angle) * radius, Math.sin(angle) * radius * .56, index % 5 === 0 ? 2.5 : 1.45, index % 4 === 0 ? hot : color, .9)
+      orbit.add(particle)
+    }
+    const sourceRing = this.scene.add.ellipse(from.x, from.y, 22, 11, color, .14)
+      .setStrokeStyle(2, hot, .88).setDepth(90).setBlendMode(Phaser.BlendModes.ADD)
+    this.scene.tweens.add({ targets: orbit, angle: effect === 'trajectory' ? -320 : 300, scale: .36, alpha: 0, duration: effect === 'grey-tide' ? 360 : 290, ease: 'Cubic.easeIn', onComplete: () => orbit.destroy() })
+    this.scene.tweens.add({ targets: sourceRing, scaleX: 2.15, scaleY: 1.65, alpha: 0, duration: 360, ease: 'Quad.easeOut', onComplete: () => sourceRing.destroy() })
+
+    const distance = Phaser.Math.Distance.Between(from.x, from.y, to.x, to.y)
+    const normalAngle = Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y) + Math.PI / 2
+    const normal = { x: Math.cos(normalAngle), y: Math.sin(normalAngle) }
+    const strandCount = effect === 'grey-tide' ? 9 : effect === 'gravity' ? 4 : 5
+    for (let strand = 0; strand < strandCount; strand += 1) {
+      const offset = (strand - (strandCount - 1) / 2) * (effect === 'grey-tide' ? 2.3 : 3.2)
+      const points = Array.from({ length: 8 }, (_, step) => {
+        const t = step / 7
+        const wave = Math.sin(t * Math.PI * (effect === 'trajectory' ? 2.2 : 1.35) + strand * .8)
+        const envelope = Math.sin(t * Math.PI)
+        return {
+          x: Phaser.Math.Linear(from.x, to.x, t) + normal.x * (offset + wave * envelope * (effect === 'gravity' ? 13 : effect === 'trajectory' ? 7 : 4)),
+          y: Phaser.Math.Linear(from.y, to.y, t) + normal.y * (offset + wave * envelope * (effect === 'gravity' ? 13 : effect === 'trajectory' ? 7 : 4)),
+        }
+      })
+      const path = this.drawPath(points, strand % 3 === 0 ? hot : color, effect === 'grey-tide' ? 1.4 : strand === 0 ? 3 : 1.7, effect === 'grey-tide' ? .72 : .8, 89)
+      this.fadeAndDestroy(path, effect === 'trajectory' ? 300 : 390, strand * 15)
+    }
+
+    if (effect === 'grey-tide') {
+      for (let index = 0; index < 18; index += 1) {
+        const speck = this.scene.add.rectangle(from.x + Phaser.Math.Between(-10, 10), from.y + Phaser.Math.Between(-7, 7), Phaser.Math.Between(1, 3), Phaser.Math.Between(1, 3), index % 5 === 0 ? hot : color, .9).setDepth(92)
+        this.scene.tweens.add({ targets: speck, x: to.x + Phaser.Math.Between(-10, 10), y: to.y + Phaser.Math.Between(-8, 8), angle: Phaser.Math.Between(-180, 180), alpha: 0, duration: Phaser.Math.Between(290, 520), delay: index * 9, ease: 'Cubic.easeIn', onComplete: () => speck.destroy() })
+      }
+    } else if (effect === 'trajectory') {
+      const echo = this.scene.add.rectangle(from.x, from.y, distance, 2, hot, .8).setOrigin(0, .5).setRotation(Phaser.Math.Angle.Between(from.x, from.y, to.x, to.y)).setDepth(91).setBlendMode(Phaser.BlendModes.ADD)
+      this.scene.tweens.add({ targets: echo, alpha: 0, scaleX: { from: 1, to: .18 }, duration: 410, ease: 'Cubic.easeIn', onComplete: () => echo.destroy() })
+    }
+  }
+
+  private playGravityImpact(at: { x: number; y: number }) {
+    for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
+      const ring = this.scene.add.ellipse(at.x, at.y, 18 + ringIndex * 7, 8 + ringIndex * 3, 0xa978ff, .08)
+        .setStrokeStyle(2.4 - ringIndex * .45, ringIndex === 0 ? 0xf6e4ff : 0xa978ff, .92).setDepth(93 - ringIndex).setBlendMode(Phaser.BlendModes.ADD)
+      this.scene.tweens.add({ targets: ring, scaleX: .28, scaleY: .4, angle: ringIndex % 2 ? 35 : -28, alpha: 0, duration: 430 + ringIndex * 70, ease: 'Cubic.easeIn', onComplete: () => ring.destroy() })
+    }
+    for (let index = 0; index < 12; index += 1) {
+      const angle = (index / 12) * Math.PI * 2
+      const radius = Phaser.Math.Between(17, 34)
+      const debris = this.scene.add.rectangle(at.x + Math.cos(angle) * radius, at.y + Math.sin(angle) * radius * .55, Phaser.Math.Between(2, 5), 1.4, index % 4 === 0 ? 0xf5e5ff : 0x9a76c8, .85).setRotation(angle).setDepth(94)
+      this.scene.tweens.add({ targets: debris, x: at.x, y: at.y, angle: debris.angle + 160, alpha: 0, scale: .15, duration: Phaser.Math.Between(280, 470), ease: 'Cubic.easeIn', onComplete: () => debris.destroy() })
+    }
+  }
+
+  private playGreyTideImpact(at: { x: number; y: number }) {
+    const scan = this.scene.add.ellipse(at.x, at.y, 20, 9, 0x74e69a, .1).setStrokeStyle(2, 0xc9ffda, .9).setDepth(92).setBlendMode(Phaser.BlendModes.ADD)
+    this.scene.tweens.add({ targets: scan, scaleX: 2.7, scaleY: 2.1, alpha: 0, duration: 560, ease: 'Quad.easeOut', onComplete: () => scan.destroy() })
+    for (let index = 0; index < 18; index += 1) {
+      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2)
+      const plate = this.scene.add.rectangle(at.x + Phaser.Math.Between(-7, 7), at.y + Phaser.Math.Between(-5, 5), Phaser.Math.Between(3, 7), Phaser.Math.FloatBetween(1, 2.2), index % 4 === 0 ? 0xc8d4cd : 0x72877b, .88).setRotation(angle).setDepth(93)
+      this.scene.tweens.add({ targets: plate, x: plate.x + Math.cos(angle) * Phaser.Math.Between(13, 31), y: plate.y + Math.sin(angle) * Phaser.Math.Between(7, 19) + Phaser.Math.Between(4, 12), angle: plate.angle + Phaser.Math.Between(-120, 120), alpha: 0, duration: Phaser.Math.Between(350, 650), ease: 'Quad.easeOut', onComplete: () => plate.destroy() })
+    }
+    for (let index = 0; index < 16; index += 1) {
+      const nano = this.scene.add.circle(at.x + Phaser.Math.Between(-18, 18), at.y + Phaser.Math.Between(-12, 12), Phaser.Math.FloatBetween(.8, 1.8), index % 5 === 0 ? 0xe8fff0 : 0x74e69a, .9).setDepth(94).setBlendMode(Phaser.BlendModes.ADD)
+      this.scene.tweens.add({ targets: nano, x: at.x + Phaser.Math.Between(-4, 4), y: at.y + Phaser.Math.Between(-4, 4), alpha: 0, duration: Phaser.Math.Between(320, 620), delay: index * 12, ease: 'Cubic.easeIn', onComplete: () => nano.destroy() })
+    }
+  }
+
+  private playTrajectoryImpact(at: { x: number; y: number }) {
+    for (let index = 0; index < 4; index += 1) {
+      const frame = this.scene.add.rectangle(at.x, at.y, 20 + index * 8, 10 + index * 4, 0x58cfff, .04).setStrokeStyle(index === 0 ? 2 : 1, index === 0 ? 0xe7fcff : 0x58cfff, .86).setDepth(94 - index).setBlendMode(Phaser.BlendModes.ADD)
+      frame.setRotation(index % 2 ? .18 : -.18)
+      this.scene.tweens.add({ targets: frame, x: at.x - 9 - index * 5, scaleX: 1.5, scaleY: 1.35, alpha: 0, duration: 340 + index * 80, delay: index * 28, ease: 'Quad.easeOut', onComplete: () => frame.destroy() })
+    }
+    for (let index = 0; index < 10; index += 1) {
+      const slash = this.scene.add.rectangle(at.x + Phaser.Math.Between(-8, 8), at.y + Phaser.Math.Between(-10, 10), Phaser.Math.Between(7, 16), 1.2, index % 3 === 0 ? 0xffffff : 0x58cfff, .92).setRotation(Phaser.Math.FloatBetween(-.3, .3)).setDepth(95).setBlendMode(Phaser.BlendModes.ADD)
+      this.scene.tweens.add({ targets: slash, x: slash.x - Phaser.Math.Between(12, 30), alpha: 0, scaleX: .2, duration: Phaser.Math.Between(180, 360), delay: index * 18, onComplete: () => slash.destroy() })
+    }
   }
 
   private fadeAndDestroy(target: Phaser.GameObjects.GameObject & { alpha: number }, duration: number, delay = 0) {
@@ -244,6 +334,18 @@ export class EffectsLayer {
     this.scene.time.delayedCall(11 * 55, () => this.playImpact(to, 'hacker'))
   }
   playImpact(at: { x: number; y: number }, effect: string) {
+    if (effect === 'gravity') {
+      this.playGravityImpact(at)
+      return
+    }
+    if (effect === 'grey-tide') {
+      this.playGreyTideImpact(at)
+      return
+    }
+    if (effect === 'trajectory') {
+      this.playTrajectoryImpact(at)
+      return
+    }
     if (effect === 'rail') {
       const bloom = this.scene.add.circle(at.x, at.y, 9, 0xf2ffff, 1)
         .setStrokeStyle(6, 0x25d8ff, 0.96)
