@@ -1,0 +1,12 @@
+﻿import fs from 'node:fs'
+const p='src/entities/EnemyActor.ts'; let s=fs.readFileSync(p,'utf8')
+s=s.replace("      const cleanTexture = textureKeyFor(this.enemy)\n      if (this.scene.textures.exists(cleanTexture)) this.sprite.setTexture(cleanTexture)\n", "")
+s=s.replace("    this.playMotion(this.enemy.blocked && this.hasMotion('attack') ? 'attack' : 'move')", "    // 敌人没有独立的攻击状态字段；用短促的周期攻击窗口让已接入的攻击动图在战斗中真正可见。被佣兵/无人机拦截时优先播放攻击动作。\n    const attackPulse = this.hasMotion('attack') && ((now + this.enemy.id * 317) % 2400) < 520\n    this.playMotion(this.enemy.blocked || attackPulse ? 'attack' : 'move')")
+fs.writeFileSync(p,s,'utf8')
+const q='src/data/animationCatalog.ts'; let a=fs.readFileSync(q,'utf8')
+a=a.replace("aerostat:'/assets/enemies/corporate-aerostat.png?v=clean-death-cutout-20260826'", "aerostat:'/assets/animations/enemies/runtime/aerostat/death/frame-01.webp?v=original-death-frame-20260826'")
+a=a.replace("devourer:'/assets/enemies/data-devourer.png?v=clean-death-cutout-20260826'", "devourer:'/assets/animations/enemies/runtime/devourer/death/frame-01.webp?v=original-death-frame-20260826'")
+a=a.replace("faraday:'/assets/enemies/new/enemy-06-faraday-suppressor.png?v=clean-death-cutout-20260826'", "faraday:'/assets/animations/enemies/runtime/faraday/death/frame-01.webp?v=original-death-frame-20260826'")
+a=a.replace("hijacker:'/assets/enemies/new/enemy-07-hijack-hovercraft.png?v=clean-death-cutout-20260826'", "hijacker:'/assets/animations/enemies/runtime/hijacker/death/frame-01.webp?v=original-death-frame-20260826'")
+a=a.replace("previewFrames:!['aerostat','devourer','faraday','hijacker'].includes(seed.id) ? runtimePreviewFrames[seed.id]?.map((url)=>url.replace('/runtime/','/runtime-clean-v4/').replace('/ATTACK/','/death/')) : undefined", "previewFrames:!['aerostat','devourer','faraday','hijacker'].includes(seed.id) ? runtimePreviewFrames[seed.id]?.map((url)=>url.replace('/runtime/','/runtime-clean-v4/').replace('/ATTACK/','/death/')) : undefined")
+fs.writeFileSync(q,a,'utf8')
