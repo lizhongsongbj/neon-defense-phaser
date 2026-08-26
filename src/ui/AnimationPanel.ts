@@ -8,6 +8,7 @@ export class AnimationPanel {
   private readonly detail: HTMLElement
   private activeCategory: AnimationCategory | 'all' = 'all'
   private query = ''
+  private readonly previewTimers = new Set<number>()
 
   constructor() {
     this.grid = document.getElementById('animation-grid') as HTMLElement
@@ -46,6 +47,8 @@ export class AnimationPanel {
   private render() {
     const entries = this.filteredEntries()
     const available = entries.filter((entry) => entry.status === 'available').length    this.count.textContent = `${entries.length} \u9879 // ${available} \u9879\u5df2\u6709\u52a8\u753b\u7d20\u6750 // ${entries.length - available} \u9879\u52a8\u4f5c\u9884\u6f14`
+    this.previewTimers.forEach((timer) => window.clearInterval(timer))
+    this.previewTimers.clear()
     this.grid.replaceChildren(...entries.map((entry) => this.createCard(entry)))
     if (!entries.length) {
       const empty = document.createElement('div')
@@ -81,6 +84,7 @@ export class AnimationPanel {
       if (img.src.endsWith(entry.referenceImage)) return
       img.src = entry.referenceImage
     })
+    this.animatePreview(img, entry)
     button.addEventListener('click', () => this.openDetail(entry))
     return button
   }
@@ -94,6 +98,7 @@ export class AnimationPanel {
     preview.innerHTML = `<img src="${entry.previewAsset ?? entry.referenceImage}" alt="${entry.name}${entry.action}" /><i class="animation-card__fx" aria-hidden="true"></i>${this.headPulseMarkup(entry)}${this.attackEffectMarkup(entry)}`
     const img = preview.querySelector('img') as HTMLImageElement
     img.addEventListener('error', () => { img.src = entry.referenceImage })
+    this.animatePreview(img, entry)
     ;(document.getElementById('animation-detail-code') as HTMLElement).textContent = `${ANIMATION_CATEGORY_LABEL[entry.category]} // ${entry.level}`
     ;(document.getElementById('animation-detail-name') as HTMLElement).textContent = `${entry.name} 路 ${entry.action}`
     ;(document.getElementById('animation-detail-description') as HTMLElement).textContent = entry.description
@@ -110,6 +115,18 @@ export class AnimationPanel {
     target.style.setProperty('--head-pulse-secondary', pulse.secondary)
   }
 
+
+  private animatePreview(img: HTMLImageElement, entry: AnimationCatalogEntry) {
+    const frames = entry.previewFrames
+    if (!frames?.length) return
+    let frame = 0
+    img.src = frames[0] ?? img.src
+    const timer = window.setInterval(() => {
+      frame = (frame + 1) % frames.length
+      img.src = frames[frame] ?? img.src
+    }, 90)
+    this.previewTimers.add(timer)
+  }
   private headPulseMarkup(entry: AnimationCatalogEntry) {
     if (!entry.headPulse) return ''
     const sparks = Array.from({ length: 8 }, (_, index) => `<i class="tower-head-pulse__spark" style="--spark-index:${index}"></i>`).join('')
