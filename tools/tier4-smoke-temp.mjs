@@ -1,4 +1,4 @@
-﻿import { chromium } from 'playwright-core'
+import { chromium } from 'playwright-core'
 const browser=await chromium.launch({executablePath:'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',headless:true})
 const page=await browser.newPage({viewport:{width:1280,height:800}})
 const errors=[]
@@ -11,11 +11,11 @@ await page.click('#start-game')
 await page.waitForSelector('#deploy-mission:not([disabled])',{timeout:20000})
 await page.click('#deploy-mission')
 await page.waitForTimeout(1200)
-await page.mouse.click(467,128)
+await clickSlot()
 await page.waitForSelector('.tower-option')
 await page.locator('.tower-option').first().click()
 await page.waitForTimeout(300)
-await page.mouse.click(467,128)
+await clickSlot()
 await page.waitForSelector('#tower-actions:not([hidden])')
 await page.click('#tower-upgrade')
 await page.waitForTimeout(150)
