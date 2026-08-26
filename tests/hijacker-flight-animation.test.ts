@@ -40,11 +40,11 @@ test('游戏运行时直接加载完整身体的 PNG 帧，避免 WebP 差分帧
     for (let frame = 1; frame <= 12; frame += 1) {
       const relative = enemyAnimationFramePath('hijacker', motion, frame)
       assert.match(relative, /enemy-07-hijack-hovercraft-fly-frames\/frame-\d{2}\.png$/)
-      const file = new URL(../public/, import.meta.url)
+      const file = new URL(`../public/${relative}`, import.meta.url)
       const { data } = await sharp(fileURLToPath(file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
       let visiblePixels = 0
       for (let index = 3; index < data.length; index += 4) if (data[index] > 16) visiblePixels += 1
-      assert.ok(visiblePixels > 80_000, ${motion} frame  lost the vehicle body)
+      assert.ok(visiblePixels > 80_000, `${motion} frame ${frame} lost the vehicle body`)
     }
   }
 })
