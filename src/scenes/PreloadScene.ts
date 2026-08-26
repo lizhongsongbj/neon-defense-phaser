@@ -46,6 +46,9 @@ export class PreloadScene extends Phaser.Scene {
     }
     for (const boss of Object.values(BOSS_TYPES)) {
       this.load.image(`enemy-${boss.id}`, boss.image)
+      for (const [stage, image] of Object.entries(boss.stageImages ?? {})) {
+        this.load.image(bossStageTextureKey(boss.id, Number(stage)), image)
+      }
     }
     for (const [typeId, motions] of Object.entries(ENEMY_RUNTIME_ANIMATIONS)) {
       for (const [motion, spec] of Object.entries(motions)) {
