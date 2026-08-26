@@ -1,4 +1,4 @@
-﻿import { TOWER_IDS, TOWER_TYPES, type TowerId } from './towers'
+import { TOWER_IDS, TOWER_TYPES, type TowerId } from './towers'
 
 /** 尚未接入战斗循环的三种扩展塔。 */
 export type ExpansionTowerId = 'gravity-nail' | 'grey-tide' | 'trajectory-rewriter'
@@ -190,6 +190,34 @@ export const TIER4_BRANCHES: readonly Tier4BranchDefinition[] = [
   tier4({ id:'trajectory-rollback-node', towerId:'trajectory-rewriter', towerName:'轨迹回写器', branch:'A', name:'回滚节点', role:'多目标回滚 / 伤害复写', upgradeCost:220, damageKind:'energy', targetLayer:'both', stats:{ range:215,cooldown:1.42,damage:108,targetCount:3,effectRadius:38,armorPenetration:0,chainDistance:0,chainCount:0,unitCount:0,unitHealth:0,blockRange:0,respawn:0,slow:.2,vulnerability:0,duration:3.8,flyingBonus:0,pursuit:0,pathDisplacement:28,armorShred:0,energyResistanceShred:0,echoRatio:.6,echoDelay:.5,executeThreshold:0,bossExecuteThreshold:0,bonusCoinsChance:0,bonusCoins:0}, notes:['最多3个目标，各回退28路径单位；Boss位移按35%生效。','0.5秒后复写60%本次伤害，复写不再次触发连携。'] }),
   tier4({ id:'trajectory-breakpoint-execution', towerId:'trajectory-rewriter', towerName:'轨迹回写器', branch:'B', name:'断点处决', role:'单体标记 / 高额处决', upgradeCost:230, damageKind:'energy', targetLayer:'both', stats:{ range:235,cooldown:2.05,damage:188,targetCount:1,effectRadius:0,armorPenetration:0,chainDistance:0,chainCount:0,unitCount:0,unitHealth:0,blockRange:0,respawn:0,slow:0,vulnerability:.22,duration:4.5,flyingBonus:0,pursuit:0,pathDisplacement:16,armorShred:0,energyResistanceShred:.2,echoRatio:.35,echoDelay:.4,executeThreshold:.18,bossExecuteThreshold:.06,bonusCoinsChance:0,bonusCoins:0}, notes:['标记目标4.5秒并施加22%易伤、20%能量抗性削弱。','非Boss低于18%、Boss低于6%生命时处决；否则0.4秒后复写35%伤害。'] }),
 ] as const
+
+export const TIER4_BRANCH_IMAGE_BY_ID: Readonly<Record<string, string>> = {
+  'rail-sky-judicator': 'assets/generated/cutout/mag-rail-sky-verdict-2026-08-23T11-25-23-710Z.png',
+  'rail-quantum-citybreaker': 'assets/generated/cutout/mag-rail-city-piercer-2026-08-23T11-25-22-347Z.png',
+  'arc-neon-storm-core': 'assets/generated/cutout/arc-neon-storm-core-2026-08-23T11-25-45-551Z.png',
+  'arc-superconductor-tide': 'assets/generated/cutout/arc-neon-superconductor-2026-08-23T11-25-37-154Z.png',
+  'merc-chrome-fortress': 'assets/generated/cutout/mercenary-chrome-fortress-2026-08-23T11-25-49-027Z.png',
+  'merc-night-blades': 'assets/generated/cutout/mercenary-night-blades-2026-08-23T11-25-52-392Z.png',
+  'hacker-zero-day-control': 'assets/generated/cutout/hacker-zero-day-control-2026-08-23T11-11-56-802Z.png',
+  'hacker-black-ice-breaker': 'assets/generated/cutout/hacker-black-ice-breaker-2026-08-23T11-13-18-369Z.png',
+  'drone-swarm-interceptor': 'assets/generated/cutout/drone-swarm-annihilator-2026-08-23T11-15-14-016Z.png',
+  'drone-queen-carrier': 'assets/generated/cutout/drone-queen-air-carrier-2026-08-23T11-26-55-854Z.png',
+  'gravity-deep-well-lockdown': 'assets/towers/new-concepts/simplified/gravity-nail-level-4-deep-well-lockdown.png',
+  'gravity-sky-deflection': 'assets/towers/new-concepts/simplified/gravity-nail-level-4-sky-deflection.png',
+  'grey-armor-eater-swarm': 'assets/towers/new-concepts/revised/grey-tide-level-4-armor-eater-swarm.png',
+  'grey-scavenger-protocol': 'assets/towers/new-concepts/revised/grey-tide-level-4-scavenger-protocol.png',
+  'trajectory-rollback-node': 'assets/towers/new-concepts/revised/trajectory-rewriter-level-4-rollback-node.png',
+  'trajectory-breakpoint-execution': 'assets/towers/new-concepts/revised/trajectory-rewriter-level-4-breakpoint-execution.png',
+}
+
+export function tier4BranchesForTower(towerId: AllTowerId): readonly Tier4BranchDefinition[] {
+  return TIER4_BRANCHES.filter((branch) => branch.towerId === towerId)
+}
+
+export function tier4BranchById(branchId: string | null | undefined): Tier4BranchDefinition | null {
+  if (!branchId) return null
+  return TIER4_BRANCH_BY_ID[branchId] ?? null
+}
 
 export interface SynergyDefinition {
   id: string
