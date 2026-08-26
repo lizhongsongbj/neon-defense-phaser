@@ -89,6 +89,7 @@ export const GameEvents = {
   ClearSelection: 'clear-selection',
   HudUpdate: 'hud-update',
   TowerInfoUpdate: 'tower-info-update',
+  TowerActionFeedback: 'tower-action-feedback',
   SetSpeed: 'set-speed',
   StartNextWave: 'start-next-wave',
   GameOver: 'game-over',

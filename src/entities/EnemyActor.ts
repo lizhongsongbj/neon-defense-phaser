@@ -30,7 +30,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
   private readonly shieldBarFill: Phaser.GameObjects.Rectangle
   private readonly tag: Phaser.GameObjects.Text
   private readonly statusRing: Phaser.GameObjects.Graphics
-  private readonly barWidth = 54
+  private readonly barWidth: number
   private readonly baseSize: number
   private currentMotion: EnemyAnimationMotion | 'static' = 'static'
   private bossVisualStage = 0
@@ -40,6 +40,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     super(scene, 0, 0)
     this.enemy = state
     this.baseSize = baseSize
+    this.barWidth = Phaser.Math.Clamp(baseSize * (state.isBoss ? 0.78 : 0.9), 34, state.isBoss ? 76 : 54)
 
     const moveTexture = enemyAnimationTextureKey(state.typeId, 'move', 1)
     const key = textureKeyFor(state)

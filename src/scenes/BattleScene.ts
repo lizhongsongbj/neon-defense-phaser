@@ -23,6 +23,7 @@ import { MapLightParticles } from '../entities/MapLightParticles'
 import { CampaignState, REGISTRY_KEY } from '../state/CampaignState'
 import { EventBus, GameEvents, type BattleHudPayload } from '../state/EventBus'
 import { ENEMY_TYPES, consumeHeavyEnemyFirstAppearance, type EnemyId } from '../data/enemies'
+import { enemyDisplaySize } from '../data/enemyVisuals'
 import { chooseSpecialEvent, specialEventHistory, specialEventTriggerDelay, type SpecialEventDefinition, type SpecialEventId } from '../data/specialEvents'
 import { BOSS_TYPES, bossStageDefinition, type BossAbilityId, type BossId } from '../data/bosses'
 import type { SavedTower } from '../systems/SaveGame'
@@ -629,9 +630,22 @@ export class BattleScene extends Phaser.Scene {
 
   private onUpgradeRequest(payload: { towerId: string }) {
     const tower = this.battle.towers.find((t) => t.id === payload.towerId)
-    if (!tower || tower.level >= 3) return
+    if (!tower) {
+      EventBus.emit(GameEvents.TowerActionFeedback, { message: '升级失败 · 未找到目标塔楼' })
+      return
+    }
+    if (tower.level >= 3) {
+      EventBus.emit(GameEvents.TowerActionFeedback, { message: '该塔已达到当前最高等级' })
+      this.emitTowerInfo(tower)
+      return
+    }
     const cost = towerUpgradeCost(tower.typeId, tower.level)
-    if (this.battle.coins < cost) return
+    if (this.battle.coins < cost) {
+      EventBus.emit(GameEvents.TowerActionFeedback, { message: `金币不足 · 还差 ${Math.ceil(cost - this.battle.coins)} 币` })
+      this.emitHud()
+      this.emitTowerInfo(tower)
+      return
+    }
     this.battle.coins -= cost
     tower.level = (tower.level + 1) as 1 | 2 | 3
     tower.spent += cost
@@ -640,6 +654,7 @@ export class BattleScene extends Phaser.Scene {
     this.persistProgress()
     this.emitHud()
     this.selectTower(tower.id)
+    EventBus.emit(GameEvents.TowerActionFeedback, { message: `${ALL_TOWER_TYPE_BY_ID[tower.typeId].name} 已升级至 LV.${tower.level}` })
   }
 
   private onSellRequest(payload: { towerId: string }) {
@@ -747,7 +762,7 @@ export class BattleScene extends Phaser.Scene {
         effect: heavyDef.heavyAlert?.effect ?? '优先锁定 · 重型敌人',
       })
     }
-    const baseSize = spriteSize(def?.size ?? 0.045)
+    const baseSize = enemyDisplaySize(def?.size ?? 0.045, enemy.isBoss, GAME_WIDTH)
     const actor = new EnemyActor(this, enemy, baseSize).setDepth(30)
     this.enemyActors.set(enemy.id, actor)
 

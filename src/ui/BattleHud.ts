@@ -121,6 +121,7 @@ export class BattleHud {
     EventBus.on(GameEvents.HudUpdate, this.onHudUpdate, this)
     EventBus.on(GameEvents.SlotClicked, this.onSlotClicked, this)
     EventBus.on(GameEvents.TowerInfoUpdate, this.onTowerInfo, this)
+    EventBus.on(GameEvents.TowerActionFeedback, this.onTowerActionFeedback, this)
     EventBus.on(GameEvents.ClearSelection, this.onClearSelection, this)
     EventBus.on(GameEvents.WaveCleared, this.onWaveCleared, this)
     EventBus.on(GameEvents.EarlyWaveBonus, this.onEarlyWaveBonus, this)
@@ -428,17 +429,34 @@ export class BattleHud {
     this.actionPanel.style.top = `${y}px`
     this.actionName.innerHTML = `${payload.name} · LV.${payload.level} <b>${payload.role}</b>`
     this.actionStats.textContent = `累计伤害 ${payload.damageDealt} · 攻击 ${payload.attacks} 次`
-    if (payload.upgradeCost != null) {
-      this.upgradeBtn.innerHTML = `<strong>升级</strong><small>${payload.upgradeCost} 币</small>`
-      this.upgradeBtn.disabled = payload.coins < payload.upgradeCost
-    } else {
-      this.upgradeBtn.innerHTML = '<strong>已满级</strong>'
-      this.upgradeBtn.disabled = true
-    }
+    this.refreshUpgradeButton(payload.coins)
     this.sellBtn.innerHTML = `<strong>拆除</strong><small>返还 ${payload.sellValue} 币</small>`
     this.setHint(HINT_TOWER_SELECTED)
   }
 
+  private refreshUpgradeButton(coins: number) {
+    const cost = this.currentTowerInfo?.upgradeCost
+    if (cost == null) {
+      this.upgradeBtn.innerHTML = '<strong>已满级</strong>'
+      this.upgradeBtn.disabled = true
+      this.upgradeBtn.removeAttribute('title')
+      delete this.upgradeBtn.dataset.affordable
+      return
+    }
+
+    const deficit = Math.max(0, Math.ceil(cost - coins))
+    // 金币不足时仍允许点击，由战斗场景给出明确原因，避免按钮因状态同步时序而“偶尔失灵”。
+    this.upgradeBtn.disabled = false
+    this.upgradeBtn.dataset.affordable = String(deficit === 0)
+    this.upgradeBtn.innerHTML = deficit === 0
+      ? `<strong>升级</strong><small>${cost} 币</small>`
+      : `<strong>升级</strong><small>${cost} 币 · 还差 ${deficit}</small>`
+    this.upgradeBtn.title = deficit === 0 ? '点击升级' : `金币不足，还差 ${deficit} 币`
+  }
+
+  private onTowerActionFeedback(payload: { message: string }) {
+    this.showToast(payload.message)
+  }
   private onClearSelection() {
     this.currentTowerInfo = null
     this.actionPanel.hidden = true
@@ -452,6 +470,10 @@ export class BattleHud {
     this.enemyCountEl.textContent = String(payload.enemyCount)
     this.coinsEl.textContent = String(Math.round(payload.coins))
     if (!this.towerPicker.hidden) this.refreshTowerAffordability(payload.coins)
+    if (this.currentTowerInfo) {
+      this.currentTowerInfo.coins = payload.coins
+      this.refreshUpgradeButton(payload.coins)
+    }
     this.healthEl.textContent = String(payload.health)
     this.healthFillEl.style.width = `${Math.max(0, Math.min(100, (payload.health / payload.maxHealth) * 100))}%`
     this.startWaveButton.disabled = payload.waveActive
