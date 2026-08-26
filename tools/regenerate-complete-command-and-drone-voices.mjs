@@ -33,7 +33,7 @@ const tts = new EdgeTTS({
   rate: '+0%',
   pitch: '-2%',
   volume: '+0%',
-  timeout: 20000,
+  timeout: 60000,
 })
 const normalize = (text) => text.normalize('NFKC').replace(/[^\p{L}\p{N}]/gu, '')
 
@@ -41,13 +41,32 @@ for (const [group, name, script] of jobs) {
   const directory = path.join(voiceRoot, group)
   fs.mkdirSync(directory, { recursive: true })
   const mp3 = path.join(directory, `${name}.mp3`)
-  await tts.ttsPromise(script, mp3)
   const subtitlePath = `${mp3}.json`
-  const subtitles = JSON.parse(fs.readFileSync(subtitlePath, 'utf8'))
-  const spoken = subtitles.map((entry) => entry.part).join('')
-  if (normalize(spoken) !== normalize(script)) {
-    throw new Error(`Incomplete subtitle coverage for ${group}/${name}: ${spoken}`)
+  let subtitles = []
+  let validExisting = false
+  if (fs.existsSync(mp3) && fs.existsSync(subtitlePath)) {
+    try {
+      subtitles = JSON.parse(fs.readFileSync(subtitlePath, 'utf8'))
+      validExisting = normalize(subtitles.map((entry) => entry.part).join('')) === normalize(script) && fs.statSync(mp3).size > 20_000
+    } catch { validExisting = false }
   }
+  if (!validExisting) {
+    let lastError
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      try {
+        await tts.ttsPromise(script, mp3)
+        lastError = undefined
+        break
+      } catch (error) {
+        lastError = error
+        console.warn(`retry ${group}/${name} attempt ${attempt}: ${String(error)}`)
+      }
+    }
+    if (lastError) throw lastError
+    subtitles = JSON.parse(fs.readFileSync(subtitlePath, 'utf8'))
+  }
+  const spoken = subtitles.map((entry) => entry.part).join('')
+  if (normalize(spoken) !== normalize(script)) throw new Error(`Incomplete subtitle coverage for ${group}/${name}: ${spoken}`)
   fs.writeFileSync(path.join(directory, `${name}.txt`), `${script}\n`, 'utf8')
   console.log(`generated ${group}/${name}: ${subtitles.at(-1)?.end ?? 0}ms`)
 }
