@@ -66,7 +66,7 @@ export interface TacticalAlertPayload {
   enemyName: string
   title: string
   description: string
-}
+  effect: string`r`n}
 
 export interface SpecialEventPayload {
   id: string

@@ -106,7 +106,7 @@ body::before {
   border-left: 4px solid var(--neon-cyan);
 }
 .title-screen__title-frame::after {
-  content: "?????? ? ??????";
+  content: "\4FDD\536B\8857\533A\8282\70B9  ·  \91CD\5199\57CE\5E02\79E9\5E8F";
   display: block;
   margin-top: 19px;
   color: #8aa6aa;
