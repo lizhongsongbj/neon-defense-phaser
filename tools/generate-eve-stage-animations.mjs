@@ -88,11 +88,12 @@ for (const form of forms) {
       frames.push(frame)
       await fs.writeFile(path.join(dir, `frame-${pad(i + 1)}.webp`), frame)
     }
-    const stacked = await sharp({ create: { width: SIZE, height: SIZE * FRAMES, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    const stacked = await sharp({ create: { width: SIZE, height: SIZE * FRAMES, pageHeight: SIZE, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
       .composite(frames.map((input, i) => ({ input, left: 0, top: i * SIZE })))
-      .webp({ quality: 90, alphaQuality: 100, pageHeight: SIZE, loop: 0, delay: Array(FRAMES).fill(motion === 'move' ? 67 : 83) })
+      .webp({ quality: 90, alphaQuality: 100, loop: 0, delay: Array(FRAMES).fill(motion === 'move' ? 67 : 83) })
       .toBuffer()
     await fs.writeFile(path.join(ROOT, `boss-eve-9-stage-${form.stage}-${motion}.webp`), stacked)
   }
 }
 console.log('Generated EVE-9 stage 2/3 move and attack animations.')
+
