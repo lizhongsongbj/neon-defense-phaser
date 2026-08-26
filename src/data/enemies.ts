@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 普通敌人数据——原样迁移自《霓虹防线》/gameplay.js 中的 `_0x5e5dc3` 常量。
  */
 
@@ -78,6 +78,7 @@ export const ENEMY_TYPES: Record<EnemyId, EnemyDefinition> = {
     id: 'hijacker', name: '劫持浮游体', hp: 430, shield: 150, speed: 31, armor: 0.1, reward: 54, attack: 0,
     image: 'assets/enemies/new/enemy-07-hijack-hovercraft.png', size: 0.061,
     air: true, heavy: true, mechanical: true, network: true, droneEvasion: 0.72,
+    heavyAlert: { description: '企业级重型浮空平台已进入战区，不受佣兵拦截，并会欺骗无人机链路。', effect: '黑客中继破解伪装 · 磁轨狙击远程压制' },
     countersTower: '无人机巢', counteredByTower: '黑客中继',
     moveAnimation: 'assets/animations/enemies/enemy-07-hijack-hovercraft-fly.webp?v=generated-flight-20260825',
     trait: '未被扫描时欺骗无人机链路，减免72%无人机伤害；黑客中继可破解伪装并施加易伤',
@@ -100,10 +101,17 @@ export const ENEMY_TYPES: Record<EnemyId, EnemyDefinition> = {
     id: 'bonebreaker', name: '骨铠破障兽', hp: 1100, speed: 13, armor: 0.52, reward: 74, attack: 34,
     image: 'assets/enemies/new/enemy-10-bonebreaker.png', size: 0.071,
     heavy: true, energyResistance: -0.35,
+    heavyAlert: { description: '再生骨铠提供高额物理防护，正沿地面路线强行突破。', effect: '优先能量攻击 · 施加能量抗性削弱' },
     moveAnimation: 'assets/animations/enemies/enemy-10-bonebreaker-move.webp?v=generated-crawl-20260825',
     trait: '再生骨铠提供52%物理护甲；导电脊液使其受到的能量伤害提高35%',
   },
 }
 
 export const ENEMY_IDS: EnemyId[] = ['gang', 'riot', 'ninja', 'aerostat', 'devourer', 'faraday', 'hijacker', 'neurohound', 'matriarch', 'bonebreaker']
-
+/** Returns the heavy definition only once for each enemy type in the supplied battle-local set. */
+export function consumeHeavyEnemyFirstAppearance(seen: Set<EnemyId>, typeId: EnemyId): EnemyDefinition | null {
+  const definition = ENEMY_TYPES[typeId]
+  if (!definition.heavy || seen.has(typeId)) return null
+  seen.add(typeId)
+  return definition
+}
