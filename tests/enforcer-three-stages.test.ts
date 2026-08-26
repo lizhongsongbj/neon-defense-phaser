@@ -1,6 +1,6 @@
-﻿import test from 'node:test'
+import test from 'node:test'
 import assert from 'node:assert/strict'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { BOSS_TYPES } from '../src/data/bosses'
 
 const preload = readFileSync(new URL('../src/scenes/PreloadScene.ts', import.meta.url), 'utf8')
@@ -25,6 +25,9 @@ test('三种形态各自使用独立Boss图像并在阶段切换时更新', () =
   for (const path of Object.values(images ?? {})) {
     assert.equal(existsSync(new URL(`../public/${path}`, import.meta.url)), true)
   }
+  const formFiles = readdirSync(new URL('../public/assets/enemies/boss-forms/', import.meta.url))
+    .filter((file) => file.startsWith('adam-smasher-stage-') && file.endsWith('.png'))
+  assert.equal(formFiles.length, 3)
   assert.match(preload, /bossStageTextureKey/)
   assert.match(preload, /boss\.stageImages/)
   assert.match(actor, /syncBossStageVisual/)
