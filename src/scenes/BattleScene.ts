@@ -783,6 +783,13 @@ export class BattleScene extends Phaser.Scene {
       this.syncDroneActor(tower)
       if (events.length) {
         const towerScreen = boardToScreen(tower.source)
+        if (
+          tower.typeId === 'gravity-nail'
+          || tower.typeId === 'grey-tide'
+          || tower.typeId === 'trajectory-rewriter'
+        ) {
+          this.towerActors.get(tower.id)?.playAttackFeedback()
+        }
         let hackerPulsePlayed = false
         let previousArcTarget: { x: number; y: number } | null = null
         for (const event of events) {
@@ -810,7 +817,11 @@ export class BattleScene extends Phaser.Scene {
                 this.effects.playImpact(targetScreen, event.effect)
               }
             } else {
-              const origin = event.effect === 'rail'
+              const usesHeadOrigin = event.effect === 'rail'
+                || event.effect === 'gravity'
+                || event.effect === 'grey-tide'
+                || event.effect === 'trajectory'
+              const origin = usesHeadOrigin
                 ? this.towerActors.get(tower.id)?.attackOrigin() ?? towerScreen
                 : towerScreen
               this.effects.playShot(origin, targetScreen, event.effect)
