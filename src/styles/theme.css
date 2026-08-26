@@ -1965,3 +1965,14 @@ html, body {
   .balance-workbench__actions > a { min-width: 88px; }
 }
 
+
+.tower-tier4-branches { display:grid; gap:7px; margin:8px 0 4px; }
+.tower-tier4-branches[hidden] { display:none; }
+.tower-tier4-branch { padding:8px 9px; border:1px solid rgba(32,244,230,.45); background:linear-gradient(135deg,#0a1a20,#101228); color:var(--text-body); text-align:left; cursor:pointer; font-family:var(--font-mono); }
+.tower-tier4-branch:hover { border-color:var(--neon-yellow); transform:translateX(-2px); }
+.tower-tier4-branch[data-affordable="false"] { border-color:rgba(255,62,165,.42); }
+.tower-tier4-branch span { float:right; color:var(--neon-cyan); font-size:9px; font-weight:900; }
+.tower-tier4-branch strong,.tower-tier4-branch small,.tower-tier4-branch em { display:block; }
+.tower-tier4-branch strong { color:var(--neon-yellow); font-size:12px; }
+.tower-tier4-branch small { margin-top:3px; color:#9fc5c8; font-size:9px; }
+.tower-tier4-branch em { margin-top:4px; color:var(--neon-pink-soft); font-size:9px; font-style:normal; }

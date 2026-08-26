@@ -220,7 +220,7 @@ export function autoInvest(params: {
         const multipliers: number[] = TOWER_LEVEL_MULTIPLIER
         const before = multipliers[tower.level - 1]
         const after = multipliers[tower.level]
-        const coverage = towerCoverageScore(typeId, tower.source, tower.level, geometry, growthBonuses, tower.rangeScale)
+        const coverage = towerCoverageScore(typeId, tower.source, tower.level as 1 | 2, geometry, growthBonuses, tower.rangeScale)
         const score = (towerPressureWeight(typeId, mix, strategy) * coverage * (after - before)) / cost * (0.97 + rng() * 0.06)
         candidates.push({ kind: 'upgrade', tower, cost, score })
       })

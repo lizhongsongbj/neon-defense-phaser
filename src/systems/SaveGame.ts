@@ -12,6 +12,7 @@ export interface SavedTower {
   slot: number
   type: AllTowerId
   level: number
+  tier4BranchId?: string | null
   spent: number
   rallyX: number | null
   rallyY: number | null

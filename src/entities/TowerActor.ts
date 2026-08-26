@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import type { TowerState } from '../systems/types'
-import { ALL_TOWER_ACCENT_COLOR } from '../data/towerExpansion'
+import { ALL_TOWER_ACCENT_COLOR, TIER4_BRANCH_BY_ID } from '../data/towerExpansion'
 
 /** 塔楼的可视化包装,原版对应 DOM `.tower` 按钮元素 */
 export class TowerActor extends Phaser.GameObjects.Container {
@@ -48,8 +48,13 @@ export class TowerActor extends Phaser.GameObjects.Container {
   attackOrigin(): { x: number; y: number } {
     return { x: this.x, y: this.y - this.baseSize * 0.4 }
   }
-  setLevel(level: number) {
-    this.levelTag.setText(`LV.${level}`)
+  setLevel(level: number, branchId?: string | null) {
+    const branch = branchId ? TIER4_BRANCH_BY_ID[branchId] : null
+    this.levelTag.setText(branch ? `LV.4-${branch.branch}` : `LV.${level}`)
+    if (level === 4 && branchId) {
+      const key = `tower-tier4-${branchId}`
+      if (this.scene.textures.exists(key)) this.sprite.setTexture(key).setDisplaySize(this.baseSize, this.baseSize)
+    }
   }
 
   playAttackFeedback() {

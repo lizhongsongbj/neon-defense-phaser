@@ -20,6 +20,8 @@ interface TowerInfoPayload {
   damageDealt: number
   attacks: number
   coins: number
+  tier4BranchId: string | null
+  tier4Branches: Array<{ id: string; branch: 'A' | 'B'; name: string; role: string; cost: number; notes: readonly string[] }>
 }
 
 const HINT_IDLE = 'BUILD GRID // 塔位待命'
@@ -54,6 +56,7 @@ export class BattleHud {
   private readonly actionPanel: HTMLElement
   private readonly actionName: HTMLElement
   private readonly actionStats: HTMLElement
+  private readonly tier4BranchesEl: HTMLElement
   private readonly upgradeBtn: HTMLButtonElement
   private readonly sellBtn: HTMLButtonElement
   private readonly endOverlay: HTMLElement
@@ -96,6 +99,7 @@ export class BattleHud {
     this.actionPanel = document.getElementById('tower-actions') as HTMLElement
     this.actionName = document.getElementById('tower-actions-name') as HTMLElement
     this.actionStats = document.getElementById('tower-actions-stats') as HTMLElement
+    this.tier4BranchesEl = document.getElementById('tower-tier4-branches') as HTMLElement
     this.upgradeBtn = document.getElementById('tower-upgrade') as HTMLButtonElement
     this.sellBtn = document.getElementById('tower-sell') as HTMLButtonElement
     this.endOverlay = document.getElementById('end-overlay') as HTMLElement
@@ -429,13 +433,37 @@ export class BattleHud {
     this.actionPanel.style.top = `${y}px`
     this.actionName.innerHTML = `${payload.name} · LV.${payload.level} <b>${payload.role}</b>`
     this.actionStats.textContent = `累计伤害 ${payload.damageDealt} · 攻击 ${payload.attacks} 次`
+    this.renderTier4Branches(payload)
     this.refreshUpgradeButton(payload.coins)
     this.sellBtn.innerHTML = `<strong>拆除</strong><small>返还 ${payload.sellValue} 币</small>`
     this.setHint(HINT_TOWER_SELECTED)
   }
 
+  private renderTier4Branches(payload: TowerInfoPayload) {
+    this.tier4BranchesEl.replaceChildren()
+    const choices = payload.level === 3 ? payload.tier4Branches : []
+    this.tier4BranchesEl.hidden = choices.length === 0
+    this.upgradeBtn.hidden = choices.length > 0
+    for (const choice of choices) {
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'tower-tier4-branch'
+      const deficit = Math.max(0, Math.ceil(choice.cost - payload.coins))
+      button.dataset.affordable = String(deficit === 0)
+      button.innerHTML = `<span>路线 ${choice.branch}</span><strong>${choice.name}</strong><small>${choice.role}</small><em>${choice.cost} 币${deficit ? ` · 还差 ${deficit}` : ''}</em>`
+      button.title = choice.notes.join('；')
+      button.addEventListener('click', () => EventBus.emit(GameEvents.UpgradeTower, { towerId: payload.towerId, branchId: choice.id }))
+      this.tier4BranchesEl.append(button)
+    }
+  }
+
   private refreshUpgradeButton(coins: number) {
     const cost = this.currentTowerInfo?.upgradeCost
+    if (this.currentTowerInfo?.level === 3 && this.currentTowerInfo.tier4Branches.length) {
+      this.renderTier4Branches({ ...this.currentTowerInfo, coins })
+      return
+    }
+    this.upgradeBtn.hidden = false
     if (cost == null) {
       this.upgradeBtn.innerHTML = '<strong>已满级</strong>'
       this.upgradeBtn.disabled = true
@@ -459,6 +487,8 @@ export class BattleHud {
   }
   private onClearSelection() {
     this.currentTowerInfo = null
+    this.tier4BranchesEl.replaceChildren()
+    this.tier4BranchesEl.hidden = true
     this.actionPanel.hidden = true
     this.hideTowerPicker()
     this.setHint(HINT_IDLE)

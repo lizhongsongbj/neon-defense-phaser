@@ -83,7 +83,8 @@ export interface TowerState {
   slotIndex: number
   source: { x: number; y: number }
   rangeScale: number
-  level: 1 | 2 | 3
+  level: 1 | 2 | 3 | 4
+  tier4BranchId?: string | null
   spent: number
   cooldown: number
   targetId: number | null

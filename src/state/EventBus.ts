@@ -24,7 +24,8 @@ export interface TowerSelectedPayload {
 export interface HudTowerSnapshot {
   slotIndex: number
   typeId: AllTowerId
-  level: 1 | 2 | 3
+  level: 1 | 2 | 3 | 4
+  tier4BranchId?: string | null
 }
 
 export interface BattleSkillSnapshot {
