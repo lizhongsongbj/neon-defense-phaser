@@ -340,50 +340,76 @@ export class BattleScene extends Phaser.Scene {
   private castPulseOverload(point: Point2) {
     const radius = 230
     let affected = 0
-    let shieldsDisrupted = 0
+    let shieldsDestroyed = 0
     let totalDamage = 0
+    let killed = 0
     for (const enemy of this.battle.enemies) {
       if (enemy.dead) continue
       const screen = boardToScreen(enemyPosition(this.geometry, enemy))
       if (Phaser.Math.Distance.Between(point.x, point.y, screen.x, screen.y) > radius) continue
       affected += 1
-      const stunMs = enemy.isBoss ? 350 : enemy.elite ? 1400 : 2500
-      enemy.stunnedUntil = Math.max(enemy.stunnedUntil, this.battle.now + stunMs)
-      enemy.skillSlowAmount = Math.max(enemy.skillSlowAmount, enemy.isBoss ? 0.22 : enemy.elite ? 0.38 : 0.5)
-      enemy.skillSlowUntil = Math.max(enemy.skillSlowUntil, this.battle.now + 7000)
-      enemy.vulnerability = Math.max(enemy.vulnerability, enemy.isBoss ? 0.08 : enemy.elite ? 0.12 : 0.2)
-      enemy.vulnerableUntil = Math.max(enemy.vulnerableUntil, this.battle.now + 6000)
-      const shockDamage = enemy.isBoss ? enemy.maxHp * 0.01 : enemy.elite ? enemy.maxHp * 0.035 : enemy.maxHp * 0.07
-      totalDamage += applyDamage(this.geometry, enemy, Math.min(shockDamage, enemy.isBoss ? 650 : 420), 'energy', null, 0, this.battle.now).dealt
+
       if (enemy.shield > 0) {
-        enemy.shield = Math.max(0, enemy.shield - enemy.maxShield * 0.5)
-        enemy.shieldBlockedUntil = Math.max(enemy.shieldBlockedUntil, this.battle.now + 5000)
-        shieldsDisrupted += 1
+        enemy.shield = 0
+        enemy.shieldBlockedUntil = Math.max(enemy.shieldBlockedUntil, this.battle.now + 6000)
+        shieldsDestroyed += 1
       }
+      enemy.phased = false
+      enemy.revealedUntil = Math.max(enemy.revealedUntil, this.battle.now + 2200)
+
+      const rawDamage = enemy.isBoss
+        ? Math.min(1400, 260 + enemy.maxHp * 0.05)
+        : enemy.elite
+          ? Math.min(900, 160 + enemy.maxHp * 0.18)
+          : Math.min(720, 120 + enemy.maxHp * 0.28)
+      const result = applyDamage(this.geometry, enemy, rawDamage, 'energy', null, 0, this.battle.now)
+      totalDamage += result.dealt
+      if (result.killed) killed += 1
+
+      // 只保留短暂命中硬直，确保技能定位是爆发伤害而不是长时间控制。
+      enemy.stunnedUntil = Math.max(enemy.stunnedUntil, this.battle.now + (enemy.isBoss ? 120 : 420))
+      enemy.skillSlowAmount = Math.max(enemy.skillSlowAmount, enemy.isBoss ? 0.05 : 0.15)
+      enemy.skillSlowUntil = Math.max(enemy.skillSlowUntil, this.battle.now + 1500)
+
       this.playPulseTargetBurst(screen)
       this.playPulseArc(point, screen)
+      this.playPulseDamageNumber(screen, result.dealt, result.killed)
     }
 
-    this.cameras.main.shake(420, 0.015, true)
-    this.cameras.main.flash(180, 160, 255, 255, false)
-    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x8fffff, 0.26).setDepth(69)
-    this.tweens.add({ targets: flash, alpha: 0, duration: 230, onComplete: () => flash.destroy() })
-    ;[0, 90, 180].forEach((delay, index) => {
+    this.cameras.main.shake(460, 0.017, true)
+    this.cameras.main.flash(210, 175, 255, 255, false)
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x8fffff, 0.3).setDepth(69)
+    this.tweens.add({ targets: flash, alpha: 0, duration: 270, onComplete: () => flash.destroy() })
+    ;[0, 85, 170].forEach((delay, index) => {
       const ring = this.add.graphics().setDepth(70)
-      ring.fillStyle(0x20f4e6, index === 0 ? 0.16 : 0.05).fillCircle(point.x, point.y, radius)
-      ring.lineStyle(index === 0 ? 5 : 3, index === 1 ? 0xffffff : 0x20f4e6, 1).strokeCircle(point.x, point.y, radius)
-      ring.lineStyle(1, 0x73fff5, 0.75).strokeCircle(point.x, point.y, radius * 0.58)
-      ring.setScale(0.08)
+      ring.fillStyle(index === 0 ? 0xffffff : 0x20f4e6, index === 0 ? 0.2 : 0.08).fillCircle(point.x, point.y, radius)
+      ring.lineStyle(index === 0 ? 7 : 4, index === 1 ? 0xffffff : 0x20f4e6, 1).strokeCircle(point.x, point.y, radius)
+      ring.lineStyle(2, 0x73fff5, 0.85).strokeCircle(point.x, point.y, radius * 0.58)
+      ring.setScale(0.06)
       ring.setAlpha(0)
-      this.tweens.add({ targets: ring, scale: 1.18 + index * 0.08, alpha: { from: 1, to: 0 }, delay, duration: 820, ease: 'Cubic.easeOut', onComplete: () => ring.destroy() })
+      this.tweens.add({ targets: ring, scale: 1.22 + index * 0.1, alpha: { from: 1, to: 0 }, delay, duration: 880, ease: 'Cubic.easeOut', onComplete: () => ring.destroy() })
     })
     const core = this.add.graphics().setDepth(71)
-    core.fillStyle(0xffffff, 0.92).fillCircle(point.x, point.y, 18)
-    core.lineStyle(5, 0x20f4e6, 0.95).strokeCircle(point.x, point.y, 34)
-    this.tweens.add({ targets: core, scale: 2.6, alpha: 0, duration: 420, onComplete: () => core.destroy() })
-    const label = this.add.text(point.x, point.y - 34, 'PULSE OVERRIDE // SYSTEM SHOCK', { fontFamily: 'monospace', fontSize: '15px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#042126ee', padding: { x: 9, y: 5 } }).setOrigin(0.5).setDepth(72)
-    this.tweens.add({ targets: label, y: label.y - 34, alpha: 0, duration: 1150, onComplete: () => label.destroy() })
-    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `脉冲过载爆发 · 冲击 ${affected} 个目标 · ${Math.round(totalDamage)} 能量伤害${shieldsDisrupted ? ` · 击穿 ${shieldsDisrupted} 层护盾` : ''}` })
+    core.fillStyle(0xffffff, 1).fillCircle(point.x, point.y, 24)
+    core.lineStyle(7, 0x20f4e6, 1).strokeCircle(point.x, point.y, 44)
+    core.lineStyle(3, 0xff3b6b, 0.9).strokeCircle(point.x, point.y, 62)
+    this.tweens.add({ targets: core, scale: 3.2, alpha: 0, duration: 480, onComplete: () => core.destroy() })
+    const label = this.add.text(point.x, point.y - 42, 'PULSE OVERRIDE // DAMAGE SPIKE', { fontFamily: 'monospace', fontSize: '16px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#042126ee', padding: { x: 10, y: 6 } }).setOrigin(0.5).setDepth(75)
+    this.tweens.add({ targets: label, y: label.y - 38, alpha: 0, duration: 1250, onComplete: () => label.destroy() })
+    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `脉冲毁伤完成 · 命中 ${affected} · 总伤害 ${Math.round(totalDamage)}${shieldsDestroyed ? ` · 摧毁护盾 ${shieldsDestroyed}` : ''}${killed ? ` · 击杀 ${killed}` : ''}` })
+  }
+
+  private playPulseDamageNumber(point: Point2, damage: number, killed: boolean) {
+    const amount = Math.max(0, Math.round(damage))
+    const text = this.add.text(point.x, point.y - 42, killed ? `OVERLOAD KILL // -${amount}` : `ENERGY -${amount}`, {
+      fontFamily: 'monospace',
+      fontSize: killed ? '15px' : '13px',
+      fontStyle: 'bold',
+      color: killed ? '#ffef68' : '#ffffff',
+      stroke: killed ? '#ff3b6b' : '#087f88',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setDepth(76)
+    this.tweens.add({ targets: text, y: text.y - 48, scale: killed ? 1.3 : 1.1, alpha: 0, duration: 1050, ease: 'Cubic.easeOut', onComplete: () => text.destroy() })
   }
 
   private playPulseArc(origin: Point2, target: Point2) {
