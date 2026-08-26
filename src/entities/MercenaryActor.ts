@@ -1,5 +1,9 @@
 ﻿import Phaser from 'phaser'
 
+const MERCENARY_WIDTH = 40
+const MERCENARY_HEIGHT = 52
+const MERCENARY_SPACING = 32
+
 /** 集结点上的佣兵小队；所有攻击视觉均从佣兵本体发出。 */
 export class MercenaryActor extends Phaser.GameObjects.Container {
   private readonly units: Phaser.GameObjects.Image[]
@@ -16,9 +20,9 @@ export class MercenaryActor extends Phaser.GameObjects.Container {
     this.walkTweens = []
     for (let i = 0; i < count; i += 1) {
       const key = i === 0 ? 'unit-mercenary-shield' : 'unit-mercenary-rifle'
-      const x = (i - (count - 1) / 2) * 16
+      const x = (i - (count - 1) / 2) * MERCENARY_SPACING
       const img = scene.add.image(x, 0, scene.textures.exists(key) ? key : '__MISSING')
-      img.setDisplaySize(20, 26)
+      img.setDisplaySize(MERCENARY_WIDTH, MERCENARY_HEIGHT)
       this.homeX.push(x)
       this.wasDown.push(false)
       this.units.push(img)
