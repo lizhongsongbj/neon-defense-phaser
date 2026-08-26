@@ -1,4 +1,4 @@
-import { test } from 'node:test'
+﻿import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { RANGE_PROJECTION_Y } from '../src/data/balance'
 import { MAP_LEVELS } from '../src/data/maps'
@@ -98,17 +98,20 @@ test('相同参数的波次计划可重复并保持确定性', () => {
   assert.ok(a.length > 0)
 })
 
-test('第6关每5波出现Boss，其他地图每10波出现Boss并交替亚当·重锤与夏娃', () => {
-  const wave5Map5 = buildWavePlan(5, 5)
-  assert.ok(wave5Map5.some((e) => e.boss && e.type === 'enforcer'), '第6关第5波应出现亚当·重锤')
-  const wave10Map5 = buildWavePlan(10, 5)
-  assert.ok(wave10Map5.some((e) => e.boss && e.type === 'eve'), '第6关第10波应出现夏娃-9')
-  const wave10Map0 = buildWavePlan(10, 0)
-  assert.ok(wave10Map0.some((e) => e.boss && e.type === 'enforcer'), '第1关第10波应出现亚当·重锤')
-  const wave20Map0 = buildWavePlan(20, 0)
-  assert.ok(wave20Map0.some((e) => e.boss && e.type === 'eve'), '第1关第20波应出现夏娃-9')
-  const wave5Map0 = buildWavePlan(5, 0)
-  assert.ok(!wave5Map0.some((e) => e.boss), '非第6关的第5波不应出现Boss')
+test('亚当·重锤和夏娃-9只在指定关卡第十波出现', () => {
+  const stageSevenFinale = buildWavePlan(10, 6).filter((entry) => entry.boss)
+  assert.deepEqual(stageSevenFinale.map((entry) => entry.type), ['enforcer'])
+
+  const stageEightFinale = buildWavePlan(10, 7).filter((entry) => entry.boss)
+  assert.deepEqual(stageEightFinale.map((entry) => entry.type), ['eve'])
+
+  for (let mapIndex = 0; mapIndex < 8; mapIndex += 1) {
+    for (let wave = 1; wave <= 20; wave += 1) {
+      const bosses = buildWavePlan(wave, mapIndex).filter((entry) => entry.boss)
+      const expected = wave === 10 && (mapIndex === 6 || mapIndex === 7) ? 1 : 0
+      assert.equal(bosses.length, expected, `第${mapIndex + 1}关第${wave}波Boss数量错误`)
+    }
+  }
 })
 
 test('电磁镇暴体克制电弧塔，同时被磁轨狙击克制', () => {
@@ -206,3 +209,4 @@ test('后期波次会编入三种生物敌人', () => {
   assert.ok(wave.some((entry) => entry.type === 'matriarch'))
   assert.ok(wave.some((entry) => entry.type === 'bonebreaker'))
 })
+
