@@ -30,7 +30,7 @@ test('亚当·重锤动画已接入素材生图工作台和Boss运行时', () =>
   assert.match(catalog, /boss-adam-smasher-death\.webp/)
   assert.match(runtime, /enforcer:/)
   assert.match(runtime, /boss-adam-smasher-move\.webp/)
-  assert.match(actor, /ENEMY_RUNTIME_ANIMATIONS\[this\.enemy\.typeId\]/)
+  assert.match(actor, /animationTypeId\\(\\)/)
   assert.match(actor, /playExitAnimation/)
 })
 
