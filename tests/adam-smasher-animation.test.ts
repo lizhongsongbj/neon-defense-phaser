@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import sharp from 'sharp'
+import { fileURLToPath } from 'node:url'
 
 const animationRoot = new URL('../public/assets/animations/enemies/', import.meta.url)
 const runtime = readFileSync(new URL('../src/data/enemyRuntimeAnimations.ts', import.meta.url), 'utf8')
@@ -12,7 +13,7 @@ for (const motion of ['move', 'attack', 'death'] as const) {
   test(`亚当·重锤${motion}动画包含8帧固定尺寸透明素材`, async () => {
     const preview = new URL(`boss-adam-smasher-${motion}.webp`, animationRoot)
     assert.equal(existsSync(preview), true)
-    const metadata = await sharp(preview, { animated: true }).metadata()
+    const metadata = await sharp(fileURLToPath(preview), { animated: true }).metadata()
     assert.equal(metadata.pages, 8)
     assert.equal(metadata.pageHeight, 512)
     assert.equal(metadata.hasAlpha, true)
@@ -32,3 +33,4 @@ test('亚当·重锤动画已接入素材生图工作台和Boss运行时', () =>
   assert.match(actor, /ENEMY_RUNTIME_ANIMATIONS\[this\.enemy\.typeId\]/)
   assert.match(actor, /playExitAnimation/)
 })
+
