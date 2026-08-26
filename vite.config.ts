@@ -554,7 +554,7 @@ async function scanAudioFiles(directory: string, category: AudioCategory, groupR
       name: readableAudioName(entry.name),
       category,
       group: category === 'music' ? '游戏背景音乐' : category === 'generated' ? 'AI 生成音效' : (voiceGroupChineseNames[groupPath] || '角色语音'),
-      url: `/assets/audio/${relative}`,
+      url: `/assets/audio/${relative}?v=${Math.round(details.mtimeMs)}`,
       fileName: entry.name,
       byteLength: details.size,
       ...(prompt ? { prompt } : {}),
@@ -687,5 +687,6 @@ export default defineConfig(({ mode }) => {
     },
   }
 })
+
 
 
