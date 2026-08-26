@@ -665,6 +665,15 @@ export class BattleScene extends Phaser.Scene {
     tower.tier4BranchId = branch?.id ?? tower.tier4BranchId
     tower.spent += cost
     this.towerActors.get(tower.id)?.setLevel(tower.level, tower.tier4BranchId)
+    if (branch && tower.typeId === 'street-mercenary') {
+      tower.mercs = null
+      this.mercActors.get(tower.id)?.destroy()
+      this.mercActors.delete(tower.id)
+    }
+    if (branch && tower.typeId === 'drone-hive') {
+      this.droneActors.get(tower.id)?.destroy()
+      this.droneActors.delete(tower.id)
+    }
     if (tower.typeId in TOWER_TYPE_BY_ID) this.voice?.play(tower.typeId as TowerId, 'upgrade')
     this.persistProgress()
     this.emitHud()
@@ -1157,7 +1166,8 @@ export class BattleScene extends Phaser.Scene {
     }
     let actor = this.droneActors.get(tower.id)
     if (!actor) {
-      actor = new DroneSquadActor(this, TOWER_COMBAT['drone-hive'].drones).setDepth(25)
+      const branch = tower.tier4BranchId ? TIER4_BRANCH_BY_ID[tower.tier4BranchId] : null
+      actor = new DroneSquadActor(this, branch?.stats.unitCount || TOWER_COMBAT['drone-hive'].drones).setDepth(25)
       this.droneActors.set(tower.id, actor)
     }
     const home = boardToScreen(tower.source)
