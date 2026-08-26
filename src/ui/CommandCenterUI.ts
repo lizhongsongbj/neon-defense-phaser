@@ -210,7 +210,7 @@ export class CommandCenterUI {
         <em data-role="status"></em>
       `
       row.addEventListener('click', () => {
-        if (!this.campaign.isMapUnlocked(index)) return
+        // Locked stages remain previewable on the right, but deployment stays disabled.
         this.selectedMapIndex = index
         this.refresh()
       })
@@ -376,6 +376,7 @@ export class CommandCenterUI {
     })
 
     const map = MAP_LEVELS[this.selectedMapIndex]
+    const unlocked = this.campaign.isMapUnlocked(this.selectedMapIndex)
     const code = String(this.selectedMapIndex + 1).padStart(2, '0')
     this.visualImg.hidden = !map.available
     this.visualImg.parentElement?.classList.toggle('mission-visual--empty', !map.available)
@@ -390,6 +391,7 @@ export class CommandCenterUI {
     this.titleEl.textContent = map.name
     this.metaEl.innerHTML = map.available
       ? `
+        <span class="map-access-note${unlocked ? '' : ' is-locked'}">${unlocked ? '?????' : '??? ? ????????'}</span>
         <span>威胁系数 <b>${CAMPAIGN_THREAT_LEVELS[this.selectedMapIndex].toFixed(2)}</b></span>
         <span>关卡波次 <b>${CAMPAIGN_WAVE_COUNTS[this.selectedMapIndex]}</b></span>
         <span>敌军种类 <b>${CAMPAIGN_ENEMY_COUNTS[this.selectedMapIndex]}</b></span>
@@ -406,7 +408,6 @@ export class CommandCenterUI {
         <span class="menu-save-status">等待新版地图</span>
       `
 
-    const unlocked = this.campaign.isMapUnlocked(this.selectedMapIndex)
     this.deployButton.disabled = !map.available || !unlocked || !this.assetsReady
     this.deployButton.textContent = !map.available ? '地图翻修中 // 暂停部署' : !this.assetsReady ? '资源加载中…' : !unlocked ? '未解锁' : 'DEPLOY // 进入战区'
 
