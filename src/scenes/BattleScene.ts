@@ -1,4 +1,4 @@
-﻿import Phaser from 'phaser'
+import Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { MAP_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_STARTING_COINS, type MapLevel, type Point2 } from '../data/maps'
 import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
@@ -32,7 +32,7 @@ function boardToScreen(p: Point2): Point2 {
   return { x: (p.x / 1000) * GAME_WIDTH, y: (p.y / 1000) * GAME_HEIGHT }
 }
 
-/** 鏁屼汉/濉斿浘鐗囧熀鍑嗗昂瀵?鍘熺増鐢?vw 鐧惧垎姣旇〃绀?杩欓噷鎸夌敾甯冨搴︽崲绠?*/
+/** 敌人/塔图片基准尺寸,原版用 vw 百分比表示,这里按画布宽度换算 */
 function spriteSize(scale: number): number {
   return Math.max(28, scale * GAME_WIDTH)
 }
@@ -80,7 +80,7 @@ export class BattleScene extends Phaser.Scene {
   private specialEventsTriggered = 0
   private readonly usedSpecialEventIds = new Set<SpecialEventId>()
   private readonly heavyEnemyAlertsShown = new Set<EnemyId>()
-  /** 涓嬩竴娉㈡暣澶囧€掕鏃?绉?,鍘?`_0x3ebe3b`;0 琛ㄧず鎴樻枟涓垨闇€瑕佺帺瀹舵墜鍔ㄥ彂鍔?*/
+  /** 下一波整备倒计时(秒),原 `_0x3ebe3b`;0 表示战斗中或需要玩家手动发动 */
   private nextWaveCountdown = 0
   private skillCooldowns: Record<PlayerSkillId, number> = { 'pulse-overload': 0, 'quantum-firewall': 0 }
   private targetingSkill: PlayerSkillId | null = null
@@ -186,7 +186,7 @@ export class BattleScene extends Phaser.Scene {
       grid.strokeRect(24, 24, GAME_WIDTH - 48, GAME_HEIGHT - 48)
 
       this.add
-        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 18, '鍏冲崱鍦板浘宸叉竻绌?, {
+        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 18, '关卡地图已清空', {
           fontFamily: 'sans-serif',
           fontSize: '34px',
           fontStyle: 'bold',
@@ -194,7 +194,7 @@ export class BattleScene extends Phaser.Scene {
         })
         .setOrigin(0.5)
       this.add
-        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 28, '绛夊緟鎺ュ叆鏂扮増鍦板浘銆佺編鏈€佽矾绾夸笌闃插尽鑺傜偣', {
+        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 28, '等待接入新版地图、美术、路线与防御节点', {
           fontFamily: 'sans-serif',
           fontSize: '16px',
           color: '#7c9aa3',
@@ -206,14 +206,14 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private drawPaths() {
-    // 璺嚎浠嶇敱 geometry 椹卞姩鎬墿绉诲姩锛屼絾涓嶅湪鐢婚潰涓婄粯鍒惰皟璇曡矾绾挎爣璇嗐€?
+    // 路线仍由 geometry 驱动怪物移动，但不在画面上绘制调试路线标识。
   }
 
   private drawSlots() {
     this.mapLevel.slots.forEach((slot, index) => {
       const screen = boardToScreen(toBoardUnits(slot))
       const radius = Math.max(18, spriteSize(slot.scale) * 0.34)
-      // Zone 鏈韩涓嶇粯鍒朵换浣曞唴瀹癸紝浣嗘彁渚涚ǔ瀹氱殑涓嶅彲瑙佺偣鍑诲尯鍩熴€?
+      // Zone 本身不绘制任何内容，但提供稳定的不可见点击区域。
       const marker = this.add
         .zone(screen.x, screen.y, (radius + 8) * 2, (radius + 8) * 2)
         .setOrigin(0.5)
@@ -278,15 +278,15 @@ export class BattleScene extends Phaser.Scene {
     }
     const level = this.campaign.playerSkillLevel(id)
     if (level <= 0) {
-      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `${PLAYER_SKILL_BY_ID[id].name}灏氭湭瑙ｉ攣` })
+      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `${PLAYER_SKILL_BY_ID[id].name}尚未解锁` })
       return
     }
     if (!this.waveActive || this.battle.enemies.length === 0) {
-      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '褰撳墠娌℃湁鍙攣瀹氱殑鏁屽啗淇″彿' })
+      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '当前没有可锁定的敌军信号' })
       return
     }
     if (this.skillCooldowns[id] > 0) {
-      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `鍗忚鍐峰嵈涓?路 ${this.skillCooldowns[id].toFixed(1)} 绉抈 })
+      EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `协议冷却中 · ${this.skillCooldowns[id].toFixed(1)} 秒` })
       return
     }
     this.beginSkillTargeting(id)
@@ -383,7 +383,7 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.add({ targets: core, scale: 2.6, alpha: 0, duration: 420, onComplete: () => core.destroy() })
     const label = this.add.text(point.x, point.y - 34, 'PULSE OVERRIDE // SYSTEM SHOCK', { fontFamily: 'monospace', fontSize: '15px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#042126ee', padding: { x: 9, y: 5 } }).setOrigin(0.5).setDepth(72)
     this.tweens.add({ targets: label, y: label.y - 34, alpha: 0, duration: 1150, onComplete: () => label.destroy() })
-    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `鑴夊啿杩囪浇鐖嗗彂 路 鍐插嚮 ${affected} 涓洰鏍?路 ${Math.round(totalDamage)} 鑳介噺浼ゅ${shieldsDisrupted ? ` 路 鍑荤┛ ${shieldsDisrupted} 灞傛姢鐩綻 : ''}` })
+    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: `脉冲过载爆发 · 冲击 ${affected} 个目标 · ${Math.round(totalDamage)} 能量伤害${shieldsDisrupted ? ` · 击穿 ${shieldsDisrupted} 层护盾` : ''}` })
   }
 
   private playPulseArc(origin: Point2, target: Point2) {
@@ -439,7 +439,7 @@ export class BattleScene extends Phaser.Scene {
     this.cameras.main.shake(240, 0.008, true)
     this.cameras.main.flash(120, 255, 62, 165, false)
     this.activeFirewalls.push({ point, expiresAt: this.battle.now + 10000, affected: new Set(), capacity: 16, graphic, label })
-    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '閲忓瓙闃茬伀澧欒秴杞介儴缃?路 瀹归噺 16 路 鎸佺画 10 绉? })
+    EventBus.emit(GameEvents.PlayerSkillFeedback, { message: '量子防火墙超载部署 · 容量 16 · 持续 10 秒' })
   }
 
   private tickQuantumFirewalls() {
@@ -478,7 +478,7 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
-  /** AUTO 婕旂ず浠ｇ悊璇锋眰鍒囨崲/閲嶅紑鏌愬叧鍗?鍘?`window.restartCampaignBattle` */
+  /** AUTO 演示代理请求切换/重开某关卡,原 `window.restartCampaignBattle` */
   private onRestartBattleRequest(payload: { mapIndex: number; difficulty: Difficulty }) {
     this.campaign.demoActive = true
     this.campaign.difficulty = payload.difficulty
@@ -543,8 +543,8 @@ export class BattleScene extends Phaser.Scene {
     EventBus.emit(GameEvents.AchievementSignal, { type: 'tower-built', towerType: tower.typeId })
 
     const screen = boardToScreen(tower.source)
-    // 绱犳潗鏈韩甯︽湁涓嶅悓澶у皬鐨勯€忔槑鐣欑櫧锛涙寜濉斿瀷琛ュ伩鍚庯紝瀹為檯鍙搴曞骇
-    // 浼氬垰濂借鐩栧湴鍥句笂鐨勫渾褰㈠缓閫犲熀搴с€?
+    // 素材本身带有不同大小的透明留白；按塔型补偿后，实际可见底座
+    // 会刚好覆盖地图上的圆形建造基座。
     const battleScale = typeId in TOWER_TYPE_BY_ID ? TOWER_TYPE_BY_ID[typeId as TowerId].battleScale : 1.5
     const baseSize = spriteSize(slot.scale) * battleScale
     const actor = new TowerActor(this, tower, baseSize).setDepth(20)
@@ -638,11 +638,11 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private onReturnToCommandCenter() {
-    // 鎸囨尌涓績鐜板湪鏄?HTML 灞?瑙?src/main.ts 鐨勫鑸€昏緫),杩欓噷鍙渶瑕佸仠姝㈣嚜宸便€?
+    // 指挥中心现在是 HTML 层(见 src/main.ts 的导航逻辑),这里只需要停止自己。
     this.scene.stop()
   }
 
-  /** 瀵瑰簲鍘熺増 "娓呯┖閮ㄧ讲" 鈥斺€?鎷嗛櫎鎵€鏈夊凡寤哄妤?閲戝竵/琛€閲忛噸缃负鏈叧鍒濆鍊?涓嶅奖鍝嶆尝娆¤繘搴?*/
+  /** 对应原版 "清空部署" —— 拆除所有已建塔楼,金币/血量重置为本关初始值,不影响波次进度 */
   private onResetDeployment() {
     this.clearSelection()
     for (const actor of this.towerActors.values()) actor.destroy()
@@ -659,7 +659,7 @@ export class BattleScene extends Phaser.Scene {
     this.emitHud()
   }
 
-  /** "鍙戝姩娉㈡"鎸夐挳鐐瑰嚮,鍘?`_0xedb0cb({ rewardEarly: true })`:鍊掕鏃舵湭缁撴潫鍒欐寜鍓╀綑鏃堕棿鍙戞斁鎴樺濂栧姳 */
+  /** "发动波次"按钮点击,原 `_0xedb0cb({ rewardEarly: true })`:倒计时未结束则按剩余时间发放战备奖励 */
   private onStartWaveRequest() {
     if (this.ended || this.waveActive) return
     const bonus = this.nextWaveCountdown > 0 ? scaleReward(earlyWaveReward(this.nextWaveCountdown), this.battle.mapIndex) : 0
@@ -712,9 +712,9 @@ export class BattleScene extends Phaser.Scene {
       EventBus.emit(GameEvents.TacticalAlert, {
         enemyType: enemy.typeId,
         enemyName: heavyDef.name,
-        title: `閲嶅瀷鏁屼汉璇嗗埆锛?{heavyDef.name}`,
-        description: heavyDef.heavyAlert?.description ?? '瑁呯敳涓庢垬鍦烘姉鎬ц緝楂橈紝宸叉爣璁颁负閲嶅瀷鏁屼汉銆傚缓璁紭鍏堜娇鐢ㄩ拡瀵规€х伀鍔涖€?,
-        effect: heavyDef.heavyAlert?.effect ?? '浼樺厛閿佸畾 路 閲嶅瀷鏁屼汉',
+        title: `重型敌人识别：${heavyDef.name}`,
+        description: heavyDef.heavyAlert?.description ?? '装甲与战场抗性较高，已标记为重型敌人。建议优先使用针对性火力。',
+        effect: heavyDef.heavyAlert?.effect ?? '优先锁定 · 重型敌人',
       })
     }
     const baseSize = spriteSize(def?.size ?? 0.045)
@@ -783,13 +783,6 @@ export class BattleScene extends Phaser.Scene {
       this.syncDroneActor(tower)
       if (events.length) {
         const towerScreen = boardToScreen(tower.source)
-        if (
-          tower.typeId === 'gravity-nail'
-          || tower.typeId === 'grey-tide'
-          || tower.typeId === 'trajectory-rewriter'
-        ) {
-          this.towerActors.get(tower.id)?.playAttackFeedback()
-        }
         let hackerPulsePlayed = false
         let previousArcTarget: { x: number; y: number } | null = null
         for (const event of events) {
@@ -817,11 +810,7 @@ export class BattleScene extends Phaser.Scene {
                 this.effects.playImpact(targetScreen, event.effect)
               }
             } else {
-              const usesHeadOrigin = event.effect === 'rail'
-                || event.effect === 'gravity'
-                || event.effect === 'grey-tide'
-                || event.effect === 'trajectory'
-              const origin = usesHeadOrigin
+              const origin = event.effect === 'rail'
                 ? this.towerActors.get(tower.id)?.attackOrigin() ?? towerScreen
                 : towerScreen
               this.effects.playShot(origin, targetScreen, event.effect)
@@ -1048,7 +1037,7 @@ export class BattleScene extends Phaser.Scene {
     const intensity = Math.min(0.018, 0.006 + Math.max(0, damage - 1) * 0.0025)
     this.cameras.main.shake(220, intensity, true)
 
-    // 鍚屼竴鐬棿澶氫釜鏁屼汉绐佺牬鏃跺彧鎾斁涓€娆★紝閬垮厤闊虫晥鍙犲姞鐖嗛煶銆?
+    // 同一瞬间多个敌人突破时只播放一次，避免音效叠加爆音。
     const now = this.time.now
     if (now - this.lastBaseDamageSfxAt >= 240 && this.cache.audio.exists('sfx-base-damage') && claimBattleSfx(performance.now())) {
       this.sound.play('sfx-base-damage', { volume: 0.9 })
@@ -1084,4 +1073,3 @@ export class BattleScene extends Phaser.Scene {
     EventBus.emit(GameEvents.GameOver, {})
   }
 }
-
