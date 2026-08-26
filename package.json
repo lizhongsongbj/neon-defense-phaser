@@ -1,41 +1,42 @@
 {
-  "name": "neon-defense-phaser",
-  "version": "0.1.0",
-  "private": true,
-  "description": "霓虹防线 · Phaser 重制版 —— 以还原版 霓虹防线 的设计数据为基础,用 Phaser 3 + TypeScript 重新实现的标准模块化工程",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "start": "vite",
-    "build": "npm run assets:alpha:check && tsc -b && vite build",
-    "preview": "vite preview",
-    "test": "node --import tsx --test tests/*.test.ts",
-    "typecheck": "tsc --noEmit",
-    "smoke": "node tools/check-battle-flow.mjs",
-    "smoke:balance": "node tools/check-balance-panel.mjs",
-    "smoke:auto-demo": "node tools/check-auto-demo.mjs",
-    "audit:campaign": "node --import tsx tools/balance-campaign-audit.ts",
-    "sweep:hard": "node --import tsx tools/balance-hard-sweep.ts",
-    "report:towers": "node tools/generate-tower-stats-report.mjs && node --import tsx tools/generate-tower-expansion-report.mjs",
-    "smoke:animations": "node tools/check-animation-panel.mjs",
-    "assets:alpha:audit": "node tools/transparent-assets.mjs",
-    "assets:alpha:fix": "node tools/transparent-assets.mjs --apply",
-    "assets:alpha:check": "node tools/transparent-assets.mjs --check",
-    "animations:bio:generate": "node tools/generate-biological-enemy-animations.mjs",
-    "animations:rail:generate": "node tools/generate-mag-rail-upgrade-animations.mjs"
-  },
-  "devDependencies": {
-    "@types/node": "^26.2.0",
-    "@types/pngjs": "^6.0.5",
-    "esbuild-wasm": "^0.28.2",
-    "playwright-core": "^1.62.1",
-    "pngjs": "^7.0.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.7.0",
-    "vite": "^7.0.0"
-  },
-  "dependencies": {
-    "phaser": "3.90.0",
-    "sharp": "^0.34.3"
-  }
+    "name":  "neon-defense-phaser",
+    "version":  "0.1.0",
+    "private":  true,
+    "description":  "霓虹防线 · Phaser 重制版 —— 以还原版 霓虹防线 的设计数据为基础,用 Phaser 3 + TypeScript 重新实现的标准模块化工程",
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "vite",
+                    "start":  "vite",
+                    "build":  "npm run assets:alpha:check \u0026\u0026 tsc -b \u0026\u0026 vite build",
+                    "preview":  "vite preview",
+                    "test":  "node --import tsx --test tests/*.test.ts",
+                    "typecheck":  "tsc --noEmit",
+                    "smoke":  "node tools/check-battle-flow.mjs",
+                    "smoke:balance":  "node tools/check-balance-panel.mjs",
+                    "smoke:auto-demo":  "node tools/check-auto-demo.mjs",
+                    "audit:campaign":  "node --import tsx tools/balance-campaign-audit.ts",
+                    "sweep:hard":  "node --import tsx tools/balance-hard-sweep.ts",
+                    "report:towers":  "node tools/generate-tower-stats-report.mjs \u0026\u0026 node --import tsx tools/generate-tower-expansion-report.mjs",
+                    "smoke:animations":  "node tools/check-animation-panel.mjs",
+                    "assets:alpha:audit":  "node tools/transparent-assets.mjs",
+                    "assets:alpha:fix":  "node tools/transparent-assets.mjs --apply",
+                    "assets:alpha:check":  "node tools/transparent-assets.mjs --check",
+                    "animations:bio:generate":  "node tools/generate-biological-enemy-animations.mjs",
+                    "animations:rail:generate":  "node tools/generate-mag-rail-upgrade-animations.mjs",
+                    "animations:enemy:extract":  "node tools/extract-enemy-runtime-animations.mjs"
+                },
+    "devDependencies":  {
+                            "@types/node":  "^26.2.0",
+                            "@types/pngjs":  "^6.0.5",
+                            "esbuild-wasm":  "^0.28.2",
+                            "playwright-core":  "^1.62.1",
+                            "pngjs":  "^7.0.0",
+                            "tsx":  "^4.19.0",
+                            "typescript":  "^5.7.0",
+                            "vite":  "^7.0.0"
+                        },
+    "dependencies":  {
+                         "phaser":  "3.90.0",
+                         "sharp":  "^0.34.3"
+                     }
 }
