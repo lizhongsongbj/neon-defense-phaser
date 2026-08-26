@@ -30,6 +30,7 @@ export interface EnemyState {
   speed: number
   baseSpeed: number
   attack: number
+  baseDamage: number
   reward: number
   elite: boolean
   air: boolean
@@ -61,6 +62,8 @@ export interface EnemyState {
   dead: boolean
   lastTeleport: number
   stage: number
+  bossStageEnteredAt: number
+  nextBossAbilityAt: number
   enragedVoicePlayed?: boolean
   coreVoicePlayed?: boolean
   components: EnemyComponentState[]
