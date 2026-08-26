@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 语音播报清单 —— 原样迁移自 霓虹防线/voice-system.js 中的 catalog 常量。
  * 路径相对 `assets/audio/voices/`。
  */
@@ -30,6 +30,7 @@ export const VOICE_COOLDOWN_MS = 20_000
 export const VOICE_PLAYBACK_RATE = 1.12
 export const COMMANDER_VOICE_PLAYBACK_RATE = 1
 export const DRONE_VOICE_PLAYBACK_RATE = 1
+export const VOICE_ASSET_VERSION = 'english-20260826'
 
 export const VOICE_CATALOG: Record<VoiceCategory, Record<string, string[]>> = {
   lan: {
@@ -136,7 +137,7 @@ export function allVoiceFiles(): Array<{ key: string; path: string }> {
   for (const [category, events] of Object.entries(VOICE_CATALOG)) {
     for (const [event, list] of Object.entries(events)) {
       list.forEach((file, index) => {
-        files.push({ key: `voice-${category}-${event}-${index}`, path: `assets/audio/voices/${file}` })
+        files.push({ key: `voice-${category}-${event}-${index}`, path: `assets/audio/voices/${file}?v=${VOICE_ASSET_VERSION}` })
       })
     }
   }
