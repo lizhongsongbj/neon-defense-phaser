@@ -78,7 +78,7 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     // 基地遭到突破时的即时反馈音效；独立于语音冷却，确保扣血时立即发声。
-    this.load.audio('sfx-base-damage', 'assets/audio/voices/lan/fortress_damaged.mp3')
+    this.load.audio('sfx-base-damage', 'assets/audio/sfx/base-damage-impact.wav')
 
     for (const voice of allVoiceFiles()) {
       this.load.audio(voice.key, voice.path)
