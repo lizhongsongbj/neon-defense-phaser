@@ -40,6 +40,7 @@ export function tickEnforcer(enemy: EnemyState, mapIndex: number, now: number): 
   let voiceEvent: EnforcerVoiceEvent | null = null
   if (stageChanged) {
     enemy.bossStageEnteredAt = now
+    enemy.stunnedUntil = Math.max(enemy.stunnedUntil, now + 650)
     enemy.nextBossAbilityAt = now + 1400
     if (enemy.stage === 3 && !enemy.enragedVoicePlayed) {
       enemy.enragedVoicePlayed = true
@@ -53,7 +54,7 @@ export function tickEnforcer(enemy: EnemyState, mapIndex: number, now: number): 
 
   let ability: BossAbilityId | null = null
   if (now >= enemy.nextBossAbilityAt) {
-    ability = stage.ability
+    ability = !missilesAlive && (stage.ability === 'missile-salvo' || stage.ability === 'overdrive-salvo') ? null : stage.ability
     enemy.nextBossAbilityAt = now + stage.abilityCooldown * 1000
   }
 

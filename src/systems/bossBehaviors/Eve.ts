@@ -30,6 +30,7 @@ export function tickEve(enemy: EnemyState, mapIndex: number, now: number): EveTi
 
   if (stageChanged) {
     enemy.bossStageEnteredAt = now
+    enemy.stunnedUntil = Math.max(enemy.stunnedUntil, now + 900)
     enemy.nextBossAbilityAt = now + 1500
     if (stage.transitionShieldRatio) {
       const transitionShield = enemy.maxHp * stage.transitionShieldRatio
