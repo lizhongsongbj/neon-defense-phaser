@@ -10,6 +10,8 @@ export class TowerActor extends Phaser.GameObjects.Container {
   readonly rangeIndicator: Phaser.GameObjects.Ellipse
   private readonly hitZone: Phaser.GameObjects.Zone
   private readonly baseSize: number
+  private readonly spriteScaleX: number
+  private readonly spriteScaleY: number
 
   constructor(scene: Phaser.Scene, state: TowerState, baseSize: number) {
     super(scene, 0, 0)
@@ -19,6 +21,8 @@ export class TowerActor extends Phaser.GameObjects.Container {
 
     this.sprite = scene.add.image(0, 0, scene.textures.exists(key) ? key : '__MISSING')
     this.sprite.setDisplaySize(baseSize, baseSize)
+    this.spriteScaleX = this.sprite.scaleX
+    this.spriteScaleY = this.sprite.scaleY
 
     this.levelTag = scene.add
       .text(0, baseSize / 2 - 4, `LV.${state.level}`, {
@@ -46,6 +50,34 @@ export class TowerActor extends Phaser.GameObjects.Container {
   }
   setLevel(level: number) {
     this.levelTag.setText(`LV.${level}`)
+  }
+
+  playAttackFeedback() {
+    const typeId = this.tower.typeId
+    if (typeId !== 'gravity-nail' && typeId !== 'grey-tide' && typeId !== 'trajectory-rewriter') return
+
+    this.scene.tweens.killTweensOf(this.sprite)
+    this.sprite.setPosition(0, 0).setAngle(0).setScale(this.spriteScaleX, this.spriteScaleY).clearTint()
+
+    const tint = typeId === 'gravity-nail' ? 0xc6a3ff : typeId === 'grey-tide' ? 0x9dffc0 : 0x8beaff
+    const angle = typeId === 'gravity-nail' ? -4 : typeId === 'grey-tide' ? 3 : 5
+    const lift = typeId === 'trajectory-rewriter' ? -4 : -2
+    const scaleBoost = typeId === 'gravity-nail' ? 1.1 : typeId === 'grey-tide' ? 1.07 : 1.085
+    this.sprite.setTint(tint)
+    this.scene.tweens.add({
+      targets: this.sprite,
+      y: lift,
+      angle,
+      scaleX: this.spriteScaleX * scaleBoost,
+      scaleY: this.spriteScaleY * (typeId === 'trajectory-rewriter' ? .94 : scaleBoost),
+      duration: 95,
+      yoyo: true,
+      repeat: typeId === 'grey-tide' ? 1 : 0,
+      ease: 'Sine.easeInOut',
+      onComplete: () => {
+        this.sprite.setPosition(0, 0).setAngle(0).setScale(this.spriteScaleX, this.spriteScaleY).clearTint()
+      },
+    })
   }
 
   onPointerDown(handler: () => void) {
