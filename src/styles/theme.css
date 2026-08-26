@@ -490,10 +490,10 @@ html, body {
 #stage {
   position: relative;
   width: 1280px;
-  height: 800px;
+  height: 992px;
   flex: 0 0 auto;
 }
-#game-canvas { position: absolute; inset: 0; }
+#game-canvas { position: absolute; top: 96px; left: 0; width: 1280px; height: 800px; }
 #game-canvas canvas { display: block; }
 
 .topbar {

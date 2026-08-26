@@ -1013,3 +1013,204 @@ body::before {
   .title-screen__backdrop, .title-screen__speed-lines::before, .title-screen__speed-lines::after,
   .title-screen__title, .title-screen__status i, .title-screen__equalizer i { animation: none !important; }
 }
+
+/* ---------- Battle HUD: map-safe top and bottom rails ---------- */
+#game-root #stage {
+  --battle-rail-height: 96px;
+  overflow: hidden;
+  background: #02070a;
+  box-shadow: 0 0 0 1px rgba(32,244,230,.24), 0 28px 70px rgba(0,0,0,.58);
+}
+
+#game-root #game-canvas {
+  overflow: hidden;
+  border-top: 1px solid rgba(32,244,230,.34);
+  border-bottom: 1px solid rgba(255,62,165,.34);
+  background: #05060a;
+}
+
+#game-root #game-canvas::before,
+#game-root #game-canvas::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  height: 8px;
+  pointer-events: none;
+}
+#game-root #game-canvas::before { top: 0; background: linear-gradient(#02080b, transparent); }
+#game-root #game-canvas::after { bottom: 0; background: linear-gradient(transparent, #02080b); }
+
+#game-root .topbar {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--battle-rail-height);
+  display: grid;
+  grid-template-columns: 270px minmax(420px, 1fr) 232px;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 18px;
+  border: 0;
+  border-bottom: 1px solid rgba(32,244,230,.28);
+  background: linear-gradient(90deg, rgba(3,13,18,.99), rgba(2,8,12,.99));
+  box-shadow: inset 0 -7px 20px rgba(32,244,230,.035);
+  pointer-events: auto;
+}
+
+#game-root .topbar .brand {
+  min-width: 0;
+  min-height: 70px;
+  padding: 8px 14px 8px 9px;
+}
+
+#game-root .wave-console {
+  position: static;
+  width: auto;
+  min-width: 0;
+  height: 70px;
+  display: grid;
+  grid-template-columns: 190px minmax(210px, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  box-shadow: inset 3px 0 0 rgba(255,210,63,.82), inset -1px 0 rgba(32,244,230,.16);
+  clip-path: polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+}
+#game-root .wave-console::before { display: none; }
+#game-root .wave-readout {
+  grid-template-columns: 60px 60px 1fr;
+  align-items: center;
+  min-height: 0;
+  height: 52px;
+  padding: 0 12px 0 4px;
+  border: 0;
+  border-right: 1px solid rgba(32,244,230,.18);
+}
+#game-root .wave-readout span,
+#game-root .wave-readout strong,
+#game-root .wave-readout small { grid-column: auto; grid-row: auto; margin: 0; }
+#game-root .wave-readout strong { font-size: 30px; }
+#game-root .wave-readout small { align-self: center; padding: 8px; border: 0; border-left: 1px solid rgba(32,244,230,.18); }
+#game-root .auto-demo-control { margin: 0; grid-template-columns: 92px minmax(0,1fr); }
+#game-root .auto-demo-toggle,
+#game-root .auto-demo-status { height: 36px; }
+
+#game-root .header-actions {
+  grid-template-columns: repeat(5, 38px);
+  justify-content: end;
+  margin: 0;
+}
+
+#game-root .combat-dock {
+  position: absolute;
+  z-index: 60;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--battle-rail-height);
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr) 205px 172px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-top: 1px solid rgba(255,62,165,.34);
+  background: linear-gradient(90deg, rgba(3,13,18,.995), rgba(2,8,12,.995));
+  box-shadow: inset 0 8px 22px rgba(255,62,165,.035);
+}
+
+#game-root .combat-dock .player-status {
+  position: static;
+  width: auto;
+  min-width: 0;
+  min-height: 74px;
+  transform: none;
+  padding: 11px 14px 9px;
+}
+
+#game-root .combat-dock .skill-dock {
+  position: static;
+  width: auto;
+  min-width: 0;
+  height: 74px;
+  display: grid;
+  grid-template-columns: 92px minmax(0,1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border: 1px solid rgba(32,244,230,.26);
+  border-left: 2px solid var(--neon-cyan);
+  background: linear-gradient(145deg, rgba(5,18,24,.96), rgba(3,11,15,.96));
+  box-shadow: inset 0 0 16px rgba(32,244,230,.06);
+}
+#game-root .combat-dock .skill-dock__heading {
+  display: grid;
+  gap: 5px;
+  padding: 0 4px;
+}
+#game-root .combat-dock .skill-dock__buttons {
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 7px;
+}
+#game-root .combat-dock .skill-button {
+  grid-template-columns: 38px minmax(0,1fr) 18px;
+  min-height: 56px;
+}
+#game-root .combat-dock .skill-button__icon { font-size: 20px; }
+#game-root .combat-dock .skill-button__copy { padding-left: 7px; }
+#game-root .combat-dock .skill-button__copy b { font-size: 10px; }
+#game-root .combat-dock .skill-button__copy small { font-size: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+#game-root .combat-dock .speed-control {
+  height: 74px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 18px 42px;
+  gap: 5px;
+  padding: 6px 9px 8px;
+  border: 1px solid rgba(32,244,230,.25);
+  background: rgba(5,18,24,.92);
+}
+#game-root .combat-dock .speed-control > span { grid-column: 1 / -1; }
+#game-root .combat-dock .speed-button { height: 42px; font-size: 11px; }
+
+#game-root .combat-dock #start-wave {
+  position: relative;
+  width: 100%;
+  height: 74px;
+  margin: 0;
+  padding: 0 34px 0 16px;
+  font-size: 12px;
+}
+
+#game-root .hint {
+  top: 73px;
+  bottom: auto;
+  left: 18px;
+  transform: none;
+  z-index: 62;
+  max-width: 245px;
+  padding: 6px 10px;
+  border: 0;
+  border-left: 2px solid var(--neon-pink);
+  background: rgba(2,10,14,.96);
+  box-shadow: none;
+  clip-path: none;
+  font-size: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#game-root .wave-toast { top: 104px; }
+#game-root .special-event-banner { top: 132px; }
+#game-root .intel-panel { top: 112px; bottom: 112px; }
+#game-root .tower-picker { bottom: 112px; }
+#game-root .tower-actions { bottom: 112px !important; }
+
+#game-root #stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+}

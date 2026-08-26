@@ -722,3 +722,79 @@
 @media (prefers-reduced-motion: reduce) {
   .command-center::before { animation: none !important; }
 }
+
+/* ---------- Battlefield typography fit pass ----------
+   战斗界面以 1280×992 固定舞台显示；放大中英文并同步扩充其所在控件，避免缩放后难以辨认。 */
+#game-root .topbar { grid-template-columns: 286px minmax(450px, 1fr) 244px; gap: 14px; }
+#game-root .topbar .brand h1 { font-size: 28px; line-height: 1; }
+#game-root .topbar .counter { margin-top: 6px; font-size: 12px; line-height: 1.15; letter-spacing: .02em; }
+#game-root .topbar::before { font-size: 8px; padding: 4px 11px; }
+#game-root .header-actions { grid-template-columns: repeat(5, 40px); }
+#game-root .icon-button { width: 40px; height: 40px; font-size: 17px; }
+
+#game-root .wave-console { grid-template-columns: 202px minmax(220px, 1fr); gap: 12px; padding: 7px 10px; }
+#game-root .wave-readout { grid-template-columns: 62px 68px minmax(70px, 1fr); padding-right: 9px; }
+#game-root .wave-readout span { font-size: 11px; line-height: 1; letter-spacing: .08em; }
+#game-root .wave-readout strong { font-size: 34px; line-height: 1; }
+#game-root .wave-readout small { padding: 7px 6px; font-size: 11px; line-height: 1.25; white-space: nowrap; }
+#game-root .auto-demo-control { grid-template-columns: 106px minmax(0, 1fr); gap: 7px; }
+#game-root .auto-demo-toggle { padding: 0 8px; font-size: 11px; white-space: nowrap; }
+#game-root .auto-demo-status { padding: 0 9px; font-size: 10px; line-height: 1.25; }
+
+#game-root .combat-dock { grid-template-columns: 286px minmax(0, 1fr) 214px 184px; gap: 10px; padding-inline: 14px; }
+#game-root .status-label { font-size: 11px; line-height: 1.1; letter-spacing: .04em; white-space: nowrap; }
+#game-root .status-value { font-size: 31px; line-height: 1; }
+#game-root .player-status::after { font-size: 8px; padding: 3px 8px; }
+#game-root .combat-dock .skill-dock { grid-template-columns: 104px minmax(0, 1fr); gap: 6px; }
+#game-root .skill-dock__heading span { font-size: 9px; line-height: 1.15; letter-spacing: .08em; }
+#game-root .skill-dock__heading b { font-size: 13px; line-height: 1.15; }
+#game-root .combat-dock .skill-button { grid-template-columns: 40px minmax(0, 1fr) 20px; padding-right: 5px; }
+#game-root .combat-dock .skill-button__copy { padding-left: 6px; }
+#game-root .combat-dock .skill-button__copy b { font-size: 13px; line-height: 1.1; white-space: nowrap; }
+#game-root .combat-dock .skill-button__copy small { margin-top: 5px; font-size: 10px; line-height: 1.1; }
+#game-root .skill-button kbd { font-size: 10px; }
+#game-root .skill-button i { font-size: 11px; }
+#game-root .combat-dock .speed-control > span { font-size: 10px; line-height: 1; }
+#game-root .combat-dock .speed-button { font-size: 14px; }
+#game-root .combat-dock #start-wave { padding-inline: 16px 30px; font-size: 15px; line-height: 1.15; white-space: nowrap; }
+#game-root .hint { max-width: 310px; padding: 8px 12px; font-size: 11px; line-height: 1.25; white-space: nowrap; }
+#game-root .wave-toast { padding: 10px 22px; font-size: 16px; line-height: 1.15; }
+
+#game-root .tower-picker { width: min(790px, calc(100% - 28px)); padding: 11px; }
+#game-root .tower-picker__bar { min-height: 34px; font-size: 14px; line-height: 1.15; }
+#game-root .tower-picker__bar::before { font-size: 9px; }
+#game-root .tower-options { gap: 8px; }
+#game-root .tower-option { height: 126px; padding: 6px 5px 7px; }
+#game-root .tower-option img { width: 62px; height: 62px; }
+#game-root .tower-option strong { min-height: 30px; font-size: 13px; line-height: 1.15; white-space: normal; text-overflow: clip; }
+#game-root .tower-option small { margin-top: 3px; font-size: 10px; line-height: 1.2; white-space: nowrap; }
+#game-root .tower-option em { margin-top: 4px; font-size: 11px; line-height: 1; }
+
+#game-root .tower-actions { width: 270px; padding: 11px; }
+#game-root .tower-actions__title { min-height: 34px; font-size: 14px; line-height: 1.2; }
+#game-root .tower-actions__stats { padding-block: 9px; font-size: 12px; line-height: 1.55; }
+#game-root .tower-action { height: auto; min-height: 48px; padding: 7px 10px; font-size: 13px; line-height: 1.25; }
+#game-root .tower-action small { margin-top: 4px; font-size: 11px; line-height: 1.15; }
+
+#game-root .special-event-banner__signal span,
+#game-root .special-event-banner__signal em { font-size: 10px; }
+#game-root .special-event-banner > strong { font-size: 20px; }
+#game-root .special-event-banner > p { font-size: 13px; line-height: 1.5; }
+#game-root .special-event-banner > b { font-size: 12px; }
+#game-root .intel-event-card small { font-size: 10px; }
+#game-root .intel-event-card strong { font-size: 16px; }
+#game-root .intel-event-card span { font-size: 12px; }
+#game-root .intel-event-card b { font-size: 11px; }
+
+@media (max-width: 1100px) {
+  #game-root .topbar { grid-template-columns: 250px minmax(390px, 1fr) 218px; gap: 8px; padding-inline: 12px; }
+  #game-root .topbar .brand h1 { font-size: 24px; }
+  #game-root .topbar .counter { font-size: 10px; }
+  #game-root .header-actions { grid-template-columns: repeat(5, 36px); }
+  #game-root .icon-button { width: 36px; height: 36px; }
+  #game-root .wave-console { grid-template-columns: 176px minmax(180px, 1fr); }
+  #game-root .combat-dock { grid-template-columns: 250px minmax(0, 1fr) 188px 164px; }
+  #game-root .combat-dock .skill-dock { grid-template-columns: 86px minmax(0, 1fr); }
+  #game-root .combat-dock .skill-button__copy b { font-size: 11px; }
+  #game-root .combat-dock .skill-button__copy small { font-size: 8px; }
+}

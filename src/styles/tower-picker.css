@@ -1,0 +1,250 @@
+/* ---------- Tower build deck: content-sized picker with complete chrome ---------- */
+#game-root .tower-picker {
+  --tower-card-width: 126px;
+  left: 50%;
+  right: auto;
+  bottom: 112px;
+  display: grid;
+  grid-template-rows: 42px auto;
+  width: max-content;
+  min-width: 0;
+  max-width: calc(100% - 44px);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(36, 234, 255, .72);
+  border-left: 3px solid var(--v3-cyan, var(--neon-cyan));
+  background:
+    linear-gradient(135deg, rgba(36, 234, 255, .035), transparent 32%),
+    rgba(2, 9, 13, .97);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, .62), 4px 4px 0 rgba(100, 53, 255, .28);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transform: translateX(-50%);
+}
+#game-root .tower-picker[hidden] { display: none; }
+
+#game-root .tower-picker__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 0 8px 0 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(36, 234, 255, .2);
+  color: #eaffff;
+  background: linear-gradient(90deg, rgba(36, 234, 255, .08), rgba(100, 53, 255, .035) 55%, transparent);
+  font: 900 10px/1 var(--font-mono);
+  letter-spacing: .12em;
+}
+#game-root .tower-picker__bar::before {
+  content: "BUILD DECK";
+  margin-right: 12px;
+  padding-right: 12px;
+  border-right: 1px solid rgba(223, 255, 22, .28);
+  color: var(--v3-acid, var(--neon-yellow));
+  font-size: 7px;
+  letter-spacing: .16em;
+}
+#game-root .tower-picker__bar::after {
+  content: attr(data-count) " UNIT DECK";
+  position: absolute;
+  right: 48px;
+  color: rgba(167, 199, 201, .55);
+  font: 800 6px/1 var(--font-mono);
+  letter-spacing: .14em;
+}
+#game-root .tower-picker__bar > span { margin-right: auto; }
+#game-root .tower-picker .picker-close {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  margin-left: 88px;
+  border: 1px solid rgba(36, 234, 255, .32);
+  color: rgba(216, 242, 243, .72);
+  background: rgba(2, 10, 14, .7);
+  box-shadow: none;
+}
+#game-root .tower-picker .picker-close:hover {
+  color: #061014;
+  border-color: var(--v3-acid, var(--neon-yellow));
+  background: var(--v3-acid, var(--neon-yellow));
+}
+
+#game-root .tower-options {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--tower-card-width);
+  grid-template-columns: none;
+  gap: 8px;
+  width: max-content;
+  max-width: 100%;
+  padding: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(36, 234, 255, .42) rgba(255, 255, 255, .025);
+}
+
+#game-root .tower-option {
+  --tower-accent: var(--v3-cyan, var(--neon-cyan));
+  position: relative;
+  display: grid;
+  grid-template-rows: 16px 72px minmax(40px, auto) 29px;
+  align-items: center;
+  width: var(--tower-card-width);
+  height: 166px;
+  min-width: 0;
+  padding: 6px 8px 8px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--tower-accent) 58%, rgba(255,255,255,.08));
+  color: #dff4f4;
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--tower-accent) 7%, transparent), transparent 42%),
+    linear-gradient(180deg, rgba(7, 23, 29, .96), rgba(2, 10, 14, .985));
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .035);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+  cursor: pointer;
+  text-align: left;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+#game-root .tower-option::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 42%;
+  height: 2px;
+  background: var(--tower-accent);
+  opacity: .92;
+}
+#game-root .tower-option::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid color-mix(in srgb, var(--tower-accent) 64%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--tower-accent) 64%, transparent);
+  opacity: .55;
+}
+#game-root .tower-option:hover:not(:disabled),
+#game-root .tower-option:focus-visible {
+  z-index: 2;
+  border-color: var(--tower-accent);
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--tower-accent) 14%, transparent), transparent 48%),
+    linear-gradient(180deg, rgba(10, 31, 38, .99), rgba(3, 13, 18, .99));
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--tower-accent) 78%, transparent), 0 9px 20px rgba(0, 0, 0, .42);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+#game-root .tower-option__index {
+  align-self: start;
+  color: color-mix(in srgb, var(--tower-accent) 82%, #fff 18%);
+  font: 900 7px/1 var(--font-mono);
+  letter-spacing: .13em;
+}
+#game-root .tower-option__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 72px;
+}
+#game-root .tower-option__visual::before {
+  content: "";
+  position: absolute;
+  width: 62px;
+  height: 24px;
+  bottom: 5px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--tower-accent) 18%, transparent), transparent 68%);
+  filter: blur(2px);
+}
+#game-root .tower-option img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 70px;
+  height: 70px;
+  margin: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 6px rgba(0, 0, 0, .68));
+  transition: transform .15s ease, filter .15s ease;
+}
+#game-root .tower-option:hover:not(:disabled) img {
+  transform: translateY(-2px) scale(1.07);
+  filter: drop-shadow(0 9px 7px rgba(0, 0, 0, .7)) drop-shadow(0 0 7px color-mix(in srgb, var(--tower-accent) 26%, transparent));
+}
+#game-root .tower-option__copy {
+  display: block;
+  min-width: 0;
+  align-self: start;
+}
+#game-root .tower-option strong {
+  display: block;
+  overflow: hidden;
+  color: #f2ffff;
+  font: 900 11px/1.15 var(--font-display);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#game-root .tower-option small {
+  display: -webkit-box;
+  min-height: 21px;
+  margin-top: 4px;
+  overflow: hidden;
+  color: rgba(170, 201, 202, .66);
+  font: 700 7px/1.4 var(--font-sans);
+  text-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+#game-root .tower-option__cost {
+  align-self: end;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  min-height: 26px;
+  margin: 0;
+  padding: 0 7px;
+  color: #061014;
+  background: var(--v3-acid, var(--neon-yellow));
+  font-style: normal;
+  clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+}
+#game-root .tower-option__cost span { font: 900 6px/1 var(--font-mono); letter-spacing: .1em; }
+#game-root .tower-option__cost b { font: 1000 12px/1 var(--font-display); }
+#game-root .tower-option__cost i { font: 900 7px/1 var(--font-mono); font-style: normal; }
+
+#game-root .tower-option:disabled {
+  opacity: .46;
+  cursor: not-allowed;
+  filter: grayscale(.72);
+}
+#game-root .tower-option:disabled .tower-option__cost {
+  color: rgba(205, 221, 221, .72);
+  background: rgba(90, 108, 110, .28);
+}
+#game-root .tower-option:disabled::after { content: "×"; border: 0; color: #ff7caf; font: 900 12px/1 var(--font-mono); }
+
+@media (max-width: 900px) {
+  #game-root .tower-picker { --tower-card-width: 112px; max-width: calc(100% - 24px); }
+  #game-root .tower-picker__bar::after { display: none; }
+  #game-root .tower-picker .picker-close { margin-left: 18px; }
+  #game-root .tower-option { height: 156px; grid-template-rows: 14px 65px minmax(38px, auto) 27px; }
+  #game-root .tower-option img { width: 64px; height: 64px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #game-root .tower-picker,
+  #game-root .tower-option,
+  #game-root .tower-option img { animation: none; transition: none; }
+}
+

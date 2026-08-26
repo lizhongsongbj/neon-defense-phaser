@@ -5,10 +5,11 @@ import { BattleScene } from '../scenes/BattleScene'
 
 export const GAME_WIDTH = 1280
 export const GAME_HEIGHT = 800
+export const STAGE_HEIGHT = 992
 
 /**
  * 主界面/指挥中心/战斗 HUD 现在都是 HTML+CSS(见 src/ui、index.html),
- * Phaser 只负责渲染战场本身,画布挂在固定 1280x800 的 #game-canvas 里,
+ * Phaser 只负责渲染战场本身,画布保持固定 1280x800，并置于 1280x992 的 #stage 中间安全区,
  * 与 HUD 覆盖层共享 #stage 的坐标系(见 src/styles/theme.css 里的 #stage 说明)。
  */
 export const gameConfig: Phaser.Types.Core.GameConfig = {

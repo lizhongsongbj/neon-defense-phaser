@@ -5,7 +5,8 @@ import './styles/hacker-pulse.css'
 import './styles/achievement-cyber.css'
 import './styles/internal-neon-theme.css'
 import './styles/campaign-map.css'
-import { gameConfig, GAME_WIDTH, GAME_HEIGHT } from './config/gameConfig'
+import './styles/tower-picker.css'
+import { gameConfig, GAME_WIDTH, STAGE_HEIGHT } from './config/gameConfig'
 import { CampaignState, REGISTRY_KEY } from './state/CampaignState'
 import { EventBus, GameEvents } from './state/EventBus'
 import { TitleScreen } from './ui/TitleScreen'
@@ -34,8 +35,8 @@ function applyStageScale() {
   const viewport = window.visualViewport
   const viewportWidth = viewport?.width ?? window.innerWidth
   const viewportHeight = viewport?.height ?? window.innerHeight
-  const scale = Math.min(1.25, viewportWidth / GAME_WIDTH, viewportHeight / GAME_HEIGHT)
-  stage.style.transform = `scale(${Math.max(0.1, scale)})`
+  const scale = Math.min(1.25, viewportWidth / GAME_WIDTH, viewportHeight / STAGE_HEIGHT)
+  stage.style.transform = `translate(-50%, -50%) scale(${Math.max(0.1, scale)})`
 }
 applyStageScale()
 window.addEventListener('resize', applyStageScale)
@@ -49,6 +50,7 @@ const commandCenterUI = new CommandCenterUI(
   campaign,
   game,
   (mapIndex, difficulty, towerIds) => {
+    campaign.demoActive = false
     campaign.difficulty = difficulty
     campaign.setTowerLoadout(towerIds)
     campaign.startMission(mapIndex)

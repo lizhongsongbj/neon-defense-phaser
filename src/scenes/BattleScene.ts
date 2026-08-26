@@ -458,7 +458,7 @@ export class BattleScene extends Phaser.Scene {
       graphic.lineStyle(2, x % 44 === 0 ? 0xf4ffff : 0x7aeeff, 0.85)
       graphic.strokeRect(point.x + x - 7, point.y - 48, 14, 96)
     }
-    const label = this.add.text(point.x, point.y - 66, 'QUANTUM FIREWALL // 16', { fontFamily: 'monospace', fontSize: '12px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#160b3be8', padding: { x: 8, y: 4 } }).setOrigin(0.5).setDepth(68)
+    const label = this.add.text(point.x, point.y - 66, 'QUANTUM FIREWALL // 16', { fontFamily: 'monospace', fontSize: '15px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#160b3be8', padding: { x: 10, y: 6 } }).setOrigin(0.5).setDepth(68)
     this.tweens.add({ targets: graphic, alpha: 0.58, duration: 260, yoyo: true, repeat: -1 })
     this.tweens.add({ targets: label, scaleX: 1.05, scaleY: 1.05, duration: 360, yoyo: true, repeat: -1 })
     this.cameras.main.shake(240, 0.008, true)
@@ -496,7 +496,7 @@ export class BattleScene extends Phaser.Scene {
         impact.lineStyle(4, 0x6435ff, 1).strokeRect(screen.x - 38, screen.y - 38, 76, 76)
         impact.lineStyle(2, 0x05c7ff, 0.92).strokeCircle(screen.x, screen.y, 52)
         this.tweens.add({ targets: impact, scale: 1.45, alpha: 0, duration: 560, onComplete: () => impact.destroy() })
-        const denied = this.add.text(screen.x, screen.y - 34, 'ACCESS DENIED // ROLLBACK', { fontFamily: 'monospace', fontSize: '11px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#210b57e8', padding: { x: 6, y: 4 } }).setOrigin(0.5).setDepth(73)
+        const denied = this.add.text(screen.x, screen.y - 34, 'ACCESS DENIED // ROLLBACK', { fontFamily: 'monospace', fontSize: '14px', fontStyle: 'bold', color: '#ffffff', backgroundColor: '#210b57e8', padding: { x: 9, y: 5 } }).setOrigin(0.5).setDepth(73)
         this.tweens.add({ targets: denied, y: denied.y - 24, alpha: 0, duration: 900, onComplete: () => denied.destroy() })
         if (firewall.capacity <= 0) break
       }

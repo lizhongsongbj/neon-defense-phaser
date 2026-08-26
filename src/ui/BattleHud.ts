@@ -1,4 +1,4 @@
-﻿import type Phaser from 'phaser'
+import type Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { ALL_TOWER_TYPES, type AllTowerId } from '../data/towerExpansion'
 import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
@@ -49,6 +49,7 @@ export class BattleHud {
   private readonly specialEventEffect: HTMLElement
   private readonly hintEl: HTMLElement
   private readonly towerPicker: HTMLElement
+  private readonly towerOptions: HTMLElement
   private readonly pickerClose: HTMLButtonElement
   private readonly actionPanel: HTMLElement
   private readonly actionName: HTMLElement
@@ -90,6 +91,7 @@ export class BattleHud {
     this.specialEventEffect = document.getElementById('special-event-effect') as HTMLElement
     this.hintEl = document.getElementById('hint') as HTMLElement
     this.towerPicker = document.getElementById('tower-picker') as HTMLElement
+    this.towerOptions = document.getElementById('tower-options') as HTMLElement
     this.pickerClose = document.getElementById('picker-close') as HTMLButtonElement
     this.actionPanel = document.getElementById('tower-actions') as HTMLElement
     this.actionName = document.getElementById('tower-actions-name') as HTMLElement
@@ -253,21 +255,40 @@ export class BattleHud {
   }
 
   private buildTowerPicker() {
-    // HUD ??????????????????/????????
-    this.towerPicker.replaceChildren()
+    this.towerOptions.replaceChildren()
     const campaign = this.game.registry.get(REGISTRY_KEY) as CampaignState | undefined
     const selected = new Set(campaign?.selectedTowerIds ?? ALL_TOWER_TYPES.map((tower) => tower.id))
-    ALL_TOWER_TYPES.filter((def) => selected.has(def.id)).forEach((def) => {
+    const towerDeck = ALL_TOWER_TYPES.filter((def) => selected.has(def.id))
+    this.towerPicker.dataset.towerCount = String(towerDeck.length)
+    const pickerBar = this.towerPicker.querySelector<HTMLElement>('.tower-picker__bar')
+    if (pickerBar) pickerBar.dataset.count = String(towerDeck.length).padStart(2, '0')
+
+    towerDeck.forEach((def, index) => {
       const card = document.createElement('button')
       card.type = 'button'
       card.className = 'tower-option'
-      card.style.borderColor = def.accent
-      card.innerHTML = `<img src="${def.image}" alt="${def.name}" /><strong>${def.name}</strong><small>${def.role}</small><em>${def.cost} 币</em>`
+      card.dataset.cost = String(def.cost)
+      card.style.setProperty('--tower-accent', def.accent)
+      card.setAttribute('aria-label', `建造${def.name}，消耗 ${def.cost} 金币`)
+      card.innerHTML = `
+        <span class="tower-option__index">${String(index + 1).padStart(2, '0')}</span>
+        <span class="tower-option__visual"><img src="${def.image}" alt="" /></span>
+        <span class="tower-option__copy"><strong>${def.name}</strong><small>${def.role}</small></span>
+        <em class="tower-option__cost"><span>BUILD</span><b>${def.cost}</b><i>G</i></em>
+      `
       card.addEventListener('click', (event) => {
         event.stopPropagation()
         this.confirmBuild(def.id)
       })
-      this.towerPicker.appendChild(card)
+      this.towerOptions.appendChild(card)
+    })
+  }
+
+  private refreshTowerAffordability(coins: number) {
+    this.towerOptions.querySelectorAll<HTMLButtonElement>('.tower-option').forEach((card) => {
+      const cost = Number(card.dataset.cost ?? 0)
+      card.disabled = coins < cost
+      card.classList.toggle('is-affordable', coins >= cost)
     })
   }
 
@@ -380,6 +401,7 @@ export class BattleHud {
 
   private onSlotClicked(payload: SlotSelectedPayload) {
     this.pendingSlot = payload
+    this.refreshTowerAffordability(payload.coins)
     this.towerPicker.hidden = false
     this.actionPanel.hidden = true
     this.setHint(HINT_SLOT_SELECTED)
@@ -429,6 +451,7 @@ export class BattleHud {
     this.waveValueEl.textContent = String(payload.wave).padStart(2, '0')
     this.enemyCountEl.textContent = String(payload.enemyCount)
     this.coinsEl.textContent = String(Math.round(payload.coins))
+    if (!this.towerPicker.hidden) this.refreshTowerAffordability(payload.coins)
     this.healthEl.textContent = String(payload.health)
     this.healthFillEl.style.width = `${Math.max(0, Math.min(100, (payload.health / payload.maxHealth) * 100))}%`
     this.startWaveButton.disabled = payload.waveActive
@@ -520,6 +543,8 @@ export class BattleHud {
     this.endOverlay.hidden = false
   }
 }
+
+
 
 
 

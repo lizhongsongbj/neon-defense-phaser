@@ -27,10 +27,10 @@ export class TowerActor extends Phaser.GameObjects.Container {
     this.levelTag = scene.add
       .text(0, baseSize / 2 - 4, `LV.${state.level}`, {
         fontFamily: 'sans-serif',
-        fontSize: '10px',
+        fontSize: '12px',
         color: '#fff',
         backgroundColor: '#00000080',
-        padding: { x: 3, y: 1 },
+        padding: { x: 5, y: 2 },
       })
       .setOrigin(0.5, 1)
 

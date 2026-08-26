@@ -21,6 +21,21 @@ const CAMPAIGN_NODE_POSITIONS = [
   { x: 76, y: 48 },
   { x: 89, y: 49 },
 ] as const
+
+type CampaignLightParticle = {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  radius: number
+  life: number
+  maxLife: number
+  hue: number
+  phase: number
+}
+
+type CampaignLightPoint = { x: number; y: number; weight: number }
+
 const GROWTH_TOWER_TYPES = [
   ...TOWER_TYPES,
   ...EXPANSION_TOWERS.map((tower) => ({
@@ -47,6 +62,7 @@ export class CommandCenterUI {
   private readonly metaEl: HTMLElement
   private readonly difficultyEl: HTMLElement
   private readonly deployButton: HTMLButtonElement
+  private readonly testUnlockButton: HTMLButtonElement
   private readonly researchPointsEl: HTMLElement
   private readonly growthTotalEl: HTMLElement
   private readonly growthGrid: HTMLElement
@@ -56,10 +72,24 @@ export class CommandCenterUI {
   private readonly musicToggle: HTMLButtonElement
   private readonly tabs: HTMLButtonElement[]
   private readonly panels: Record<string, HTMLElement>
+  private readonly particleCanvas: HTMLCanvasElement
+  private readonly particleContext: CanvasRenderingContext2D | null
+  private readonly campaignMap: HTMLElement
+  private readonly campaignBackdrop: HTMLElement
+  private readonly particles: CampaignLightParticle[] = []
+  private lightPoints: CampaignLightPoint[] = []
+  private particleFrame = 0
+  private particleLastTime = 0
+  private particleSpawnCarry = 0
+  private particleWidth = 0
+  private particleHeight = 0
+  private readonly particleResizeObserver: ResizeObserver
+  private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
   private selectedMapIndex = 0
   private selectedDifficulty: Difficulty = 'normal'
   private assetsReady = false
+  private testUnlockActive = false
   private loadoutDialog!: HTMLElement
   private loadoutGrid!: HTMLElement
   private loadoutCount!: HTMLElement
@@ -79,6 +109,7 @@ export class CommandCenterUI {
     this.metaEl = document.getElementById('mission-meta') as HTMLElement
     this.difficultyEl = document.getElementById('mission-difficulty') as HTMLElement
     this.deployButton = document.getElementById('deploy-mission') as HTMLButtonElement
+    this.testUnlockButton = document.getElementById('test-unlock-maps') as HTMLButtonElement
     this.researchPointsEl = document.getElementById('research-points') as HTMLElement
     this.growthTotalEl = document.getElementById('growth-total') as HTMLElement
     this.growthGrid = document.getElementById('growth-grid') as HTMLElement
@@ -91,6 +122,13 @@ export class CommandCenterUI {
       missions: this.el.querySelector('[data-command-panel="missions"]') as HTMLElement,
       growth: this.el.querySelector('[data-command-panel="growth"]') as HTMLElement,
     }
+    this.particleCanvas = document.getElementById('campaign-light-particles') as HTMLCanvasElement
+    this.particleContext = this.particleCanvas.getContext('2d')
+    this.campaignMap = this.particleCanvas.parentElement as HTMLElement
+    this.campaignBackdrop = this.campaignMap.querySelector('.campaign-map__backdrop') as HTMLElement
+    this.particleResizeObserver = new ResizeObserver(() => this.resizeParticleCanvas())
+    this.particleResizeObserver.observe(this.campaignMap)
+    void this.buildLightPointMap()
 
     // 新进入游戏时始终从第一个地图开始显示，存档进度不会改变默认选中项。
     this.selectedMapIndex = 0
@@ -103,6 +141,7 @@ export class CommandCenterUI {
     this.buildSkillGrowthGrid()
     this.bindTabs()
     this.bindDeploy()
+    this.bindTestUnlock()
     this.bindClose()
     this.bindAudioToggles()
   }
@@ -112,10 +151,169 @@ export class CommandCenterUI {
     this.music()?.startMenu()
     this.syncAudioLabels()
     this.refresh()
+    this.startLightParticles()
   }
 
   hide() {
     this.el.hidden = true
+    this.stopLightParticles()
+  }
+
+  private resizeParticleCanvas() {
+    const rect = this.campaignMap.getBoundingClientRect()
+    const width = Math.max(1, Math.round(rect.width))
+    const height = Math.max(1, Math.round(rect.height))
+    if (width === this.particleWidth && height === this.particleHeight) return
+
+    this.particleWidth = width
+    this.particleHeight = height
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    this.particleCanvas.width = Math.round(width * dpr)
+    this.particleCanvas.height = Math.round(height * dpr)
+    this.particleCanvas.style.width = `${width}px`
+    this.particleCanvas.style.height = `${height}px`
+    this.particleContext?.setTransform(dpr, 0, 0, dpr, 0, 0)
+  }
+
+  private async buildLightPointMap() {
+    const background = getComputedStyle(this.campaignBackdrop).backgroundImage
+    const source = background.match(/url\(["']?(.*?)["']?\)/)?.[1]
+    if (!source) return
+
+    try {
+      const image = new Image()
+      image.decoding = 'async'
+      image.src = source
+      await image.decode()
+
+      const sample = document.createElement('canvas')
+      sample.width = 160
+      sample.height = 90
+      const context = sample.getContext('2d', { willReadFrequently: true })
+      if (!context) return
+      context.drawImage(image, 0, 0, sample.width, sample.height)
+      const pixels = context.getImageData(0, 0, sample.width, sample.height).data
+      const points: CampaignLightPoint[] = []
+
+      for (let y = 2; y < sample.height - 2; y += 2) {
+        for (let x = 2; x < sample.width - 2; x += 2) {
+          const offset = (y * sample.width + x) * 4
+          const red = pixels[offset]
+          const green = pixels[offset + 1]
+          const blue = pixels[offset + 2]
+          const luminance = red * .2126 + green * .7152 + blue * .0722
+          const chroma = Math.max(red, green, blue) - Math.min(red, green, blue)
+          const lightWeight = Math.max(0, luminance - 104) + Math.max(0, chroma - 38) * .45
+          if (lightWeight > 12) points.push({ x: x / sample.width, y: y / sample.height, weight: lightWeight })
+        }
+      }
+      this.lightPoints = points
+    } catch {
+      this.lightPoints = [
+        { x: .2, y: .58, weight: 1 }, { x: .38, y: .43, weight: 1 },
+        { x: .57, y: .5, weight: 1 }, { x: .73, y: .38, weight: 1 }, { x: .84, y: .56, weight: 1 },
+      ]
+    }
+  }
+
+  private startLightParticles() {
+    this.resizeParticleCanvas()
+    if (this.reducedMotion.matches || this.particleFrame) return
+    this.particleLastTime = performance.now()
+    this.particleFrame = requestAnimationFrame(this.animateLightParticles)
+  }
+
+  private stopLightParticles() {
+    if (this.particleFrame) cancelAnimationFrame(this.particleFrame)
+    this.particleFrame = 0
+    this.particleLastTime = 0
+    this.particleSpawnCarry = 0
+    this.particles.length = 0
+    this.particleContext?.clearRect(0, 0, this.particleWidth, this.particleHeight)
+  }
+
+  private readonly animateLightParticles = (time: number) => {
+    const context = this.particleContext
+    if (!context || this.el.hidden || this.reducedMotion.matches) {
+      this.stopLightParticles()
+      return
+    }
+
+    const delta = Math.min(40, Math.max(0, time - this.particleLastTime)) / 1000
+    this.particleLastTime = time
+    this.particleSpawnCarry += delta * 28
+    while (this.particleSpawnCarry >= 1 && this.particles.length < 150) {
+      this.spawnLightParticle()
+      this.particleSpawnCarry -= 1
+    }
+
+    context.clearRect(0, 0, this.particleWidth, this.particleHeight)
+    context.save()
+    context.globalCompositeOperation = 'lighter'
+    for (let index = this.particles.length - 1; index >= 0; index--) {
+      const particle = this.particles[index]
+      particle.life -= delta
+      if (particle.life <= 0 || particle.y < -20) {
+        this.particles.splice(index, 1)
+        continue
+      }
+
+      particle.phase += delta * 2.2
+      particle.x += (particle.vx + Math.sin(particle.phase) * 4) * delta
+      particle.y += particle.vy * delta
+      const progress = 1 - particle.life / particle.maxLife
+      const alpha = Math.sin(Math.PI * progress) * .95
+      const tail = Math.max(5, Math.abs(particle.vy) * .12)
+      const gradient = context.createLinearGradient(particle.x, particle.y, particle.x, particle.y + tail)
+      gradient.addColorStop(0, `hsla(${particle.hue}, 100%, 82%, ${alpha})`)
+      gradient.addColorStop(1, `hsla(${particle.hue}, 100%, 65%, 0)`)
+      context.strokeStyle = gradient
+      context.lineWidth = Math.max(.6, particle.radius * .65)
+      context.beginPath()
+      context.moveTo(particle.x, particle.y)
+      context.lineTo(particle.x - particle.vx * .04, particle.y + tail)
+      context.stroke()
+
+      context.shadowBlur = 8 + particle.radius * 3
+      context.shadowColor = `hsla(${particle.hue}, 100%, 70%, ${alpha})`
+      context.fillStyle = `hsla(${particle.hue}, 100%, 88%, ${alpha})`
+      context.beginPath()
+      context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2)
+      context.fill()
+      context.shadowBlur = 0
+    }
+    context.restore()
+    this.particleFrame = requestAnimationFrame(this.animateLightParticles)
+  }
+
+  private spawnLightParticle() {
+    const point = this.pickLightPoint()
+    const x = point ? point.x * this.particleWidth : (.12 + Math.random() * .76) * this.particleWidth
+    const y = point ? point.y * this.particleHeight : (.28 + Math.random() * .45) * this.particleHeight
+    const maxLife = 2.1 + Math.random() * 2.5
+    this.particles.push({
+      x: x + (Math.random() - .5) * 20,
+      y: y + (Math.random() - .5) * 12,
+      vx: (Math.random() - .5) * 9,
+      vy: -(24 + Math.random() * 30),
+      radius: .8 + Math.random() * 1.8,
+      life: maxLife,
+      maxLife,
+      hue: Math.random() < .7 ? 184 + Math.random() * 12 : 48 + Math.random() * 16,
+      phase: Math.random() * Math.PI * 2,
+    })
+  }
+
+  private pickLightPoint() {
+    if (!this.lightPoints.length) return undefined
+    let total = 0
+    for (const point of this.lightPoints) total += point.weight
+    let target = Math.random() * total
+    for (const point of this.lightPoints) {
+      target -= point.weight
+      if (target <= 0) return point
+    }
+    return this.lightPoints[this.lightPoints.length - 1]
   }
 
   markAssetsReady() {
@@ -331,15 +529,29 @@ export class CommandCenterUI {
 
   private bindDeploy() {
     this.deployButton.addEventListener('click', () => {
-      if (!this.campaign.isMapUnlocked(this.selectedMapIndex) || !this.assetsReady) return
+      if (!this.assetsReady) return
       this.openLoadoutDialog()
+    })
+  }
+
+  private bindTestUnlock() {
+    this.testUnlockButton.addEventListener('click', () => {
+      this.testUnlockActive = true
+      this.testUnlockButton.setAttribute('aria-pressed', 'true')
+      this.testUnlockButton.disabled = true
+      this.testUnlockButton.querySelector('strong')!.textContent = '全部关卡已解锁'
+      this.refresh()
     })
   }
 
   refresh() {
     const rows = Array.from(this.missionList.querySelectorAll<HTMLButtonElement>('.mission-row'))
     rows.forEach((row, index) => {
-      const status = this.campaign.mapStatus(index)
+      const status = this.campaign.completedMaps[index]
+        ? 'cleared'
+        : this.testUnlockActive
+          ? 'online'
+          : this.campaign.mapStatus(index)
       row.dataset.status = status
       row.setAttribute('aria-selected', String(index === this.selectedMapIndex))
       const statusEl = row.querySelector('[data-role="status"]') as HTMLElement
@@ -351,7 +563,7 @@ export class CommandCenterUI {
     })
 
     const map = MAP_LEVELS[this.selectedMapIndex]
-    const unlocked = this.campaign.isMapUnlocked(this.selectedMapIndex)
+    const unlocked = this.testUnlockActive || this.campaign.isMapUnlocked(this.selectedMapIndex)
     const code = String(this.selectedMapIndex + 1).padStart(2, '0')
     this.visualImg.hidden = !map.available
     this.visualImg.parentElement?.classList.toggle('mission-visual--empty', !map.available)
@@ -432,6 +644,7 @@ export class CommandCenterUI {
     })
   }
 }
+
 
 
 

@@ -30,7 +30,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
   private readonly shieldBarFill: Phaser.GameObjects.Rectangle
   private readonly tag: Phaser.GameObjects.Text
   private readonly statusRing: Phaser.GameObjects.Graphics
-  private readonly barWidth = 46
+  private readonly barWidth = 54
   private readonly baseSize: number
   private currentMotion: EnemyAnimationMotion | 'static' = 'static'
   private finishing = false
@@ -54,7 +54,10 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     this.tag = scene.add
       .text(0, -baseSize / 2 - 20, displayName(state), {
         fontFamily: 'sans-serif',
-        fontSize: state.isBoss ? '13px' : '10px',
+        fontSize: state.isBoss ? '16px' : '12px',
+        fontStyle: 'bold',
+        backgroundColor: '#02070bcc',
+        padding: { x: 4, y: 2 },
         color: '#f4ffff',
       })
       .setOrigin(0.5, 1)

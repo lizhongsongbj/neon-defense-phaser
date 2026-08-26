@@ -94,11 +94,16 @@
         <div class="campaign-map">
           <div class="campaign-map__backdrop" aria-hidden="true"></div>
           <div class="campaign-map__shade" aria-hidden="true"></div>
+          <canvas class="campaign-light-particles" id="campaign-light-particles" aria-hidden="true"></canvas>
           <div class="campaign-map__heading">
             <span>NEON CITY CAMPAIGN</span>
             <strong>选择你的下一处防线</strong>
             <small>沿战役路线推进，完成关卡后解锁新的战区节点</small>
           </div>
+          <button class="campaign-test-unlock" id="test-unlock-maps" type="button" aria-pressed="false">
+            <span>TEST</span>
+            <strong>解锁全部关卡</strong>
+          </button>
           <svg class="campaign-route" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
             <path class="campaign-route__shadow" d="M110 186 C175 164 220 138 270 150 S380 126 450 138 S355 280 220 318 S370 330 470 324 S610 158 680 150 S730 218 730 258 S790 228 830 228" />
             <path class="campaign-route__line" d="M110 186 C175 164 220 138 270 150 S380 126 450 138 S355 280 220 318 S370 330 470 324 S610 158 680 150 S730 218 730 258 S790 228 830 228" />
@@ -153,6 +158,19 @@
               <span class="counter" id="counter">已部署 0 / 0</span>
             </div>
           </div>
+
+          <div class="wave-console" aria-label="战场信息">
+            <div class="wave-readout">
+              <span>WAVE</span>
+              <strong id="wave-value">01</strong>
+              <small>敌军 <b id="enemy-count">0</b></small>
+            </div>
+            <div class="auto-demo-control">
+              <button class="auto-demo-toggle" id="auto-demo-toggle" type="button" aria-pressed="false">AUTO 演示</button>
+              <output class="auto-demo-status" id="auto-demo-status" data-active="false">代理待命</output>
+            </div>
+          </div>
+
           <div class="header-actions">
             <button class="icon-button" id="return-command-center" type="button" aria-label="主界面" title="主界面">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
@@ -170,40 +188,44 @@
           </div>
         </header>
 
-        <aside class="wave-console" aria-label="波次控制">
-          <div class="wave-readout">
-            <span>WAVE</span>
-            <strong id="wave-value">01</strong>
-            <small>敌军 <b id="enemy-count">0</b></small>
+        <footer class="combat-dock" aria-label="战斗控制台">
+          <div class="player-status" aria-label="玩家状态">
+            <div class="status-item">
+              <span class="status-label">金币</span>
+              <strong class="status-value" id="coin-value">0</strong>
+            </div>
+            <span class="status-divider" aria-hidden="true"></span>
+            <div class="status-item status-health">
+              <span class="status-label">城防血量</span>
+              <strong class="status-value" id="health-value">0</strong>
+              <span class="health-meter" aria-hidden="true"><i id="health-fill"></i></span>
+            </div>
           </div>
+
+          <section class="skill-dock" id="skill-dock" aria-label="主动技能">
+            <div class="skill-dock__heading"><span>ACTIVE PROTOCOLS</span><b>主动技能</b></div>
+            <div class="skill-dock__buttons">
+              <button class="skill-button" type="button" data-player-skill="pulse-overload" style="--skill-accent:#20f4e6">
+                <span class="skill-button__icon" aria-hidden="true">⌁</span>
+                <span class="skill-button__copy"><b>脉冲过载</b><small data-role="skill-status">未解锁</small></span>
+                <i data-role="skill-cooldown"></i><kbd>1</kbd>
+              </button>
+              <button class="skill-button" type="button" data-player-skill="quantum-firewall" style="--skill-accent:#ff3ea5">
+                <span class="skill-button__icon" aria-hidden="true">▰</span>
+                <span class="skill-button__copy"><b>量子防火墙</b><small data-role="skill-status">未解锁</small></span>
+                <i data-role="skill-cooldown"></i><kbd>2</kbd>
+              </button>
+            </div>
+          </section>
+
           <div class="speed-control" role="group" aria-label="战斗倍速">
             <span>SPEED</span>
             <button class="speed-button" type="button" data-speed="1" aria-pressed="true" aria-label="一倍速">1×</button>
             <button class="speed-button" type="button" data-speed="2" aria-pressed="false" aria-label="二倍速">2×</button>
             <button class="speed-button" type="button" data-speed="3" aria-pressed="false" aria-label="三倍速">3×</button>
           </div>
-          <div class="auto-demo-control">
-            <button class="auto-demo-toggle" id="auto-demo-toggle" type="button" aria-pressed="false">AUTO 演示</button>
-            <output class="auto-demo-status" id="auto-demo-status" data-active="false">代理待命</output>
-          </div>
           <button id="start-wave" type="button"><span aria-hidden="true">▶</span> 发动波次</button>
-        </aside>
-
-        <section class="skill-dock" id="skill-dock" aria-label="主动技能">
-          <div class="skill-dock__heading"><span>ACTIVE PROTOCOLS</span><b>主动技能</b></div>
-          <div class="skill-dock__buttons">
-            <button class="skill-button" type="button" data-player-skill="pulse-overload" style="--skill-accent:#20f4e6">
-              <span class="skill-button__icon" aria-hidden="true">⌁</span>
-              <span class="skill-button__copy"><b>脉冲过载</b><small data-role="skill-status">未解锁</small></span>
-              <i data-role="skill-cooldown"></i><kbd>1</kbd>
-            </button>
-            <button class="skill-button" type="button" data-player-skill="quantum-firewall" style="--skill-accent:#ff3ea5">
-              <span class="skill-button__icon" aria-hidden="true">▰</span>
-              <span class="skill-button__copy"><b>量子防火墙</b><small data-role="skill-status">未解锁</small></span>
-              <i data-role="skill-cooldown"></i><kbd>2</kbd>
-            </button>
-          </div>
-        </section>
+        </footer>
 
         <div class="wave-toast" id="wave-toast"></div>
 
@@ -262,27 +284,14 @@
             <ul class="help-list">
               <li>点击空闲塔位选择要建造的塔楼,金币足够即可建造。</li>
               <li>点击已建塔楼可查看详情、升级或拆除(拆除返还部分金币)。</li>
-              <li>右上角 <b>SPEED</b> 可调整战斗倍速,<b>发动波次</b> 可提前触发下一波。</li>
-              <li>左下角主动技能可点击或按 <b>1 / 2</b> 选择，再点击战场指定释放位置；技能需在指挥中心使用研发点解锁。</li>
+              <li>底部 <b>SPEED</b> 可调整战斗倍速,<b>发动波次</b> 可提前触发下一波。</li>
+              <li>底部主动技能可点击或按 <b>1 / 2</b> 选择，再点击战场指定释放位置；技能需在指挥中心使用研发点解锁。</li>
               <li>顶部图标依次为:音乐 / 语音 / 主界面 / 战术档案 / 成就 / 操作说明 / 清空部署。</li>
             </ul>
           </div>
         </section>
 
         <div class="wave-message" id="wave-message" aria-live="polite"></div>
-
-        <footer class="player-status" aria-label="玩家状态">
-          <div class="status-item">
-            <span class="status-label">金币</span>
-            <strong class="status-value" id="coin-value">0</strong>
-          </div>
-          <span class="status-divider" aria-hidden="true"></span>
-          <div class="status-item status-health">
-            <span class="status-label">城防血量</span>
-            <strong class="status-value" id="health-value">0</strong>
-            <span class="health-meter" aria-hidden="true"><i id="health-fill"></i></span>
-          </div>
-        </footer>
 
         <div class="hint" id="hint">BUILD GRID // 塔位待命</div>
 
@@ -318,5 +327,3 @@
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
-
-
