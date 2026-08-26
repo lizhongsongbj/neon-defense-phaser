@@ -1,7 +1,7 @@
 ﻿import Phaser from 'phaser'
 import type { EnemyState } from '../systems/types'
 import { ENEMY_TYPES } from '../data/enemies'
-import { BOSS_TYPES } from '../data/bosses'
+import { BOSS_TYPES, bossStageDefinition } from '../data/bosses'
 import {
   ENEMY_RUNTIME_ANIMATIONS,
   enemyAnimationKey,
@@ -123,12 +123,21 @@ export class EnemyActor extends Phaser.GameObjects.Container {
     } else if (now < this.enemy.skillSlowUntil) {
       this.sprite.setTint(0x7aeeff)
       this.statusRing.lineStyle(2, 0x05c7ff, 0.55).strokeCircle(0, 0, this.sprite.displayWidth * 0.58)
+    } else if (this.enemy.isBoss) {
+      const phaseColors = this.enemy.typeId === 'eve'
+        ? [0x92f6ff, 0xc084ff, 0xff5dcc]
+        : [0xffd089, 0xff9368, 0xff4968, 0xff45bb]
+      const color = phaseColors[Math.max(0, this.enemy.stage - 1)] ?? 0xffffff
+      this.sprite.setTint(color)
+      this.statusRing.lineStyle(2, color, 0.66).strokeCircle(0, 0, this.sprite.displayWidth * 0.62)
     } else {
       this.sprite.clearTint()
     }
     if (this.enemy.isBoss) {
+      const stage = bossStageDefinition(this.enemy.typeId as keyof typeof BOSS_TYPES, this.enemy.stage)
       const activeComponent = this.enemy.components.find((c) => c.hp > 0)
-      this.tag.setText(activeComponent ? `${displayName(this.enemy)} · ${activeComponent.name}` : `${displayName(this.enemy)} · 阶段 ${this.enemy.stage}`)
+      const componentLabel = activeComponent ? ` · ${activeComponent.name} ${Math.ceil(activeComponent.hp)}/${Math.ceil(activeComponent.maxHp)}` : ''
+      this.tag.setText(`${displayName(this.enemy)} · ${stage.name}${componentLabel}`)
     }
   }
 

@@ -2,7 +2,7 @@
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { ALL_TOWER_TYPES, type AllTowerId } from '../data/towerExpansion'
 import { ENEMY_TYPES, type EnemyDefinition } from '../data/enemies'
-import { BOSS_TYPES, type BossDefinition } from '../data/bosses'
+import { BOSS_TYPES, bossComponentHp, type BossDefinition } from '../data/bosses'
 import { SPECIAL_EVENTS } from '../data/specialEvents'
 import { EventBus, GameEvents, type BattleHudPayload, type SlotSelectedPayload, type SpecialEventPayload, type TacticalAlertPayload, type WaveClearedPayload } from '../state/EventBus'
 import { REGISTRY_KEY, type CampaignState } from '../state/CampaignState'
@@ -296,7 +296,10 @@ export class BattleHud {
         ? `<p class="intel-enemy__matchup"><span>克制 ${def.countersTower}</span><b>弱点 ${def.counteredByTower}</b></p>` : ''
       const shield = 'shield' in def && def.shield ? `<li><span>护盾</span><b>${def.shield}</b></li>` : ''
       const components = 'components' in def && def.components
-        ? `<p class="intel-enemy__components">部件：${def.components.join(' / ')} · 单件 ${def.componentHp} HP</p>`
+        ? `<p class="intel-enemy__components">部件：${def.components.map((component) => `${component} ${bossComponentHp(def, component)} HP`).join(' / ')} </p>`
+        : ''
+      const stages = isBoss && 'stages' in def
+        ? `<div class="intel-boss-stages">${def.stages.map((stage) => `<article><strong>阶段 ${stage.stage} · ${stage.name}</strong><span>${stage.enterCondition}</span><small>生命阈值 ${Math.round(stage.hpThreshold * 100)}% · 护甲 ${Math.round(stage.armor * 100)}% · 速度 ${stage.speed} · 攻击 ${stage.attack}</small><b>${stage.abilityName}</b><em>${stage.abilityDescription}</em></article>`).join('')} </div>`
         : ''
 
       return `
@@ -318,6 +321,7 @@ export class BattleHud {
               <li><span>护甲</span><b>${Math.round(def.armor * 100)}%</b></li>
             </ul>
             ${components}
+            ${stages}
             ${matchup}
             <p class="intel-enemy__trait">${def.trait}</p>
           </div>

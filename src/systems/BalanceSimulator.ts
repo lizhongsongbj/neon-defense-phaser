@@ -129,7 +129,10 @@ function simulateWave(
     for (const enemy of battle.enemies) {
       if (enemy.dead) continue
       if (enemy.typeId === 'enforcer') tickEnforcer(enemy, battle.mapIndex, battle.now)
-      else if (enemy.typeId === 'eve') tickEve(enemy, battle.mapIndex, battle.now)
+      else if (enemy.typeId === 'eve') {
+        const result = tickEve(enemy, battle.mapIndex, battle.now)
+        if (result.baseDamage > 0) battle.health = Math.max(0, battle.health - result.baseDamage)
+      }
       enemy.phased = isEnemyPhasedAt(enemy, battle.now)
     }
 
