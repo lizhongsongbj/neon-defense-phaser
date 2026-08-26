@@ -460,7 +460,10 @@ export class BattleHud {
   private refreshUpgradeButton(coins: number) {
     const cost = this.currentTowerInfo?.upgradeCost
     if (this.currentTowerInfo?.level === 3 && this.currentTowerInfo.tier4Branches.length) {
-      this.renderTier4Branches({ ...this.currentTowerInfo, coins })
+      this.tier4BranchesEl.querySelectorAll<HTMLButtonElement>('.tower-tier4-branch').forEach((button, index) => {
+        const choice = this.currentTowerInfo!.tier4Branches[index]
+        if (choice) button.dataset.affordable = String(coins >= choice.cost)
+      })
       return
     }
     this.upgradeBtn.hidden = false
