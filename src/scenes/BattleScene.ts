@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+﻿import Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { MAP_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_STARTING_COINS, type MapLevel, type Point2 } from '../data/maps'
 import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
@@ -53,7 +53,7 @@ export class BattleScene extends Phaser.Scene {
   private mapLevel!: MapLevel
   private geometry!: MapGeometry
   private battle!: BattleState
-  private totalWaves = 5
+  private totalWaves = 8
 
   private towerActors = new Map<string, TowerActor>()
   private enemyActors = new Map<number, EnemyActor>()
@@ -127,7 +127,7 @@ export class BattleScene extends Phaser.Scene {
       demoActive: this.campaign.demoActive,
     })
     this.geometry = buildMapGeometry(this.mapLevel)
-    this.totalWaves = CAMPAIGN_WAVE_COUNTS[this.campaign.mapIndex] ?? 5
+    this.totalWaves = CAMPAIGN_WAVE_COUNTS[this.campaign.mapIndex] ?? 8
     this.effects = new EffectsLayer(this)
     void this.music?.playMap(this.campaign.mapIndex)
 
@@ -1120,4 +1120,5 @@ export class BattleScene extends Phaser.Scene {
     EventBus.emit(GameEvents.GameOver, {})
   }
 }
+
 
