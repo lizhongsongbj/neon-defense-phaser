@@ -32,11 +32,13 @@ export function resolveExpansionTower(tower: TowerState, ctx: TowerAttackContext
   if (!targets.length) return []
   tower.attacks += 1
 
-  const durationMs = stats.effectDuration * 1000
+  const durationSec = branch?.stats.duration ?? definition.levels[Math.min(2, tower.level - 1)].effectDuration
+  const slowDuration = branch?.stats.duration ?? definition.levels[Math.min(2, tower.level - 1)].slowDuration
+  const durationMs = durationSec * 1000
   const events: AttackEvent[] = []
   for (const enemy of targets) {
     if (stats.slow > 0) {
-      enemy.slowUntil = Math.max(enemy.slowUntil, ctx.now + stats.slowDuration * 1000)
+      enemy.slowUntil = Math.max(enemy.slowUntil, ctx.now + slowDuration * 1000)
       enemy.slowAmount = Math.max(enemy.slowAmount, stats.slow)
     }
     if (stats.armorShred > 0 || stats.energyResistanceShred > 0) {
