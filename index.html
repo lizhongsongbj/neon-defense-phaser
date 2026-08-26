@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -45,6 +45,10 @@
         </nav>
 
         <div class="command-profile">
+          <div class="command-audio-actions" aria-label="声音控制">
+            <button class="icon-button music-toggle" id="hud-toggle-music" type="button" aria-label="音乐开关" title="音乐开关">♫</button>
+            <button class="icon-button voice-toggle" id="hud-toggle-voice" type="button" aria-label="语音开关" title="语音开关">♪</button>
+          </div>
           <div class="profile-stat"><span>研发点</span><strong id="research-points">0</strong></div>
           <div class="profile-stat"><span>强化等级</span><strong id="growth-total">00</strong></div>
           <button class="command-close" id="command-close" type="button" aria-label="返回主界面" title="返回主界面">
@@ -279,8 +283,6 @@
             </div>
           </div>
           <div class="header-actions">
-            <button class="icon-button music-toggle" id="hud-toggle-music" type="button" aria-label="音乐开关" title="音乐开关">♫</button>
-            <button class="icon-button voice-toggle" id="hud-toggle-voice" type="button" aria-label="语音开关" title="语音开关">♪</button>
             <button class="icon-button" id="return-command-center" type="button" aria-label="主界面" title="主界面">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
                 <path d="M4 10.5L12 4l8 6.5V20h-6v-6h-4v6H4z"/>
@@ -445,4 +447,5 @@
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
+
 

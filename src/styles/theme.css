@@ -261,6 +261,8 @@ html, body {
 .command-tab:first-child { border-left: 0; }
 .command-tab[aria-selected="true"] { color: #061116; background: var(--neon-cyan); }
 .command-profile { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+.command-audio-actions { display: flex; align-items: center; gap: 6px; }
+.command-audio-actions .icon-button { width: 36px; height: 36px; font-size: 16px; }
 .profile-stat { display: grid; justify-items: end; }
 .profile-stat span { color: var(--text-dim); font: 800 8px/1 var(--font-mono); }
 .profile-stat strong { margin-top: 4px; color: var(--neon-yellow); font: 900 18px/1 var(--font-mono); }
@@ -1824,3 +1826,4 @@ html, body {
 .skill-button.is-targeting kbd { color: #061116; }
 .skill-button i { position: absolute; right: 7px; bottom: 5px; color: var(--skill-accent); font: normal 900 10px/1 var(--font-mono); }
 @media (max-width: 900px) { .skill-growth-grid { grid-template-columns: 1fr; } }
+
