@@ -13,6 +13,14 @@ export const ENEMY_RUNTIME_ANIMATIONS: Record<string, EnemyRuntimeAnimationSet> 
   eve: {
     move: { source: 'boss-eve-9-move.webp', frames: 12, frameRate: 15, repeat: -1 },
   },
+  'eve-stage-2': {
+    move: { source: 'boss-eve-9-stage-2-move.webp', frames: 12, frameRate: 15, repeat: -1 },
+    attack: { source: 'boss-eve-9-stage-2-attack.webp', frames: 12, frameRate: 12, repeat: -1 },
+  },
+  'eve-stage-3': {
+    move: { source: 'boss-eve-9-stage-3-move.webp', frames: 12, frameRate: 12, repeat: -1 },
+    attack: { source: 'boss-eve-9-stage-3-attack.webp', frames: 12, frameRate: 12, repeat: -1 },
+  },
   enforcer: {
     move: { source: 'boss-adam-smasher-move.webp', frames: 8, frameRate: 9, repeat: -1 },
     attack: { source: 'boss-adam-smasher-attack.webp', frames: 8, frameRate: 8, repeat: -1 },
@@ -82,6 +90,7 @@ export function enemyAnimationFramePath(typeId: string, motion: EnemyAnimationMo
   const root = cleanDeath ? 'runtime-clean-v4' : 'runtime'
   return `assets/animations/enemies/${root}/${typeId}/${motion}/frame-${String(frame).padStart(2, '0')}.webp`
 }
+
 
 
 

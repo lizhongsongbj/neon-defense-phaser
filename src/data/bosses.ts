@@ -1,4 +1,4 @@
-/** Boss combat definitions, phase thresholds, component durability, and ability cadence. */
+﻿/** Boss combat definitions, phase thresholds, component durability, and ability cadence. */
 
 export type BossId = 'enforcer' | 'eve'
 export type BossStage = 1 | 2 | 3
@@ -96,6 +96,10 @@ export const BOSS_TYPES: Record<BossId, BossDefinition> = {
     size: 0.115,
     mechanical: true,
     boss: true,
+    stageImages: {
+      2: 'assets/enemies/boss-forms/eve-9-stage-2-carrier.png',
+      3: 'assets/enemies/boss-forms/eve-9-stage-3-core.png',
+    },
     trait: '节点入侵、机械载体与固定核心三种形态依次切换；最终核心会持续脉冲基地。',
     stages: [
       { stage: 1, name: '节点入侵', hpThreshold: 1, enterCondition: '初始形态；生命高于70%', armor: 0.18, speed: 0, attack: 70, energyResistance: 0.32, railVulnerability: 0, ability: 'node-lock', abilityName: '节点劫持', abilityCooldown: 4.5, abilityDescription: '向前迁移45路径单位，并锁定两座非黑客塔2.2秒。' },
@@ -124,3 +128,4 @@ export const ENFORCER_COMPONENT_VOICE_EVENT: Record<string, string> = {
   导弹舱: 'missiles',
   推进器: 'thruster',
 }
+
