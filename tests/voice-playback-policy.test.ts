@@ -7,8 +7,8 @@ const voiceSystem = readFileSync(new URL('../src/audio/VoiceSystem.ts', import.m
 const battleScene = readFileSync(new URL('../src/scenes/BattleScene.ts', import.meta.url), 'utf8')
 const audioStudio = readFileSync(new URL('../src/ui/AudioStudio.ts', import.meta.url), 'utf8')
 
-test('all character voices use a faster shared playback rate', () => {
-  assert.equal(VOICE_PLAYBACK_RATE, 1.2)
+test('all character voices use a brisk but complete shared playback rate', () => {
+  assert.equal(VOICE_PLAYBACK_RATE, 1.12)
   assert.match(voiceSystem, /rate:\s*VOICE_PLAYBACK_RATE/)
   assert.match(audioStudio, /item\.category === 'voice' \? VOICE_PLAYBACK_RATE : 1/)
 })
