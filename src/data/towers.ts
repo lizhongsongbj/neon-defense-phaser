@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 塔楼数据 —— 原样迁移自 霓虹防线/index.html (towerTypes) 与
  * 霓虹防线/gameplay.js 中的 towerCombat 常量(反混淆前变量名 _0x3f0ab1)。
  * 数值、颜色、图片路径均未改动,只是拆分成两张表 + TypeScript 类型。
@@ -48,7 +48,7 @@ export const TOWER_TYPES: TowerVisualDefinition[] = [
     name: '无人机巢',
     cost: 135,
     accent: '#e8ffff',
-    role: '空中拦截 / 远程追击',
+    role: '道路驻守 / 浮空拦截',
     image: 'assets/towers/generated-raw-selected/tower-05-drone-hive-base-new-drones.png',
     battleScale: 1.43,
   },
@@ -133,6 +133,8 @@ export interface DroneHiveCombat {
   damage: number
   flyingBonus: number
   pursuit: number
+  patrolRadii: [number, number, number]
+  interceptRadius: number
   damageScale: [number, number, number]
 }
 
@@ -188,6 +190,8 @@ export const TOWER_COMBAT: TowerCombatMap = {
     damage: 28,
     flyingBonus: 0.45,
     pursuit: 30,
+    patrolRadii: [92, 106, 120],
+    interceptRadius: 30,
     damageScale: [1, 1.3, 1.68],
   },
 }
@@ -200,3 +204,4 @@ export const TOWER_ACCENT_COLOR: Record<TowerId, string> = {
   'hacker-relay': '#79ff9e',
   'drone-hive': '#e8ffff',
 }
+
