@@ -1,4 +1,4 @@
-import test from 'node:test'
+﻿import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 
@@ -30,7 +30,7 @@ test('预加载和怪物演员接入移动、攻击与死亡动作', () => {
   assert.match(preload, /ENEMY_RUNTIME_ANIMATIONS/)
   assert.match(preload, /enemyAnimationFramePath/)
   assert.match(actor, /this\.playMotion\('move'\)/)
-  assert.match(actor, /this\.enemy\.blocked && this\.hasMotion\('attack'\)/)
+  assert.match(actor, /const attackActive = this\.enemy\.blocked \|\| attackPulse/)
   assert.match(actor, /playExitAnimation/)
   assert.match(actor, /ANIMATION_COMPLETE_KEY/)
   assert.match(catalog, /enemy-10-bonebreaker-death\.webp/)
