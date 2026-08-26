@@ -17,7 +17,7 @@ test('动画面板只保留磁轨、电弧和黑客三种塔的15种攻击形态
 
 test('每种怪物均具有移动、攻击和死亡动画定义', () => {
   const enemies = ANIMATION_CATALOG.filter((entry) => entry.category === 'enemy')
-  assert.equal(enemies.length, 36)
+  assert.equal(enemies.length, 34)
   const families = new Set(enemies.map((entry) => entry.family))
   assert.equal(families.size, 12)
   for (const family of families) {
@@ -33,12 +33,21 @@ test('动画面板不展示执法者·零号', () => {
   assert.equal(ANIMATION_CATALOG.some((entry) => entry.family === '执法者·零号'), false)
 })
 
+test('动画面板不展示亚当·重锤初始阶段和夏娃-9初始形态的死亡动画', () => {
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'adam-smasher-death'), false)
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'eve-death'), false)
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'adam-smasher-walk'), true)
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'adam-smasher-attack'), true)
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'eve-fly'), true)
+  assert.equal(ANIMATION_CATALOG.some((entry) => entry.id === 'eve-attack'), true)
+})
+
 test('动画面板只展示佣兵和无人机单位动画，不展示系统与连携', () => {
   assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'mercenary').length, 9)
   assert.equal(ANIMATION_CATALOG.filter((entry) => entry.category === 'drone').length, 9)
   assert.equal(ANIMATION_CATALOG.some((entry) => String(entry.category) === 'system'), false)
-  assert.equal(ANIMATION_CATALOG.length, 84)
-  assert.equal(new Set(ANIMATION_CATALOG.map((entry) => entry.id)).size, 84)
+  assert.equal(ANIMATION_CATALOG.length, 82)
+  assert.equal(new Set(ANIMATION_CATALOG.map((entry) => entry.id)).size, 82)
 })
 
 
