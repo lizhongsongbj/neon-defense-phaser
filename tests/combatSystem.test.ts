@@ -1,4 +1,4 @@
-﻿import { test } from 'node:test'
+import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { RANGE_PROJECTION_Y } from '../src/data/balance'
 import { MAP_LEVELS } from '../src/data/maps'
@@ -39,6 +39,7 @@ function makeNinja(overrides: Partial<EnemyState> = {}): EnemyState {
     speed: 40,
     baseSpeed: 40,
     attack: 18,
+    baseDamage: 1,
     reward: 30,
     elite: false,
     air: false,
@@ -70,6 +71,8 @@ function makeNinja(overrides: Partial<EnemyState> = {}): EnemyState {
     dead: false,
     lastTeleport: 0,
     stage: 1,
+    bossStageEnteredAt: 0,
+    nextBossAbilityAt: Infinity,
     components: [],
     ...overrides,
   }
