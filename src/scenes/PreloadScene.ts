@@ -8,6 +8,7 @@ import { allVoiceFiles } from '../audio/voiceManifest'
 import { allMusicFiles } from '../audio/musicManifest'
 import { ensureAudioSystems } from '../audio'
 import { EventBus, GameEvents } from '../state/EventBus'
+import { ENEMY_RUNTIME_ANIMATIONS, enemyAnimationFramePath, enemyAnimationTextureKey } from '../data/enemyRuntimeAnimations'
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -45,6 +46,17 @@ export class PreloadScene extends Phaser.Scene {
     }
     for (const boss of Object.values(BOSS_TYPES)) {
       this.load.image(`enemy-${boss.id}`, boss.image)
+    }
+    for (const [typeId, motions] of Object.entries(ENEMY_RUNTIME_ANIMATIONS)) {
+      for (const [motion, spec] of Object.entries(motions)) {
+        if (!spec) continue
+        for (let frame = 1; frame <= spec.frames; frame += 1) {
+          this.load.image(
+            enemyAnimationTextureKey(typeId, motion as 'move' | 'attack' | 'death', frame),
+            enemyAnimationFramePath(typeId, motion as 'move' | 'attack' | 'death', frame),
+          )
+        }
+      }
     }
     MAP_LEVELS.forEach((map, index) => {
       if (map.available) this.load.image(`map-${index}`, map.image)
