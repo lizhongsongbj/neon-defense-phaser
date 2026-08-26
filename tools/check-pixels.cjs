@@ -1,0 +1,2 @@
+﻿const sharp=require('sharp');
+(async()=>{for(const p of ['public/assets/animations/enemies/runtime-clean/faraday/move/frame-08.webp','public/assets/animations/enemies/runtime-clean/aerostat/death/frame-07.webp']){const {data,info}=await sharp(p).raw().toBuffer({resolveWithObject:true}); let vals=[]; for(let y=0;y<512;y+=10)for(let x=0;x<512;x+=10){let i=(y*512+x)*info.channels;if(data[i+3]>0&& (data[i]>180||data[i+1]>180||data[i+2]>180)) vals.push([x,y,data[i],data[i+1],data[i+2],data[i+3]])} console.log(p,vals.slice(0,20))}})()
