@@ -27,7 +27,7 @@ import { enemyDisplaySize } from '../data/enemyVisuals'
 import { chooseSpecialEvent, specialEventHistory, specialEventTriggerDelay, type SpecialEventDefinition, type SpecialEventId } from '../data/specialEvents'
 import { BOSS_TYPES, bossStageDefinition, type BossAbilityId, type BossId } from '../data/bosses'
 import type { SavedTower } from '../systems/SaveGame'
-import { EnemySpawnSfx, claimBattleSfx, MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
+import { EnemyCombatSfx, EnemySpawnSfx, claimBattleSfx, isSpecialCombatEnemy, MUSIC_REGISTRY_KEY, VOICE_REGISTRY_KEY, type MusicController, type VoiceCategory, type VoiceSystem } from '../audio'
 import { PLAYER_SKILLS, PLAYER_SKILL_BY_ID, playerSkillCooldown, type PlayerSkillId } from '../data/playerSkills'
 
 function boardToScreen(p: Point2): Point2 {
@@ -74,6 +74,7 @@ export class BattleScene extends Phaser.Scene {
   private voice!: VoiceSystem
   private music!: MusicController
   private enemySpawnSfx!: EnemySpawnSfx
+  private enemyCombatSfx!: EnemyCombatSfx
   private lastBaseDamageSfxAt = -Infinity
   private lastBaseDamageVoiceAt = -Infinity
   private activeSpecialEvent: SpecialEventDefinition | null = null
@@ -122,6 +123,7 @@ export class BattleScene extends Phaser.Scene {
     this.voice = this.game.registry.get(VOICE_REGISTRY_KEY) as VoiceSystem
     this.music = this.game.registry.get(MUSIC_REGISTRY_KEY) as MusicController
     this.enemySpawnSfx = new EnemySpawnSfx()
+    this.enemyCombatSfx = new EnemyCombatSfx()
     this.mapLevel = MAP_LEVELS[this.campaign.mapIndex]
     EventBus.emit(GameEvents.AchievementSignal, {
       type: 'mission-start',
@@ -260,6 +262,7 @@ export class BattleScene extends Phaser.Scene {
     this.mapLightParticles = null
     this.effects?.destroy()
     this.enemySpawnSfx?.destroy()
+    this.enemyCombatSfx?.destroy()
     this.sound.stopByKey('sfx-base-damage')
     this.cancelSkillTargeting()
     this.activeFirewalls.forEach((firewall) => { this.tweens.killTweensOf(firewall.graphic); firewall.graphic.destroy(); firewall.label.destroy() })
@@ -790,7 +793,13 @@ export class BattleScene extends Phaser.Scene {
       this.cameras.main.flash(180, bossId === 'eve' ? 175 : 255, 45, bossId === 'eve' ? 255 : 80, false)
       this.cameras.main.shake(220, 0.006, true)
     }
-    if (ability) this.applyBossAbility(enemy, ability)
+    if (ability) {
+      if (!this.voice?.muted) {
+        const screen = boardToScreen(enemyPosition(this.geometry, enemy))
+        this.enemyCombatSfx.playAttack(bossId, screen.x / GAME_WIDTH)
+      }
+      this.applyBossAbility(enemy, ability)
+    }
     if (baseDamage > 0) {
       this.battle.health = Math.max(0, this.battle.health - baseDamage)
       this.playBaseDamageFeedback(baseDamage)
@@ -969,6 +978,15 @@ export class BattleScene extends Phaser.Scene {
       if (this.selectedTowerId === tower.id) this.emitTowerInfo(tower)
     }
 
+    if (!this.voice?.muted) {
+      for (const enemy of this.battle.enemies) {
+        if (!enemy.dead && enemy.blocked && isSpecialCombatEnemy(enemy.typeId)) {
+          const screen = boardToScreen(enemyPosition(this.geometry, enemy))
+          this.enemyCombatSfx.playAttack(enemy.typeId, screen.x / GAME_WIDTH)
+        }
+      }
+    }
+
     tickEnemyTraits(this.geometry, this.battle.enemies, this.battle.now, dtSeconds)
     this.tickQuantumFirewalls()
 
@@ -979,6 +997,10 @@ export class BattleScene extends Phaser.Scene {
       const skillSlowScale = this.battle.now < enemy.skillSlowUntil ? Math.max(0.2, 1 - enemy.skillSlowAmount) : 1
       enemy.distance += enemy.speed * dtSeconds * enemySpeedScale * skillSlowScale
       if (enemy.distance >= 1000) {
+        if (!this.voice?.muted && isSpecialCombatEnemy(enemy.typeId)) {
+          const screen = boardToScreen(enemyPosition(this.geometry, enemy))
+          this.enemyCombatSfx.playAttack(enemy.typeId, screen.x / GAME_WIDTH)
+        }
         enemy.dead = true
         this.battle.leaks += 1
         const leakDamage = enemy.baseDamage
@@ -1000,6 +1022,9 @@ export class BattleScene extends Phaser.Scene {
       const leaked = enemy.distance >= 1000
       const exitPosition = boardToScreen(enemyPosition(this.geometry, enemy))
       const actor = this.enemyActors.get(enemy.id)
+      if (!leaked && !this.voice?.muted && isSpecialCombatEnemy(enemy.typeId)) {
+        this.enemyCombatSfx.playDeath(enemy.typeId, exitPosition.x / GAME_WIDTH)
+      }
       const finishExitVisual = () => {
         if (!leaked) this.effects.playEnemyDeathRemnant(exitPosition, enemy.mechanical, enemy.isBoss)
         actor?.destroy()
