@@ -1,0 +1,52 @@
+[
+  {
+    "part": "The ",
+    "start": 100,
+    "end": 250
+  },
+  {
+    "part": "network ",
+    "start": 275,
+    "end": 762
+  },
+  {
+    "part": "remembers ",
+    "start": 787,
+    "end": 1325
+  },
+  {
+    "part": "me. ",
+    "start": 1337,
+    "end": 1637
+  },
+  {
+    "part": "Destruction ",
+    "start": 2512,
+    "end": 3125
+  },
+  {
+    "part": "is ",
+    "start": 3150,
+    "end": 3287
+  },
+  {
+    "part": "only ",
+    "start": 3312,
+    "end": 3575
+  },
+  {
+    "part": "a ",
+    "start": 3600,
+    "end": 3662
+  },
+  {
+    "part": "temporary ",
+    "start": 3675,
+    "end": 4262
+  },
+  {
+    "part": "interruption.",
+    "start": 4287,
+    "end": 4925
+  }
+]

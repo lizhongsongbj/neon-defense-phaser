@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Aerial ",
+    "start": 100,
+    "end": 487
+  },
+  {
+    "part": "deployment ",
+    "start": 500,
+    "end": 1075
+  },
+  {
+    "part": "confirmed. ",
+    "start": 1100,
+    "end": 1787
+  },
+  {
+    "part": "Payload ",
+    "start": 2675,
+    "end": 3075
+  },
+  {
+    "part": "release ",
+    "start": 3087,
+    "end": 3412
+  },
+  {
+    "part": "in ",
+    "start": 3425,
+    "end": 3550
+  },
+  {
+    "part": "three, ",
+    "start": 3575,
+    "end": 3950
+  },
+  {
+    "part": "two, ",
+    "start": 4100,
+    "end": 4412
+  },
+  {
+    "part": "one.",
+    "start": 4575,
+    "end": 4925
+  }
+]

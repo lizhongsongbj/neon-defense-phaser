@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Elite ",
+    "start": 100,
+    "end": 500
+  },
+  {
+    "part": "target ",
+    "start": 525,
+    "end": 937
+  },
+  {
+    "part": "eliminated. ",
+    "start": 962,
+    "end": 1700
+  },
+  {
+    "part": "Scanning ",
+    "start": 2562,
+    "end": 3087
+  },
+  {
+    "part": "for ",
+    "start": 3100,
+    "end": 3237
+  },
+  {
+    "part": "the ",
+    "start": 3250,
+    "end": 3337
+  },
+  {
+    "part": "next ",
+    "start": 3350,
+    "end": 3637
+  },
+  {
+    "part": "priority ",
+    "start": 3662,
+    "end": 4187
+  },
+  {
+    "part": "threat.",
+    "start": 4212,
+    "end": 4637
+  }
+]

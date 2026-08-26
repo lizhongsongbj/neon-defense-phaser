@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Upgrade ",
+    "start": 100,
+    "end": 600
+  },
+  {
+    "part": "complete. ",
+    "start": 625,
+    "end": 1250
+  },
+  {
+    "part": "Arc ",
+    "start": 2125,
+    "end": 2375
+  },
+  {
+    "part": "intensity ",
+    "start": 2387,
+    "end": 3012
+  },
+  {
+    "part": "and ",
+    "start": 3037,
+    "end": 3137
+  },
+  {
+    "part": "conduction ",
+    "start": 3162,
+    "end": 3725
+  },
+  {
+    "part": "range ",
+    "start": 3750,
+    "end": 4025
+  },
+  {
+    "part": "increased.",
+    "start": 4050,
+    "end": 4625
+  }
+]

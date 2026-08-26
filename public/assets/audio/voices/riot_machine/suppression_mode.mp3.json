@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Suppression ",
+    "start": 100,
+    "end": 725
+  },
+  {
+    "part": "mode ",
+    "start": 750,
+    "end": 987
+  },
+  {
+    "part": "engaged. ",
+    "start": 1012,
+    "end": 1637
+  },
+  {
+    "part": "All ",
+    "start": 2500,
+    "end": 2750
+  },
+  {
+    "part": "resistance ",
+    "start": 2775,
+    "end": 3387
+  },
+  {
+    "part": "will ",
+    "start": 3400,
+    "end": 3550
+  },
+  {
+    "part": "be ",
+    "start": 3575,
+    "end": 3700
+  },
+  {
+    "part": "neutralized.",
+    "start": 3725,
+    "end": 4487
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Weapon ",
+    "start": 100,
+    "end": 537
+  },
+  {
+    "part": "guidance ",
+    "start": 562,
+    "end": 962
+  },
+  {
+    "part": "is ",
+    "start": 975,
+    "end": 1125
+  },
+  {
+    "part": "jammed. ",
+    "start": 1150,
+    "end": 1637
+  },
+  {
+    "part": "Recalibrating ",
+    "start": 2500,
+    "end": 3462
+  },
+  {
+    "part": "the ",
+    "start": 3487,
+    "end": 3600
+  },
+  {
+    "part": "targeting ",
+    "start": 3612,
+    "end": 4112
+  },
+  {
+    "part": "system.",
+    "start": 4137,
+    "end": 4637
+  }
+]

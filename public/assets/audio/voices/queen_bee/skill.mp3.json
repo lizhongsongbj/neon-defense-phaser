@@ -1,42 +1,42 @@
 [
   {
-    "part": "蜂群",
+    "part": "Swarm ",
     "start": 100,
-    "end": 600
+    "end": 587
   },
   {
-    "part": "协议",
+    "part": "protocol ",
     "start": 612,
-    "end": 950
+    "end": 1187
   },
   {
-    "part": "启动。",
-    "start": 962,
-    "end": 1475
+    "part": "activated. ",
+    "start": 1212,
+    "end": 1875
   },
   {
-    "part": "所有",
-    "start": 2050,
-    "end": 2487
+    "part": "All ",
+    "start": 2750,
+    "end": 2987
   },
   {
-    "part": "无人机",
-    "start": 2500,
-    "end": 3037
+    "part": "drones, ",
+    "start": 3012,
+    "end": 3487
   },
   {
-    "part": "立即",
-    "start": 3162,
-    "end": 3712
+    "part": "concentrate ",
+    "start": 3650,
+    "end": 4275
   },
   {
-    "part": "集中",
-    "start": 3725,
-    "end": 4062
+    "part": "fire ",
+    "start": 4300,
+    "end": 4650
   },
   {
-    "part": "火力！",
-    "start": 4075,
-    "end": 4400
+    "part": "immediately!",
+    "start": 4675,
+    "end": 5325
   }
 ]

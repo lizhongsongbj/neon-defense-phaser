@@ -1,0 +1,37 @@
+[
+  {
+    "part": "Firing ",
+    "start": 100,
+    "end": 587
+  },
+  {
+    "part": "high ",
+    "start": 612,
+    "end": 812
+  },
+  {
+    "part": "velocity ",
+    "start": 825,
+    "end": 1412
+  },
+  {
+    "part": "round. ",
+    "start": 1437,
+    "end": 1850
+  },
+  {
+    "part": "Clear ",
+    "start": 2737,
+    "end": 3062
+  },
+  {
+    "part": "the ",
+    "start": 3075,
+    "end": 3187
+  },
+  {
+    "part": "line!",
+    "start": 3200,
+    "end": 3625
+  }
+]

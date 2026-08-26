@@ -1,52 +1,67 @@
 [
   {
-    "part": "任务",
+    "part": "Mission ",
     "start": 100,
-    "end": 487
+    "end": 537
   },
   {
-    "part": "完成！",
-    "start": 500,
-    "end": 1087
+    "part": "complete! ",
+    "start": 562,
+    "end": 1212
   },
   {
-    "part": "敌军",
-    "start": 1662,
-    "end": 2037
+    "part": "The ",
+    "start": 2087,
+    "end": 2225
   },
   {
-    "part": "攻势",
-    "start": 2050,
-    "end": 2450
+    "part": "enemy ",
+    "start": 2250,
+    "end": 2637
   },
   {
-    "part": "已经",
-    "start": 2475,
-    "end": 2675
+    "part": "offensive ",
+    "start": 2662,
+    "end": 3137
   },
   {
-    "part": "瓦解，",
-    "start": 2687,
-    "end": 3200
+    "part": "has ",
+    "start": 3162,
+    "end": 3337
   },
   {
-    "part": "防线",
-    "start": 3600,
-    "end": 4000
+    "part": "collapsed, ",
+    "start": 3350,
+    "end": 3875
   },
   {
-    "part": "成功",
-    "start": 4025,
-    "end": 4350
+    "part": "and ",
+    "start": 4075,
+    "end": 4162
   },
   {
-    "part": "守",
-    "start": 4362,
-    "end": 4537
+    "part": "the ",
+    "start": 4187,
+    "end": 4275
   },
   {
-    "part": "住！",
-    "start": 4537,
-    "end": 4750
+    "part": "defensive ",
+    "start": 4300,
+    "end": 4812
+  },
+  {
+    "part": "line ",
+    "start": 4825,
+    "end": 5100
+  },
+  {
+    "part": "is ",
+    "start": 5112,
+    "end": 5225
+  },
+  {
+    "part": "secure!",
+    "start": 5250,
+    "end": 5850
   }
 ]

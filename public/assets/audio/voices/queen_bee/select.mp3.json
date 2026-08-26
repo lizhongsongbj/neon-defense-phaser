@@ -1,47 +1,42 @@
 [
   {
-    "part": "蜂",
+    "part": "Queen ",
     "start": 100,
-    "end": 400
+    "end": 412
   },
   {
-    "part": "后",
-    "start": 400,
-    "end": 537
+    "part": "Bee ",
+    "start": 437,
+    "end": 550
   },
   {
-    "part": "系统",
-    "start": 550,
-    "end": 812
+    "part": "system ",
+    "start": 575,
+    "end": 1012
   },
   {
-    "part": "在线。",
-    "start": 825,
-    "end": 1312
+    "part": "online. ",
+    "start": 1037,
+    "end": 1562
   },
   {
-    "part": "等待",
-    "start": 1887,
-    "end": 2262
+    "part": "Awaiting ",
+    "start": 2450,
+    "end": 2975
   },
   {
-    "part": "新",
-    "start": 2287,
-    "end": 2550
+    "part": "new ",
+    "start": 3000,
+    "end": 3162
   },
   {
-    "part": "的",
-    "start": 2550,
-    "end": 2637
+    "part": "tactical ",
+    "start": 3187,
+    "end": 3762
   },
   {
-    "part": "战术",
-    "start": 2650,
-    "end": 3012
-  },
-  {
-    "part": "指令。",
-    "start": 3025,
-    "end": 3412
+    "part": "instructions.",
+    "start": 3787,
+    "end": 4550
   }
 ]

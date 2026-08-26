@@ -1,1 +1,1 @@
-切换防空模式。截击无人机，锁定所有空中目标。
+Switching to anti-air mode. Interceptor drones are locking onto every airborne target.

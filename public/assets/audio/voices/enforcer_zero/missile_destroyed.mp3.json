@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Missile ",
+    "start": 100,
+    "end": 550
+  },
+  {
+    "part": "system ",
+    "start": 575,
+    "end": 1012
+  },
+  {
+    "part": "destroyed. ",
+    "start": 1037,
+    "end": 1700
+  },
+  {
+    "part": "Switching ",
+    "start": 2587,
+    "end": 3050
+  },
+  {
+    "part": "to ",
+    "start": 3062,
+    "end": 3162
+  },
+  {
+    "part": "direct ",
+    "start": 3187,
+    "end": 3550
+  },
+  {
+    "part": "assault ",
+    "start": 3575,
+    "end": 3925
+  },
+  {
+    "part": "protocol.",
+    "start": 3950,
+    "end": 4637
+  }
+]

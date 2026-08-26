@@ -1,0 +1,52 @@
+[
+  {
+    "part": "Zero-day ",
+    "start": 100,
+    "end": 700
+  },
+  {
+    "part": "exploit ",
+    "start": 725,
+    "end": 1262
+  },
+  {
+    "part": "deployed. ",
+    "start": 1275,
+    "end": 1850
+  },
+  {
+    "part": "The ",
+    "start": 2725,
+    "end": 2850
+  },
+  {
+    "part": "hostile ",
+    "start": 2875,
+    "end": 3262
+  },
+  {
+    "part": "network ",
+    "start": 3287,
+    "end": 3687
+  },
+  {
+    "part": "is ",
+    "start": 3700,
+    "end": 3825
+  },
+  {
+    "part": "collapsing ",
+    "start": 3837,
+    "end": 4387
+  },
+  {
+    "part": "from ",
+    "start": 4412,
+    "end": 4587
+  },
+  {
+    "part": "within.",
+    "start": 4600,
+    "end": 5062
+  }
+]

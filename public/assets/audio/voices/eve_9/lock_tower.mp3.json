@@ -1,0 +1,52 @@
+[
+  {
+    "part": "Tower ",
+    "start": 100,
+    "end": 450
+  },
+  {
+    "part": "control ",
+    "start": 475,
+    "end": 925
+  },
+  {
+    "part": "channel ",
+    "start": 937,
+    "end": 1312
+  },
+  {
+    "part": "captured. ",
+    "start": 1337,
+    "end": 1887
+  },
+  {
+    "part": "Your ",
+    "start": 2762,
+    "end": 2975
+  },
+  {
+    "part": "weapon ",
+    "start": 3000,
+    "end": 3337
+  },
+  {
+    "part": "now ",
+    "start": 3362,
+    "end": 3550
+  },
+  {
+    "part": "obeys ",
+    "start": 3562,
+    "end": 3925
+  },
+  {
+    "part": "my ",
+    "start": 3950,
+    "end": 4112
+  },
+  {
+    "part": "command.",
+    "start": 4137,
+    "end": 4687
+  }
+]

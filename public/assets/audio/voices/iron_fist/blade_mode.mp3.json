@@ -1,0 +1,52 @@
+[
+  {
+    "part": "Blade ",
+    "start": 100,
+    "end": 475
+  },
+  {
+    "part": "mode ",
+    "start": 500,
+    "end": 712
+  },
+  {
+    "part": "active. ",
+    "start": 737,
+    "end": 1262
+  },
+  {
+    "part": "I ",
+    "start": 2125,
+    "end": 2312
+  },
+  {
+    "part": "am ",
+    "start": 2325,
+    "end": 2450
+  },
+  {
+    "part": "taking ",
+    "start": 2475,
+    "end": 2837
+  },
+  {
+    "part": "the ",
+    "start": 2850,
+    "end": 2950
+  },
+  {
+    "part": "fight ",
+    "start": 2962,
+    "end": 3212
+  },
+  {
+    "part": "to ",
+    "start": 3237,
+    "end": 3337
+  },
+  {
+    "part": "them.",
+    "start": 3350,
+    "end": 3650
+  }
+]

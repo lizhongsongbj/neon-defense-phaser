@@ -1,0 +1,52 @@
+[
+  {
+    "part": "Hostile ",
+    "start": 100,
+    "end": 537
+  },
+  {
+    "part": "control ",
+    "start": 562,
+    "end": 1037
+  },
+  {
+    "part": "layer ",
+    "start": 1062,
+    "end": 1350
+  },
+  {
+    "part": "breached. ",
+    "start": 1375,
+    "end": 1850
+  },
+  {
+    "part": "Redirecting ",
+    "start": 2737,
+    "end": 3462
+  },
+  {
+    "part": "the ",
+    "start": 3487,
+    "end": 3562
+  },
+  {
+    "part": "unit ",
+    "start": 3575,
+    "end": 3950
+  },
+  {
+    "part": "against ",
+    "start": 3975,
+    "end": 4337
+  },
+  {
+    "part": "its ",
+    "start": 4362,
+    "end": 4500
+  },
+  {
+    "part": "allies.",
+    "start": 4512,
+    "end": 5075
+  }
+]

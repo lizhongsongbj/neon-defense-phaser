@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Rail ",
+    "start": 100,
+    "end": 437
+  },
+  {
+    "part": "system ",
+    "start": 462,
+    "end": 887
+  },
+  {
+    "part": "charging. ",
+    "start": 912,
+    "end": 1425
+  },
+  {
+    "part": "Hold ",
+    "start": 2300,
+    "end": 2587
+  },
+  {
+    "part": "the ",
+    "start": 2612,
+    "end": 2725
+  },
+  {
+    "part": "target ",
+    "start": 2737,
+    "end": 3162
+  },
+  {
+    "part": "in ",
+    "start": 3175,
+    "end": 3312
+  },
+  {
+    "part": "position.",
+    "start": 3337,
+    "end": 3912
+  }
+]

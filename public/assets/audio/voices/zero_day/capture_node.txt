@@ -1,0 +1,1 @@
+Node handshake accepted. Rewriting ownership credentials now.

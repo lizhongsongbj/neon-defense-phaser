@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Combat ",
+    "start": 100,
+    "end": 650
+  },
+  {
+    "part": "overdrive ",
+    "start": 662,
+    "end": 1237
+  },
+  {
+    "part": "engaged. ",
+    "start": 1262,
+    "end": 1887
+  },
+  {
+    "part": "No ",
+    "start": 2750,
+    "end": 3025
+  },
+  {
+    "part": "one ",
+    "start": 3037,
+    "end": 3225
+  },
+  {
+    "part": "gets ",
+    "start": 3250,
+    "end": 3512
+  },
+  {
+    "part": "through ",
+    "start": 3525,
+    "end": 3712
+  },
+  {
+    "part": "this ",
+    "start": 3737,
+    "end": 3925
+  },
+  {
+    "part": "line!",
+    "start": 3950,
+    "end": 4362
+  }
+]

@@ -1,47 +1,47 @@
 [
   {
-    "part": "蜂群",
+    "part": "Swarm ",
     "start": 100,
-    "end": 587
+    "end": 575
   },
   {
-    "part": "控制",
-    "start": 612,
-    "end": 912
+    "part": "control ",
+    "start": 600,
+    "end": 1037
   },
   {
-    "part": "核心",
-    "start": 925,
-    "end": 1400
+    "part": "core ",
+    "start": 1062,
+    "end": 1362
   },
   {
-    "part": "已",
-    "start": 1425,
-    "end": 1575
+    "part": "online. ",
+    "start": 1375,
+    "end": 1925
   },
   {
-    "part": "上线。",
-    "start": 1575,
-    "end": 2100
+    "part": "Drone ",
+    "start": 2812,
+    "end": 3112
   },
   {
-    "part": "无人机",
-    "start": 2662,
-    "end": 3150
+    "part": "formation ",
+    "start": 3137,
+    "end": 3750
   },
   {
-    "part": "编队",
-    "start": 3162,
-    "end": 3550
+    "part": "ready ",
+    "start": 3775,
+    "end": 4037
   },
   {
-    "part": "准备",
-    "start": 3575,
-    "end": 3812
+    "part": "for ",
+    "start": 4062,
+    "end": 4212
   },
   {
-    "part": "部署。",
-    "start": 3825,
-    "end": 4275
+    "part": "deployment.",
+    "start": 4237,
+    "end": 4887
   }
 ]

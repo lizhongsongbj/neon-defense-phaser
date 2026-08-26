@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Electromagnetic ",
+    "start": 100,
+    "end": 1112
+  },
+  {
+    "part": "countermeasure ",
+    "start": 1137,
+    "end": 1825
+  },
+  {
+    "part": "active. ",
+    "start": 1837,
+    "end": 2287
+  },
+  {
+    "part": "Incoming ",
+    "start": 3150,
+    "end": 3725
+  },
+  {
+    "part": "systems ",
+    "start": 3737,
+    "end": 4262
+  },
+  {
+    "part": "will ",
+    "start": 4287,
+    "end": 4437
+  },
+  {
+    "part": "be ",
+    "start": 4450,
+    "end": 4575
+  },
+  {
+    "part": "disrupted.",
+    "start": 4600,
+    "end": 5262
+  }
+]

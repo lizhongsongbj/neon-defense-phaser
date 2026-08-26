@@ -1,57 +1,67 @@
 [
   {
-    "part": "警告！",
+    "part": "Warning! ",
     "start": 100,
-    "end": 750
+    "end": 700
   },
   {
-    "part": "侦测",
-    "start": 1312,
-    "end": 1687
+    "part": "Enemy ",
+    "start": 1575,
+    "end": 1987
   },
   {
-    "part": "到",
-    "start": 1687,
-    "end": 1812
+    "part": "forces ",
+    "start": 2000,
+    "end": 2462
   },
   {
-    "part": "敌军",
-    "start": 1837,
-    "end": 2112
+    "part": "have ",
+    "start": 2487,
+    "end": 2625
   },
   {
-    "part": "正在",
-    "start": 2137,
-    "end": 2362
+    "part": "been ",
+    "start": 2650,
+    "end": 2787
   },
   {
-    "part": "接近，",
-    "start": 2375,
-    "end": 2825
+    "part": "detected ",
+    "start": 2812,
+    "end": 3362
   },
   {
-    "part": "请",
-    "start": 3200,
-    "end": 3425
+    "part": "approaching ",
+    "start": 3387,
+    "end": 3862
   },
   {
-    "part": "立即",
-    "start": 3437,
-    "end": 3762
+    "part": "the ",
+    "start": 3887,
+    "end": 3987
   },
   {
-    "part": "做好",
-    "start": 3775,
-    "end": 4037
+    "part": "perimeter. ",
+    "start": 4012,
+    "end": 4662
   },
   {
-    "part": "战斗",
-    "start": 4062,
-    "end": 4362
+    "part": "Prepare ",
+    "start": 5537,
+    "end": 6000
   },
   {
-    "part": "准备！",
-    "start": 4375,
-    "end": 4725
+    "part": "for ",
+    "start": 6025,
+    "end": 6212
+  },
+  {
+    "part": "immediate ",
+    "start": 6237,
+    "end": 6712
+  },
+  {
+    "part": "combat!",
+    "start": 6737,
+    "end": 7325
   }
 ]

@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Ready ",
+    "start": 100,
+    "end": 500
+  },
+  {
+    "part": "for ",
+    "start": 525,
+    "end": 775
+  },
+  {
+    "part": "orders. ",
+    "start": 800,
+    "end": 1325
+  },
+  {
+    "part": "I ",
+    "start": 2200,
+    "end": 2337
+  },
+  {
+    "part": "will ",
+    "start": 2362,
+    "end": 2537
+  },
+  {
+    "part": "hold ",
+    "start": 2562,
+    "end": 2812
+  },
+  {
+    "part": "this ",
+    "start": 2825,
+    "end": 3000
+  },
+  {
+    "part": "position.",
+    "start": 3012,
+    "end": 3587
+  }
+]

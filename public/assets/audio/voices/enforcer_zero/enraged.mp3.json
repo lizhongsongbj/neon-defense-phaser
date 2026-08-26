@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Damage ",
+    "start": 100,
+    "end": 562
+  },
+  {
+    "part": "threshold ",
+    "start": 587,
+    "end": 1087
+  },
+  {
+    "part": "exceeded. ",
+    "start": 1112,
+    "end": 1700
+  },
+  {
+    "part": "Restraint ",
+    "start": 2575,
+    "end": 3112
+  },
+  {
+    "part": "protocols ",
+    "start": 3125,
+    "end": 3725
+  },
+  {
+    "part": "removed. ",
+    "start": 3737,
+    "end": 4312
+  },
+  {
+    "part": "Maximum ",
+    "start": 5187,
+    "end": 5837
+  },
+  {
+    "part": "force ",
+    "start": 5862,
+    "end": 6187
+  },
+  {
+    "part": "authorized!",
+    "start": 6212,
+    "end": 6925
+  }
+]

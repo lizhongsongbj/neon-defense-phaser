@@ -1,52 +1,57 @@
 [
   {
-    "part": "警告！",
+    "part": "Warning! ",
     "start": 100,
-    "end": 750
+    "end": 700
   },
   {
-    "part": "防御",
-    "start": 1312,
-    "end": 1700
+    "part": "A ",
+    "start": 1575,
+    "end": 1712
   },
   {
-    "part": "节点",
-    "start": 1712,
-    "end": 2100
+    "part": "defense ",
+    "start": 1737,
+    "end": 2175
   },
   {
-    "part": "正在",
-    "start": 2125,
-    "end": 2375
+    "part": "node ",
+    "start": 2187,
+    "end": 2450
   },
   {
-    "part": "遭受",
-    "start": 2387,
-    "end": 2675
+    "part": "is ",
+    "start": 2475,
+    "end": 2612
   },
   {
-    "part": "攻击，",
-    "start": 2687,
-    "end": 3125
+    "part": "under ",
+    "start": 2637,
+    "end": 2900
   },
   {
-    "part": "立刻",
-    "start": 3350,
-    "end": 3737
+    "part": "attack. ",
+    "start": 2912,
+    "end": 3387
   },
   {
-    "part": "增援",
-    "start": 3750,
-    "end": 4087
+    "part": "Reinforce ",
+    "start": 4250,
+    "end": 4912
   },
   {
-    "part": "该",
-    "start": 4112,
-    "end": 4262
+    "part": "that ",
+    "start": 4937,
+    "end": 5100
   },
   {
-    "part": "区域！",
-    "start": 4262,
-    "end": 4650
+    "part": "sector ",
+    "start": 5125,
+    "end": 5550
+  },
+  {
+    "part": "immediately!",
+    "start": 5575,
+    "end": 6300
   }
 ]

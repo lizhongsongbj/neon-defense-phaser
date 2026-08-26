@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Thrusters ",
+    "start": 100,
+    "end": 712
+  },
+  {
+    "part": "disabled. ",
+    "start": 737,
+    "end": 1425
+  },
+  {
+    "part": "Diverting ",
+    "start": 2300,
+    "end": 2837
+  },
+  {
+    "part": "all ",
+    "start": 2850,
+    "end": 3062
+  },
+  {
+    "part": "remaining ",
+    "start": 3087,
+    "end": 3550
+  },
+  {
+    "part": "power ",
+    "start": 3562,
+    "end": 3875
+  },
+  {
+    "part": "to ",
+    "start": 3900,
+    "end": 4012
+  },
+  {
+    "part": "weapons.",
+    "start": 4037,
+    "end": 4562
+  }
+]

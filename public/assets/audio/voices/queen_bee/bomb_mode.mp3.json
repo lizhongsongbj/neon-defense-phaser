@@ -1,42 +1,52 @@
 [
   {
-    "part": "切换",
+    "part": "Switching ",
     "start": 100,
-    "end": 625
+    "end": 612
   },
   {
-    "part": "轰炸",
-    "start": 650,
-    "end": 1062
+    "part": "to ",
+    "start": 637,
+    "end": 762
   },
   {
-    "part": "模式。",
-    "start": 1075,
-    "end": 1537
+    "part": "bombardment ",
+    "start": 775,
+    "end": 1437
   },
   {
-    "part": "爆破",
-    "start": 2112,
-    "end": 2537
+    "part": "mode. ",
+    "start": 1450,
+    "end": 1800
   },
   {
-    "part": "无人机，",
-    "start": 2550,
-    "end": 3162
+    "part": "Strike ",
+    "start": 2662,
+    "end": 3050
   },
   {
-    "part": "装载",
-    "start": 3387,
-    "end": 3762
+    "part": "drones ",
+    "start": 3075,
+    "end": 3425
   },
   {
-    "part": "重型",
-    "start": 3787,
-    "end": 4187
+    "part": "are ",
+    "start": 3450,
+    "end": 3550
   },
   {
-    "part": "弹药。",
-    "start": 4200,
-    "end": 4587
+    "part": "loading ",
+    "start": 3575,
+    "end": 3875
+  },
+  {
+    "part": "heavy ",
+    "start": 3900,
+    "end": 4200
+  },
+  {
+    "part": "ordnance.",
+    "start": 4225,
+    "end": 4750
   }
 ]

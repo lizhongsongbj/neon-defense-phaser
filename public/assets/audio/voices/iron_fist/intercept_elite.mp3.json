@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Elite ",
+    "start": 100,
+    "end": 450
+  },
+  {
+    "part": "hostile ",
+    "start": 475,
+    "end": 950
+  },
+  {
+    "part": "identified. ",
+    "start": 962,
+    "end": 1737
+  },
+  {
+    "part": "I ",
+    "start": 2612,
+    "end": 2800
+  },
+  {
+    "part": "am ",
+    "start": 2812,
+    "end": 2937
+  },
+  {
+    "part": "moving ",
+    "start": 2962,
+    "end": 3287
+  },
+  {
+    "part": "to ",
+    "start": 3312,
+    "end": 3437
+  },
+  {
+    "part": "intercept.",
+    "start": 3462,
+    "end": 4162
+  }
+]

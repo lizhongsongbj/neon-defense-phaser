@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Upgrade ",
+    "start": 100,
+    "end": 600
+  },
+  {
+    "part": "complete. ",
+    "start": 625,
+    "end": 1250
+  },
+  {
+    "part": "Range, ",
+    "start": 2125,
+    "end": 2562
+  },
+  {
+    "part": "stability, ",
+    "start": 2725,
+    "end": 3337
+  },
+  {
+    "part": "and ",
+    "start": 3575,
+    "end": 3675
+  },
+  {
+    "part": "penetration ",
+    "start": 3700,
+    "end": 4362
+  },
+  {
+    "part": "have ",
+    "start": 4387,
+    "end": 4550
+  },
+  {
+    "part": "increased.",
+    "start": 4575,
+    "end": 5150
+  }
+]

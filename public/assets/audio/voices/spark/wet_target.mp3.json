@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Target ",
+    "start": 100,
+    "end": 575
+  },
+  {
+    "part": "is ",
+    "start": 587,
+    "end": 712
+  },
+  {
+    "part": "saturated. ",
+    "start": 737,
+    "end": 1462
+  },
+  {
+    "part": "Conductivity ",
+    "start": 2337,
+    "end": 3187
+  },
+  {
+    "part": "has ",
+    "start": 3212,
+    "end": 3400
+  },
+  {
+    "part": "increased ",
+    "start": 3412,
+    "end": 3887
+  },
+  {
+    "part": "to ",
+    "start": 3912,
+    "end": 4025
+  },
+  {
+    "part": "critical ",
+    "start": 4050,
+    "end": 4550
+  },
+  {
+    "part": "levels.",
+    "start": 4575,
+    "end": 5062
+  }
+]

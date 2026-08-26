@@ -1,47 +1,72 @@
 [
   {
-    "part": "指挥官，",
+    "part": "Commander, ",
     "start": 100,
-    "end": 825
+    "end": 650
   },
   {
-    "part": "防线",
-    "start": 1137,
-    "end": 1562
+    "part": "the ",
+    "start": 800,
+    "end": 900
   },
   {
-    "part": "已",
-    "start": 1587,
-    "end": 1662
+    "part": "defensive ",
+    "start": 925,
+    "end": 1437
   },
   {
-    "part": "部署。",
-    "start": 1675,
-    "end": 2175
+    "part": "line ",
+    "start": 1450,
+    "end": 1737
   },
   {
-    "part": "敌军",
-    "start": 2750,
-    "end": 3112
+    "part": "is ",
+    "start": 1750,
+    "end": 1875
   },
   {
-    "part": "正在",
-    "start": 3137,
-    "end": 3325
+    "part": "deployed. ",
+    "start": 1900,
+    "end": 2500
   },
   {
-    "part": "接近，",
-    "start": 3337,
-    "end": 3775
+    "part": "Enemy ",
+    "start": 3375,
+    "end": 3762
   },
   {
-    "part": "准备",
-    "start": 4137,
-    "end": 4525
+    "part": "forces ",
+    "start": 3787,
+    "end": 4275
   },
   {
-    "part": "迎战！",
-    "start": 4537,
-    "end": 4925
+    "part": "are ",
+    "start": 4300,
+    "end": 4425
+  },
+  {
+    "part": "closing ",
+    "start": 4450,
+    "end": 4862
+  },
+  {
+    "part": "in. ",
+    "start": 4887,
+    "end": 5150
+  },
+  {
+    "part": "Prepare ",
+    "start": 6037,
+    "end": 6525
+  },
+  {
+    "part": "for ",
+    "start": 6550,
+    "end": 6737
+  },
+  {
+    "part": "battle!",
+    "start": 6762,
+    "end": 7275
   }
 ]

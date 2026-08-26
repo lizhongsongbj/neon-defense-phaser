@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Zero ",
+    "start": 100,
+    "end": 512
+  },
+  {
+    "part": "Day ",
+    "start": 525,
+    "end": 725
+  },
+  {
+    "part": "relay ",
+    "start": 750,
+    "end": 1150
+  },
+  {
+    "part": "established. ",
+    "start": 1175,
+    "end": 1900
+  },
+  {
+    "part": "Secure ",
+    "start": 2775,
+    "end": 3250
+  },
+  {
+    "part": "channel ",
+    "start": 3262,
+    "end": 3662
+  },
+  {
+    "part": "is ",
+    "start": 3687,
+    "end": 3812
+  },
+  {
+    "part": "operational.",
+    "start": 3837,
+    "end": 4650
+  }
+]

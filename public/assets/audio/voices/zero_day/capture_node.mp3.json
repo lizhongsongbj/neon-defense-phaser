@@ -1,0 +1,37 @@
+[
+  {
+    "part": "Node ",
+    "start": 100,
+    "end": 450
+  },
+  {
+    "part": "handshake ",
+    "start": 475,
+    "end": 1012
+  },
+  {
+    "part": "accepted. ",
+    "start": 1037,
+    "end": 1712
+  },
+  {
+    "part": "Rewriting ",
+    "start": 2575,
+    "end": 3162
+  },
+  {
+    "part": "ownership ",
+    "start": 3175,
+    "end": 3650
+  },
+  {
+    "part": "credentials ",
+    "start": 3675,
+    "end": 4275
+  },
+  {
+    "part": "now.",
+    "start": 4287,
+    "end": 4675
+  }
+]

@@ -1,57 +1,62 @@
 [
   {
-    "part": "警告，",
+    "part": "Warning. ",
     "start": 100,
-    "end": 637
+    "end": 725
   },
   {
-    "part": "一",
-    "start": 1000,
-    "end": 1175
+    "part": "One ",
+    "start": 1587,
+    "end": 1850
   },
   {
-    "part": "架",
-    "start": 1175,
-    "end": 1300
+    "part": "drone ",
+    "start": 1875,
+    "end": 2200
   },
   {
-    "part": "无人机",
-    "start": 1312,
-    "end": 1900
+    "part": "has ",
+    "start": 2225,
+    "end": 2425
   },
   {
-    "part": "已经",
-    "start": 2000,
-    "end": 2237
+    "part": "lost ",
+    "start": 2450,
+    "end": 2762
   },
   {
-    "part": "失去",
-    "start": 2250,
-    "end": 2562
+    "part": "connection. ",
+    "start": 2787,
+    "end": 3350
   },
   {
-    "part": "连接。",
-    "start": 2575,
-    "end": 3000
+    "part": "A ",
+    "start": 4237,
+    "end": 4350
   },
   {
-    "part": "正在",
-    "start": 3575,
-    "end": 3912
+    "part": "replacement ",
+    "start": 4362,
+    "end": 4950
   },
   {
-    "part": "准备",
-    "start": 3925,
-    "end": 4237
+    "part": "unit ",
+    "start": 4962,
+    "end": 5287
   },
   {
-    "part": "替补",
-    "start": 4262,
-    "end": 4550
+    "part": "is ",
+    "start": 5300,
+    "end": 5437
   },
   {
-    "part": "单位。",
-    "start": 4562,
-    "end": 4975
+    "part": "being ",
+    "start": 5462,
+    "end": 5750
+  },
+  {
+    "part": "prepared.",
+    "start": 5775,
+    "end": 6412
   }
 ]

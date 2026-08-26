@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Intrusion ",
+    "start": 100,
+    "end": 750
+  },
+  {
+    "part": "rejected. ",
+    "start": 775,
+    "end": 1437
+  },
+  {
+    "part": "Changing ",
+    "start": 2312,
+    "end": 2800
+  },
+  {
+    "part": "vectors ",
+    "start": 2825,
+    "end": 3262
+  },
+  {
+    "part": "and ",
+    "start": 3287,
+    "end": 3412
+  },
+  {
+    "part": "preparing ",
+    "start": 3437,
+    "end": 3975
+  },
+  {
+    "part": "another ",
+    "start": 3987,
+    "end": 4337
+  },
+  {
+    "part": "attempt.",
+    "start": 4362,
+    "end": 4862
+  }
+]

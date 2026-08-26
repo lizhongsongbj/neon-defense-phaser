@@ -1,1 +1,1 @@
-警告，一架无人机已经失去连接。正在准备替补单位。
+Warning. One drone has lost connection. A replacement unit is being prepared.

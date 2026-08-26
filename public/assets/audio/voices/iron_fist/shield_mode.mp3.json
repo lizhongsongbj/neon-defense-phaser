@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Shield ",
+    "start": 100,
+    "end": 537
+  },
+  {
+    "part": "mode ",
+    "start": 562,
+    "end": 787
+  },
+  {
+    "part": "active. ",
+    "start": 812,
+    "end": 1312
+  },
+  {
+    "part": "Form ",
+    "start": 2175,
+    "end": 2525
+  },
+  {
+    "part": "behind ",
+    "start": 2550,
+    "end": 2925
+  },
+  {
+    "part": "me ",
+    "start": 2937,
+    "end": 3100
+  },
+  {
+    "part": "and ",
+    "start": 3125,
+    "end": 3237
+  },
+  {
+    "part": "keep ",
+    "start": 3262,
+    "end": 3500
+  },
+  {
+    "part": "firing.",
+    "start": 3525,
+    "end": 4037
+  }
+]

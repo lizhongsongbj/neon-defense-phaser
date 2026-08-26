@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Control ",
+    "start": 100,
+    "end": 600
+  },
+  {
+    "part": "signal ",
+    "start": 625,
+    "end": 1037
+  },
+  {
+    "part": "acquired. ",
+    "start": 1062,
+    "end": 1625
+  },
+  {
+    "part": "Preparing ",
+    "start": 2500,
+    "end": 3012
+  },
+  {
+    "part": "to ",
+    "start": 3037,
+    "end": 3150
+  },
+  {
+    "part": "hijack ",
+    "start": 3175,
+    "end": 3725
+  },
+  {
+    "part": "the ",
+    "start": 3750,
+    "end": 3862
+  },
+  {
+    "part": "target ",
+    "start": 3875,
+    "end": 4225
+  },
+  {
+    "part": "system.",
+    "start": 4250,
+    "end": 4712
+  }
+]

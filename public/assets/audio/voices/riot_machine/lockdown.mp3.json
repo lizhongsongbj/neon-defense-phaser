@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Lockdown ",
+    "start": 100,
+    "end": 650
+  },
+  {
+    "part": "protocol ",
+    "start": 675,
+    "end": 1225
+  },
+  {
+    "part": "active. ",
+    "start": 1250,
+    "end": 1712
+  },
+  {
+    "part": "This ",
+    "start": 2575,
+    "end": 2862
+  },
+  {
+    "part": "sector ",
+    "start": 2887,
+    "end": 3275
+  },
+  {
+    "part": "is ",
+    "start": 3300,
+    "end": 3425
+  },
+  {
+    "part": "now ",
+    "start": 3437,
+    "end": 3637
+  },
+  {
+    "part": "sealed.",
+    "start": 3650,
+    "end": 4187
+  }
+]

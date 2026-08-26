@@ -1,0 +1,57 @@
+[
+  {
+    "part": "My ",
+    "start": 100,
+    "end": 262
+  },
+  {
+    "part": "shield ",
+    "start": 287,
+    "end": 625
+  },
+  {
+    "part": "is ",
+    "start": 650,
+    "end": 762
+  },
+  {
+    "part": "down, ",
+    "start": 787,
+    "end": 1087
+  },
+  {
+    "part": "but ",
+    "start": 1350,
+    "end": 1475
+  },
+  {
+    "part": "the ",
+    "start": 1500,
+    "end": 1612
+  },
+  {
+    "part": "battle ",
+    "start": 1637,
+    "end": 2000
+  },
+  {
+    "part": "has ",
+    "start": 2025,
+    "end": 2212
+  },
+  {
+    "part": "only ",
+    "start": 2237,
+    "end": 2462
+  },
+  {
+    "part": "just ",
+    "start": 2487,
+    "end": 2687
+  },
+  {
+    "part": "begun.",
+    "start": 2700,
+    "end": 3125
+  }
+]

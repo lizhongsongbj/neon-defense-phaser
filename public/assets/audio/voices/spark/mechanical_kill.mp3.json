@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Mechanical ",
+    "start": 100,
+    "end": 762
+  },
+  {
+    "part": "target ",
+    "start": 775,
+    "end": 1200
+  },
+  {
+    "part": "disabled. ",
+    "start": 1225,
+    "end": 1875
+  },
+  {
+    "part": "Its ",
+    "start": 2762,
+    "end": 3012
+  },
+  {
+    "part": "circuits ",
+    "start": 3037,
+    "end": 3437
+  },
+  {
+    "part": "are ",
+    "start": 3450,
+    "end": 3550
+  },
+  {
+    "part": "completely ",
+    "start": 3575,
+    "end": 4125
+  },
+  {
+    "part": "burned ",
+    "start": 4137,
+    "end": 4425
+  },
+  {
+    "part": "out.",
+    "start": 4450,
+    "end": 4762
+  }
+]

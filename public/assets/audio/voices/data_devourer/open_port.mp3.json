@@ -1,0 +1,52 @@
+[
+  {
+    "part": "Open ",
+    "start": 100,
+    "end": 462
+  },
+  {
+    "part": "the ",
+    "start": 487,
+    "end": 600
+  },
+  {
+    "part": "data ",
+    "start": 625,
+    "end": 925
+  },
+  {
+    "part": "port. ",
+    "start": 937,
+    "end": 1350
+  },
+  {
+    "part": "Your ",
+    "start": 2237,
+    "end": 2450
+  },
+  {
+    "part": "network ",
+    "start": 2475,
+    "end": 2925
+  },
+  {
+    "part": "will ",
+    "start": 2937,
+    "end": 3075
+  },
+  {
+    "part": "feed ",
+    "start": 3100,
+    "end": 3337
+  },
+  {
+    "part": "the ",
+    "start": 3362,
+    "end": 3475
+  },
+  {
+    "part": "swarm.",
+    "start": 3487,
+    "end": 4000
+  }
+]

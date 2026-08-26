@@ -1,0 +1,42 @@
+[
+  {
+    "part": "Shield ",
+    "start": 100,
+    "end": 537
+  },
+  {
+    "part": "encryption ",
+    "start": 562,
+    "end": 1112
+  },
+  {
+    "part": "broken. ",
+    "start": 1137,
+    "end": 1625
+  },
+  {
+    "part": "Defensive ",
+    "start": 2500,
+    "end": 3037
+  },
+  {
+    "part": "field ",
+    "start": 3050,
+    "end": 3425
+  },
+  {
+    "part": "is ",
+    "start": 3450,
+    "end": 3575
+  },
+  {
+    "part": "now ",
+    "start": 3587,
+    "end": 3800
+  },
+  {
+    "part": "offline.",
+    "start": 3812,
+    "end": 4412
+  }
+]

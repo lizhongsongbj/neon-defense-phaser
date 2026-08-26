@@ -1,57 +1,77 @@
 [
   {
-    "part": "防线",
+    "part": "The ",
     "start": 100,
-    "end": 562
+    "end": 225
   },
   {
-    "part": "已经",
-    "start": 587,
-    "end": 750
+    "part": "defensive ",
+    "start": 250,
+    "end": 762
   },
   {
-    "part": "失守。",
-    "start": 762,
-    "end": 1237
+    "part": "line ",
+    "start": 787,
+    "end": 1100
   },
   {
-    "part": "保存",
-    "start": 1812,
-    "end": 2225
+    "part": "has ",
+    "start": 1125,
+    "end": 1300
   },
   {
-    "part": "作战",
-    "start": 2250,
-    "end": 2525
+    "part": "fallen. ",
+    "start": 1325,
+    "end": 1787
   },
   {
-    "part": "数据，",
-    "start": 2537,
-    "end": 3050
+    "part": "Preserve ",
+    "start": 2675,
+    "end": 3125
   },
   {
-    "part": "重新",
+    "part": "the ",
+    "start": 3150,
+    "end": 3250
+  },
+  {
+    "part": "combat ",
     "start": 3275,
-    "end": 3700
+    "end": 3725
   },
   {
-    "part": "整备",
-    "start": 3712,
-    "end": 4012
+    "part": "data, ",
+    "start": 3750,
+    "end": 4025
   },
   {
-    "part": "后",
-    "start": 4012,
-    "end": 4337
+    "part": "regroup, ",
+    "start": 4250,
+    "end": 4675
   },
   {
-    "part": "再次",
-    "start": 4450,
-    "end": 4875
+    "part": "and ",
+    "start": 4875,
+    "end": 4975
   },
   {
-    "part": "部署。",
-    "start": 4887,
-    "end": 5287
+    "part": "prepare ",
+    "start": 4987,
+    "end": 5362
+  },
+  {
+    "part": "to ",
+    "start": 5387,
+    "end": 5487
+  },
+  {
+    "part": "deploy ",
+    "start": 5500,
+    "end": 5862
+  },
+  {
+    "part": "again.",
+    "start": 5887,
+    "end": 6287
   }
 ]

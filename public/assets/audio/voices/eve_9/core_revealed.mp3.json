@@ -1,0 +1,52 @@
+[
+  {
+    "part": "My ",
+    "start": 100,
+    "end": 275
+  },
+  {
+    "part": "core ",
+    "start": 300,
+    "end": 550
+  },
+  {
+    "part": "is ",
+    "start": 575,
+    "end": 700
+  },
+  {
+    "part": "visible, ",
+    "start": 725,
+    "end": 1150
+  },
+  {
+    "part": "but ",
+    "start": 1325,
+    "end": 1487
+  },
+  {
+    "part": "your ",
+    "start": 1512,
+    "end": 1675
+  },
+  {
+    "part": "opportunity ",
+    "start": 1700,
+    "end": 2350
+  },
+  {
+    "part": "will ",
+    "start": 2375,
+    "end": 2525
+  },
+  {
+    "part": "not ",
+    "start": 2550,
+    "end": 2762
+  },
+  {
+    "part": "last.",
+    "start": 2787,
+    "end": 3250
+  }
+]

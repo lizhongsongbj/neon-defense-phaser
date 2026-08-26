@@ -1,62 +1,72 @@
 [
   {
-    "part": "警告！",
+    "part": "Warning! ",
     "start": 100,
-    "end": 750
+    "end": 700
   },
   {
-    "part": "大本营",
-    "start": 1312,
-    "end": 1850
+    "part": "Headquarters ",
+    "start": 1575,
+    "end": 2250
   },
   {
-    "part": "正在",
-    "start": 1875,
-    "end": 2087
+    "part": "is ",
+    "start": 2262,
+    "end": 2437
   },
   {
-    "part": "遭受",
-    "start": 2100,
-    "end": 2362
+    "part": "under ",
+    "start": 2462,
+    "end": 2775
   },
   {
-    "part": "攻击，",
-    "start": 2375,
-    "end": 2787
+    "part": "attack. ",
+    "start": 2787,
+    "end": 3275
   },
   {
-    "part": "请",
-    "start": 3150,
-    "end": 3375
-  },
-  {
-    "part": "立即",
-    "start": 3387,
-    "end": 3687
-  },
-  {
-    "part": "拦截",
-    "start": 3700,
-    "end": 4037
-  },
-  {
-    "part": "突破",
-    "start": 4062,
-    "end": 4362
-  },
-  {
-    "part": "防线",
-    "start": 4375,
-    "end": 4662
-  },
-  {
-    "part": "的",
-    "start": 4662,
+    "part": "Intercept ",
+    "start": 4137,
     "end": 4737
   },
   {
-    "part": "敌人！",
-    "start": 4750,
-    "end": 5087
+    "part": "every ",
+    "start": 4762,
+    "end": 5012
+  },
+  {
+    "part": "enemy ",
+    "start": 5037,
+    "end": 5387
+  },
+  {
+    "part": "that ",
+    "start": 5412,
+    "end": 5550
+  },
+  {
+    "part": "has ",
+    "start": 5562,
+    "end": 5712
+  },
+  {
+    "part": "breached ",
+    "start": 5737,
+    "end": 6100
+  },
+  {
+    "part": "the ",
+    "start": 6125,
+    "end": 6212
+  },
+  {
+    "part": "defensive ",
+    "start": 6237,
+    "end": 6737
+  },
+  {
+    "part": "line!",
+    "start": 6762,
+    "end": 7137
   }
 ]

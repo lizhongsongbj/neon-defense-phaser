@@ -1,62 +1,72 @@
 [
   {
-    "part": "注意！",
+    "part": "Attention! ",
     "start": 100,
-    "end": 662
+    "end": 850
   },
   {
-    "part": "最终",
-    "start": 1225,
-    "end": 1687
+    "part": "The ",
+    "start": 1725,
+    "end": 1862
   },
   {
-    "part": "波次",
-    "start": 1700,
-    "end": 2100
+    "part": "final ",
+    "start": 1887,
+    "end": 2250
   },
   {
-    "part": "已经",
-    "start": 2125,
-    "end": 2350
+    "part": "enemy ",
+    "start": 2262,
+    "end": 2575
   },
   {
-    "part": "抵达。",
-    "start": 2362,
-    "end": 2925
+    "part": "wave ",
+    "start": 2600,
+    "end": 2875
   },
   {
-    "part": "坚守",
-    "start": 3500,
-    "end": 3975
+    "part": "has ",
+    "start": 2900,
+    "end": 3075
   },
   {
-    "part": "阵地，",
-    "start": 3987,
-    "end": 4450
+    "part": "arrived. ",
+    "start": 3100,
+    "end": 3625
   },
   {
-    "part": "不要",
+    "part": "Hold ",
+    "start": 4487,
+    "end": 4737
+  },
+  {
+    "part": "the ",
+    "start": 4762,
+    "end": 4862
+  },
+  {
+    "part": "line ",
     "start": 4887,
-    "end": 5137
+    "end": 5237
   },
   {
-    "part": "让",
-    "start": 5150,
-    "end": 5262
+    "part": "and ",
+    "start": 5250,
+    "end": 5337
   },
   {
-    "part": "任何",
-    "start": 5287,
-    "end": 5625
+    "part": "let ",
+    "start": 5350,
+    "end": 5537
   },
   {
-    "part": "敌人",
-    "start": 5637,
-    "end": 5850
+    "part": "nothing ",
+    "start": 5562,
+    "end": 5887
   },
   {
-    "part": "通过！",
-    "start": 5862,
-    "end": 6250
+    "part": "pass!",
+    "start": 5912,
+    "end": 6425
   }
 ]

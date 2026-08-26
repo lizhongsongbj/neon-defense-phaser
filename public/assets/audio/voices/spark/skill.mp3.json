@@ -1,0 +1,47 @@
+[
+  {
+    "part": "Power ",
+    "start": 100,
+    "end": 462
+  },
+  {
+    "part": "surge ",
+    "start": 487,
+    "end": 812
+  },
+  {
+    "part": "released. ",
+    "start": 837,
+    "end": 1462
+  },
+  {
+    "part": "Overloading ",
+    "start": 2325,
+    "end": 3012
+  },
+  {
+    "part": "every ",
+    "start": 3025,
+    "end": 3287
+  },
+  {
+    "part": "hostile ",
+    "start": 3312,
+    "end": 3750
+  },
+  {
+    "part": "circuit ",
+    "start": 3775,
+    "end": 4137
+  },
+  {
+    "part": "in ",
+    "start": 4162,
+    "end": 4275
+  },
+  {
+    "part": "range!",
+    "start": 4300,
+    "end": 4750
+  }
+]

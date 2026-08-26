@@ -1,0 +1,87 @@
+[
+  {
+    "part": "You ",
+    "start": 100,
+    "end": 275
+  },
+  {
+    "part": "built ",
+    "start": 287,
+    "end": 500
+  },
+  {
+    "part": "this ",
+    "start": 525,
+    "end": 700
+  },
+  {
+    "part": "line ",
+    "start": 725,
+    "end": 1025
+  },
+  {
+    "part": "to ",
+    "start": 1050,
+    "end": 1150
+  },
+  {
+    "part": "stop ",
+    "start": 1175,
+    "end": 1475
+  },
+  {
+    "part": "an ",
+    "start": 1487,
+    "end": 1612
+  },
+  {
+    "part": "army. ",
+    "start": 1637,
+    "end": 2025
+  },
+  {
+    "part": "I ",
+    "start": 2900,
+    "end": 3075
+  },
+  {
+    "part": "came ",
+    "start": 3087,
+    "end": 3312
+  },
+  {
+    "part": "alone, ",
+    "start": 3337,
+    "end": 3725
+  },
+  {
+    "part": "and ",
+    "start": 3937,
+    "end": 4037
+  },
+  {
+    "part": "I ",
+    "start": 4062,
+    "end": 4125
+  },
+  {
+    "part": "will ",
+    "start": 4150,
+    "end": 4300
+  },
+  {
+    "part": "tear ",
+    "start": 4325,
+    "end": 4537
+  },
+  {
+    "part": "it ",
+    "start": 4550,
+    "end": 4612
+  },
+  {
+    "part": "apart.",
+    "start": 4637,
+    "end": 5100
+  }
+]

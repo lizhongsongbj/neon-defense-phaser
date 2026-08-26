@@ -1,0 +1,32 @@
+[
+  {
+    "part": "Target ",
+    "start": 100,
+    "end": 525
+  },
+  {
+    "part": "confirmed. ",
+    "start": 550,
+    "end": 1250
+  },
+  {
+    "part": "The ",
+    "start": 2112,
+    "end": 2262
+  },
+  {
+    "part": "bounty ",
+    "start": 2287,
+    "end": 2687
+  },
+  {
+    "part": "is ",
+    "start": 2712,
+    "end": 2850
+  },
+  {
+    "part": "mine!",
+    "start": 2875,
+    "end": 3300
+  }
+]

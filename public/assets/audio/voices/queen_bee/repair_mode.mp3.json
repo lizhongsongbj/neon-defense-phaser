@@ -1,57 +1,62 @@
 [
   {
-    "part": "切换",
+    "part": "Switching ",
     "start": 100,
-    "end": 600
+    "end": 625
   },
   {
-    "part": "维修",
-    "start": 625,
-    "end": 1000
+    "part": "to ",
+    "start": 650,
+    "end": 762
   },
   {
-    "part": "模式。",
-    "start": 1012,
-    "end": 1487
+    "part": "repair ",
+    "start": 787,
+    "end": 1175
   },
   {
-    "part": "回收",
-    "start": 2062,
-    "end": 2537
+    "part": "mode. ",
+    "start": 1187,
+    "end": 1600
   },
   {
-    "part": "受",
-    "start": 2562,
-    "end": 2737
+    "part": "Recovery ",
+    "start": 2475,
+    "end": 3012
   },
   {
-    "part": "损",
-    "start": 2737,
-    "end": 2912
+    "part": "drones ",
+    "start": 3037,
+    "end": 3425
   },
   {
-    "part": "单位，",
-    "start": 2925,
-    "end": 3350
+    "part": "will ",
+    "start": 3437,
+    "end": 3612
   },
   {
-    "part": "并",
-    "start": 3612,
-    "end": 3825
+    "part": "retrieve ",
+    "start": 3625,
+    "end": 4125
   },
   {
-    "part": "执行",
-    "start": 3837,
-    "end": 4287
+    "part": "and ",
+    "start": 4150,
+    "end": 4250
   },
   {
-    "part": "快速",
-    "start": 4312,
-    "end": 4700
+    "part": "restore ",
+    "start": 4275,
+    "end": 4725
   },
   {
-    "part": "修复。",
-    "start": 4712,
-    "end": 5137
+    "part": "damaged ",
+    "start": 4737,
+    "end": 5200
+  },
+  {
+    "part": "units.",
+    "start": 5225,
+    "end": 5700
   }
 ]

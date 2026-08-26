@@ -1,1 +1,1 @@
-蜂群控制核心已上线。无人机编队准备部署。
+Swarm control core online. Drone formation ready for deployment.

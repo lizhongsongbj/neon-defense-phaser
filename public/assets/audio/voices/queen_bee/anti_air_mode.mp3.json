@@ -1,47 +1,62 @@
 [
   {
-    "part": "切换",
+    "part": "Switching ",
     "start": 100,
-    "end": 612
+    "end": 600
   },
   {
-    "part": "防空",
-    "start": 637,
-    "end": 987
+    "part": "to ",
+    "start": 625,
+    "end": 762
   },
   {
-    "part": "模式。",
-    "start": 1000,
-    "end": 1437
+    "part": "anti-air ",
+    "start": 775,
+    "end": 1362
   },
   {
-    "part": "截击",
-    "start": 2012,
-    "end": 2400
+    "part": "mode. ",
+    "start": 1375,
+    "end": 1737
   },
   {
-    "part": "无人机，",
-    "start": 2412,
-    "end": 2975
+    "part": "Interceptor ",
+    "start": 2600,
+    "end": 3262
   },
   {
-    "part": "锁定",
-    "start": 3312,
-    "end": 3750
+    "part": "drones ",
+    "start": 3287,
+    "end": 3650
   },
   {
-    "part": "所有",
-    "start": 3775,
-    "end": 4112
+    "part": "are ",
+    "start": 3675,
+    "end": 3775
   },
   {
-    "part": "空中",
-    "start": 4125,
-    "end": 4400
+    "part": "locking ",
+    "start": 3800,
+    "end": 4162
   },
   {
-    "part": "目标。",
-    "start": 4412,
-    "end": 4825
+    "part": "onto ",
+    "start": 4187,
+    "end": 4462
+  },
+  {
+    "part": "every ",
+    "start": 4475,
+    "end": 4812
+  },
+  {
+    "part": "airborne ",
+    "start": 4825,
+    "end": 5237
+  },
+  {
+    "part": "target.",
+    "start": 5262,
+    "end": 5737
   }
 ]

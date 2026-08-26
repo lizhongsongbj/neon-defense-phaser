@@ -1,1 +1,1 @@
-切换维修模式。回收受损单位，并执行快速修复。
+Switching to repair mode. Recovery drones will retrieve and restore damaged units.

@@ -1,0 +1,57 @@
+[
+  {
+    "part": "Conductive ",
+    "start": 100,
+    "end": 675
+  },
+  {
+    "part": "path ",
+    "start": 700,
+    "end": 1000
+  },
+  {
+    "part": "confirmed. ",
+    "start": 1012,
+    "end": 1687
+  },
+  {
+    "part": "The ",
+    "start": 2550,
+    "end": 2700
+  },
+  {
+    "part": "arc ",
+    "start": 2725,
+    "end": 2975
+  },
+  {
+    "part": "will ",
+    "start": 2987,
+    "end": 3137
+  },
+  {
+    "part": "jump ",
+    "start": 3162,
+    "end": 3450
+  },
+  {
+    "part": "through ",
+    "start": 3475,
+    "end": 3675
+  },
+  {
+    "part": "the ",
+    "start": 3700,
+    "end": 3787
+  },
+  {
+    "part": "entire ",
+    "start": 3812,
+    "end": 4287
+  },
+  {
+    "part": "formation.",
+    "start": 4312,
+    "end": 4962
+  }
+]
