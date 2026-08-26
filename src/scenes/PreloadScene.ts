@@ -9,6 +9,8 @@ import { allMusicFiles } from '../audio/musicManifest'
 import { ensureAudioSystems } from '../audio'
 import { EventBus, GameEvents } from '../state/EventBus'
 import { ENEMY_RUNTIME_ANIMATIONS, enemyAnimationFramePath, enemyAnimationTextureKey } from '../data/enemyRuntimeAnimations'
+import { TOWER_ATTACK_FRAMES, TOWER_LEVEL_IMAGE, towerAttackFrameKey, towerLevelTextureKey } from '../data/towerVisuals'
+import { UNIT_RUNTIME_FRAMES, UNIT_RUNTIME_MOTIONS, unitAnimationFrameKey } from '../data/unitRuntimeAnimations'
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -45,6 +47,14 @@ export class PreloadScene extends Phaser.Scene {
       const image = TIER4_BRANCH_IMAGE_BY_ID[branch.id]
       if (image) this.load.image(`tower-tier4-${branch.id}`, image)
     }
+    for (const [typeId, images] of Object.entries(TOWER_LEVEL_IMAGE)) {
+      images.forEach((image, index) => this.load.image(towerLevelTextureKey(typeId as keyof typeof TOWER_LEVEL_IMAGE, index + 1), image))
+    }
+    for (const [typeId, frameCount] of Object.entries(TOWER_ATTACK_FRAMES)) {
+      for (let frame = 1; frame <= (frameCount ?? 0); frame += 1) {
+        this.load.image(towerAttackFrameKey(typeId as keyof typeof TOWER_LEVEL_IMAGE, frame), `assets/animations/towers/runtime/${typeId}/attack/frame-${String(frame).padStart(2, '0')}.png`)
+      }
+    }
     for (const enemy of Object.values(ENEMY_TYPES)) {
       this.load.image(`enemy-${enemy.id}`, enemy.image)
     }
@@ -71,6 +81,13 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('unit-mercenary-shield', 'assets/units/mercenary-shield.png')
     this.load.image('unit-mercenary-rifle', 'assets/units/mercenary-rifle.png')
     this.load.image('unit-drone-hive', 'assets/generated/cutout/drone-hive-unit-2026-08-24T16-11-53-567Z.png')
+    for (const [unitId, motions] of Object.entries(UNIT_RUNTIME_MOTIONS)) {
+      for (const motion of motions) {
+        for (let frame = 1; frame <= UNIT_RUNTIME_FRAMES; frame += 1) {
+          this.load.image(unitAnimationFrameKey(unitId as keyof typeof UNIT_RUNTIME_MOTIONS, motion, frame), `assets/animations/units/runtime/${unitId}/${motion}/frame-${String(frame).padStart(2, '0')}.png`)
+        }
+      }
+    }
     this.load.image('remnant-biological', 'assets/effects/death-remnants/biological-blood-puddle.png')
     this.load.image('remnant-mechanical', 'assets/effects/death-remnants/mechanical-parts-pile.png')
     this.load.image('drone-crash-flame', 'assets/effects/drone-crash-flame.png')
@@ -82,6 +99,10 @@ export class PreloadScene extends Phaser.Scene {
     for (let frame = 1; frame <= 16; frame += 1) {
       const suffix = String(frame).padStart(2, '0')
       this.load.image(`fx-hacker-selected-pulse-${suffix}`, `assets/effects/hacker-relay-selected-pulse/frame-${suffix}.png`)
+    }
+    for (let frame = 1; frame <= 16; frame += 1) {
+      const suffix = String(frame).padStart(2, '0')
+      this.load.image(`fx-arc-lightning-${suffix}`, `assets/effects/arc-neon-lightning/frame-${suffix}.png`)
     }
 
     // 基地遭到突破时的即时反馈音效；独立于语音冷却，确保扣血时立即发声。

@@ -196,7 +196,25 @@ export class EffectsLayer {
     })
   }
   playArcLightning(from: { x: number; y: number }, to: { x: number; y: number }, chainIndex = 0) {
-    this.playArcDischarge(from, to, Phaser.Math.Clamp(1 - chainIndex * 0.12, 0.7, 1))
+    const intensity = Phaser.Math.Clamp(1 - chainIndex * 0.12, 0.7, 1)
+    this.playArcDischarge(from, to, intensity)
+    const animationKey = 'fx-arc-lightning-discharge'
+    if (this.scene.textures.exists('fx-arc-lightning-01')) {
+      if (!this.scene.anims.exists(animationKey)) {
+        this.scene.anims.create({
+          key: animationKey,
+          frames: Array.from({ length: 16 }, (_, index) => ({ key: `fx-arc-lightning-${String(index + 1).padStart(2, '0')}` })),
+          frameRate: 24,
+          repeat: 0,
+        })
+      }
+      const discharge = this.scene.add.sprite(from.x, from.y, 'fx-arc-lightning-01')
+        .setDisplaySize(106 * intensity, 106 * intensity)
+        .setDepth(89)
+        .setBlendMode(Phaser.BlendModes.ADD)
+      discharge.play(animationKey)
+      discharge.once(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + animationKey, () => discharge.destroy())
+    }
     this.playImpact(to, 'arc')
   }
 
