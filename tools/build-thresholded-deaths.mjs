@@ -1,0 +1,4 @@
+﻿import fs from 'node:fs/promises'; import path from 'node:path'; import sharp from 'sharp'
+const root=process.cwd(), srcRoot=path.join(root,'public/assets/animations/enemies/runtime-clean'), out=path.join(root,'public/assets/animations/enemies/runtime-clean-v2'), jobs={aerostat:12,devourer:12,faraday:8,hijacker:12}; await fs.rm(out,{recursive:true,force:true})
+for(const [id,count] of Object.entries(jobs))for(let i=1;i<=count;i++){const s=String(i).padStart(2,'0'),p=path.join(srcRoot,id,'death',`frame-${s}.webp`),d=path.join(out,id,'death',`frame-${s}.webp`);const {data,info}=await sharp(p).ensureAlpha().raw().toBuffer({resolveWithObject:true});for(let k=3;k<data.length;k+=info.channels)if(data[k]<190)data[k]=0;await fs.mkdir(path.dirname(d),{recursive:true});await fs.writeFile(d,await sharp(data,{raw:info}).webp({lossless:true,quality:92}).toBuffer())}
+console.log('built runtime-clean-v2 deaths')

@@ -76,7 +76,7 @@ export function enemyAnimationKey(typeId: string, motion: EnemyAnimationMotion) 
 
 export function enemyAnimationFramePath(typeId: string, motion: EnemyAnimationMotion, frame: number) {
   const cleanDeath = motion === 'death' && ['aerostat', 'devourer', 'faraday', 'hijacker'].includes(typeId)
-  const root = cleanDeath ? 'runtime-clean' : 'runtime'
+  const root = cleanDeath ? 'runtime-clean-v2' : 'runtime'
   return `assets/animations/enemies/${root}/${typeId}/${motion}/frame-${String(frame).padStart(2, '0')}.webp`
 }
 
