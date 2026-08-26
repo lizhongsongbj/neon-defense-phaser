@@ -3,14 +3,14 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
 const scripts = {
-  opening: '指挥官，防线已部署。敌军正在接近，准备迎战！',
-  enemy_incoming: '警告！侦测到敌军正在接近，请立即做好战斗准备！',
-  final_wave: '注意！最终波次已经抵达。坚守阵地，不要让任何敌人通过！',
-  fortress_damaged: '警告！大本营正在遭受攻击，请立即拦截突破防线的敌人！',
-  node_attacked: '警告！防御节点正在遭受攻击，立刻增援该区域！',
-  route_split: '敌军正在分流，多条路线同时出现目标。请重新部署防御力量！',
-  victory: '任务完成！敌军攻势已经瓦解，防线成功守住！',
-  defeat: '防线已经失守。保存作战数据，重新整备后再次部署。',
+  build: '蜂群控制核心已上线。无人机编队准备部署。',
+  select: '蜂后系统在线。等待新的战术指令。',
+  anti_air_mode: '切换防空模式。截击无人机，锁定所有空中目标。',
+  bomb_mode: '切换轰炸模式。爆破无人机，装载重型弹药。',
+  repair_mode: '切换维修模式。回收受损单位，并执行快速修复。',
+  skill: '蜂群协议启动。所有无人机立即集中火力！',
+  drone_destroyed: '警告，一架无人机已经失去连接。正在准备替补单位。',
+  return: '任务结束。无人机编队脱离战区，返回母巢。',
 } as const
 
 const normalize = (text: string) => text.normalize('NFKC').replace(/[^\p{L}\p{N}]/gu, '')
@@ -25,19 +25,18 @@ function wavDurationSeconds(buffer: Buffer): number {
   return dataBytes / (sampleRate * channels * (bitsPerSample / 8))
 }
 
-test('all battlefield commander lines contain the complete intended script and release tail', () => {
+test('all drone lines include the complete intended subtitle script and a clean release tail', () => {
   for (const [name, script] of Object.entries(scripts)) {
-    const base = new URL(`../public/assets/audio/voices/lan/${name}`, import.meta.url)
+    const base = new URL(`../public/assets/audio/voices/queen_bee/${name}`, import.meta.url)
     assert.equal(readFileSync(new URL(`${base.href}.txt`), 'utf8').trim(), script)
     const subtitles = JSON.parse(readFileSync(new URL(`${base.href}.mp3.json`), 'utf8')) as Array<{ part: string }>
     assert.equal(normalize(subtitles.map((entry) => entry.part).join('')), normalize(script))
-    const wav = readFileSync(new URL(`${base.href}.wav`))
-    assert.ok(wavDurationSeconds(wav) >= 4.5, `${name} should contain a full spoken sentence`)
 
+    const wav = readFileSync(new URL(`${base.href}.wav`))
+    assert.ok(wavDurationSeconds(wav) >= 4.5, `${name} should contain a complete spoken sentence`)
     const channels = wav.readUInt16LE(22)
     const sampleRate = wav.readUInt32LE(24)
-    const bytesPerFrame = channels * 2
-    const silentTailStart = Math.max(44, wav.length - Math.round(sampleRate * 0.5) * bytesPerFrame)
+    const silentTailStart = Math.max(44, wav.length - Math.round(sampleRate * 0.5) * channels * 2)
     for (let offset = silentTailStart; offset + 1 < wav.length; offset += 2) {
       assert.equal(wav.readInt16LE(offset), 0, `${name} should end with clean silence`)
     }
