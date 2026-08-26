@@ -308,7 +308,7 @@ html, body {
 }
 .mission-row:hover { background: rgba(18, 42, 48, .84); }
 .mission-row[aria-selected="true"] { border-left-color: var(--neon-yellow); color: #fff; background: rgba(23, 52, 58, .96); }
-.mission-row[data-status="locked"] { color: #627779; background: rgba(7, 17, 21, .76); cursor: not-allowed; }
+.mission-row[data-status="locked"] { color: #627779; background: rgba(7, 17, 21, .76); cursor: pointer; }
 .mission-row[data-status="locked"] img { filter: grayscale(1) brightness(.42) contrast(1.08); }
 .mission-row[data-status="locked"] em { color: var(--neon-pink-soft); }
 .mission-row[data-status="cleared"] em { color: #79ff9e; }

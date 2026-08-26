@@ -24,8 +24,8 @@ test('劫持浮游体动画已接入游戏数据、生图工作台和运行时�
   assert.match(enemies, /enemy-07-hijack-hovercraft-fly\.webp\?v=generated-flight-20260825/)
   assert.match(catalog, /hijacker:'\/assets\/animations\/enemies\/enemy-07-hijack-hovercraft-fly\.webp/)
   assert.match(preload, /enemy-hijacker-fly-\$\{suffix\}/)
-  assert.match(actor, /state\.typeId === 'hijacker'/)
-  assert.match(actor, /this\.sprite\.play\(hijackerFlightKey\)/)
+  assert.match(actor, /ENEMY_RUNTIME_ANIMATIONS\[this\.enemy\.typeId\]/)
+  assert.match(actor, /this\.playMotion\('move'\)/)
 })
 
 test('运行时所需的12张透明帧均存在', () => {
@@ -34,3 +34,4 @@ test('运行时所需的12张透明帧均存在', () => {
     assert.equal(existsSync(new URL(`enemy-07-hijack-hovercraft-fly-frames/frame-${suffix}.png`, root)), true)
   }
 })
+
