@@ -927,13 +927,7 @@ export class BattleScene extends Phaser.Scene {
       this.syncDroneActor(tower)
       if (events.length) {
         const towerScreen = boardToScreen(tower.source)
-        if (
-          tower.typeId === 'gravity-nail'
-          || tower.typeId === 'grey-tide'
-          || tower.typeId === 'trajectory-rewriter'
-        ) {
-          this.towerActors.get(tower.id)?.playAttackFeedback()
-        }
+        this.towerActors.get(tower.id)?.playAttackFeedback()
         let hackerPulsePlayed = false
         let previousArcTarget: { x: number; y: number } | null = null
         for (const event of events) {
