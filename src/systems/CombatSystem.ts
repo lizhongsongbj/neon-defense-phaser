@@ -109,6 +109,7 @@ export function spawnEnemy({ id, mapIndex, wave, difficulty, now, entry }: Spawn
     typeId: entry.type,
     isBoss: entry.boss,
     lane: entry.lane,
+    routeIndex: Number.isInteger(entry.routeIndex) && (entry.routeIndex as number) >= 0 ? entry.routeIndex : (entry.lane === 'left' ? 0 : 1),
     distance: 0,
     hp: def.hp * multiplier * power,
     maxHp: def.hp * multiplier * power,

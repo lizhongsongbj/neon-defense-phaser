@@ -2,6 +2,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { MAP_LEVELS } from '../src/data/maps'
 import { buildMapGeometry, findNearestRoutePoint, toBoardUnits } from '../src/systems/PathSystem'
+import { enemyPosition, spawnEnemy } from '../src/systems/CombatSystem'
+import { buildWavePlan } from '../src/systems/WaveSpawner'
 
 /**
  * 移植自 霓虹防线/map-coverage.test.js:验证每张地图的每个塔位都能被
@@ -24,6 +26,22 @@ test('每张地图的塔位都在最低射程内可达', () => {
     assert.ok(general.length >= Math.ceil(coverage.length / 2), `${map.name} 通用射程塔位数量不足`)
     assert.ok(closeRange.length >= 2, `${map.name} 近战射程塔位数量不足`)
   }
+})
+
+test('生成的敌人会保留其入口路线编号', () => {
+  const mapIndex = 1
+  const map = MAP_LEVELS[mapIndex]
+  const geometry = buildMapGeometry(map)
+  const entries = buildWavePlan(1, mapIndex)
+  const routeIndexes = new Set(entries.map((entry) => entry.routeIndex))
+  assert.equal(routeIndexes.size, map.entranceRoutes.length)
+  entries.forEach((entry, index) => {
+    const enemy = spawnEnemy({ id: index + 1, mapIndex, wave: 1, difficulty: 'normal', now: 0, entry })
+    assert.equal(enemy.routeIndex, entry.routeIndex)
+    const point = enemyPosition(geometry, enemy)
+    const firstPoint = geometry.routes[entry.routeIndex!].segments[0].from
+    assert.deepEqual(point, { x: firstPoint.x, y: firstPoint.y })
+  })
 })
 
 test('路线几何返回有限坐标', () => {
