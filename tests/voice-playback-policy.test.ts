@@ -1,7 +1,7 @@
 ﻿import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import { VOICE_PLAYBACK_RATE } from '../src/audio/voiceManifest.ts'
+import { VOICE_PLAYBACK_RATE } from '../src/audio/voiceManifest'
 
 const voiceSystem = readFileSync(new URL('../src/audio/VoiceSystem.ts', import.meta.url), 'utf8')
 const battleScene = readFileSync(new URL('../src/scenes/BattleScene.ts', import.meta.url), 'utf8')
@@ -18,3 +18,4 @@ test('voice playback is not interrupted by another line or battle scene teardown
   assert.doesNotMatch(battleScene, /this\.voice\?\.stop\(\)/)
   assert.doesNotMatch(audioStudio, /pauseOtherPlayers|player\.pause\(\)/)
 })
+
