@@ -1,7 +1,7 @@
 import { EXPANSION_TOWER_BY_ID, type ExpansionTowerId } from '../../data/towerExpansion'
 import { applyDamage } from '../CombatSystem'
 import type { TowerState } from '../types'
-import { effectiveDamage, effectiveRange, enemiesInTowerRange } from './common'
+import { activeTier4Branch, effectiveDamage, effectiveRange, enemiesInTowerRange } from './common'
 import type { AttackEvent, TowerAttackContext } from './types'
 
 const EFFECT_BY_TOWER: Record<ExpansionTowerId, string> = {
@@ -14,15 +14,17 @@ export function resolveExpansionTower(tower: TowerState, ctx: TowerAttackContext
   const typeId = tower.typeId as ExpansionTowerId
   const definition = EXPANSION_TOWER_BY_ID[typeId]
   if (!definition) return []
-  const stats = definition.levels[tower.level - 1]
+  const branch = activeTier4Branch(tower)
+  const stats = branch?.stats ?? definition.levels[Math.min(2, tower.level - 1)]
 
   tower.cooldown -= ctx.dt
   if (tower.cooldown > 0) return []
 
   const range = effectiveRange(tower, typeId, ctx.growth.range)
-  const includeAir = definition.targetLayer !== 'ground'
+  const targetLayer = branch?.targetLayer ?? definition.targetLayer
+  const includeAir = targetLayer !== 'ground'
   const targets = enemiesInTowerRange(ctx, tower, range, includeAir)
-    .filter((enemy) => definition.targetLayer !== 'air' || enemy.air)
+    .filter((enemy) => targetLayer !== 'air' || enemy.air)
     .sort((a, b) => b.distance - a.distance)
     .slice(0, stats.targetCount)
 
@@ -48,9 +50,9 @@ export function resolveExpansionTower(tower: TowerState, ctx: TowerAttackContext
 
     const echoScale = typeId === 'trajectory-rewriter' ? 1 + stats.echoRatio : 1
     const damage = effectiveDamage(stats.damage * echoScale, ctx.growth.damage)
-    const result = applyDamage(ctx.geometry, enemy, damage, definition.damageKind, { position: tower.source, typeId }, 0, ctx.now)
+    const result = applyDamage(ctx.geometry, enemy, damage, branch?.damageKind ?? definition.damageKind, { position: tower.source, typeId }, 0, ctx.now)
     tower.damageDealt += result.dealt
-    events.push({ targetId: enemy.id, damage, kind: definition.damageKind, result, effect: EFFECT_BY_TOWER[typeId] })
+    events.push({ targetId: enemy.id, damage, kind: branch?.damageKind ?? definition.damageKind, result, effect: EFFECT_BY_TOWER[typeId] })
   }
   return events
 }

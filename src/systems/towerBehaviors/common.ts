@@ -1,15 +1,22 @@
 import { TOWER_COMBAT } from '../../data/towers'
-import { EXPANSION_TOWER_BY_ID, isExpansionTowerId, type AllTowerId } from '../../data/towerExpansion'
+import { EXPANSION_TOWER_BY_ID, TIER4_BRANCH_BY_ID, isExpansionTowerId, type AllTowerId, type Tier4BranchDefinition } from '../../data/towerExpansion'
 import { enemyPosition } from '../CombatSystem'
 import { projectedDistance } from '../PathSystem'
 import type { EnemyState, TowerState } from '../types'
 import type { TowerAttackContext } from './types'
 
+export function activeTier4Branch(tower: TowerState): Tier4BranchDefinition | null {
+  if (tower.level !== 4 || !tower.tier4BranchId) return null
+  const branch = TIER4_BRANCH_BY_ID[tower.tier4BranchId]
+  return branch?.towerId === tower.typeId ? branch : null
+}
+
 /** 塔楼当前实际射程,原 `_0x1b0355` */
 export function effectiveRange(tower: TowerState, typeId: AllTowerId, growthRange: number): number {
-  const baseRange = isExpansionTowerId(typeId)
-    ? EXPANSION_TOWER_BY_ID[typeId].levels[tower.level - 1].range
-    : (TOWER_COMBAT[typeId] as { ranges: [number, number, number] }).ranges[tower.level - 1]
+  const branch = activeTier4Branch(tower)
+  const baseRange = branch ? branch.stats.range : isExpansionTowerId(typeId)
+    ? EXPANSION_TOWER_BY_ID[typeId].levels[Math.min(2, tower.level - 1)].range
+    : (TOWER_COMBAT[typeId] as { ranges: [number, number, number] }).ranges[Math.min(2, tower.level - 1)]
   return baseRange * growthRange * tower.rangeScale
 }
 
