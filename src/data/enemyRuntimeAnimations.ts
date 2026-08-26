@@ -14,7 +14,8 @@ export const ENEMY_RUNTIME_ANIMATIONS: Record<string, EnemyRuntimeAnimationSet> 
     move: { source: 'boss-adam-smasher-move.webp', frames: 8, frameRate: 9, repeat: -1 },
     attack: { source: 'boss-adam-smasher-attack.webp', frames: 8, frameRate: 8, repeat: -1 },
     death: { source: 'boss-adam-smasher-death.webp', frames: 8, frameRate: 7, repeat: 0 },
-  },  gang: {
+  },
+  gang: {
     move: { source: 'enemy-01-gang-cyborg-side45-move-fixed-size.webp', frames: 8, frameRate: 10, repeat: -1 },
     death: { source: 'enemy-01-gang-cyborg-death-kneel-8f.webp', frames: 8, frameRate: 8, repeat: 0 },
   },
@@ -68,4 +69,5 @@ export function enemyAnimationKey(typeId: string, motion: EnemyAnimationMotion) 
 export function enemyAnimationFramePath(typeId: string, motion: EnemyAnimationMotion, frame: number) {
   return `assets/animations/enemies/runtime/${typeId}/${motion}/frame-${String(frame).padStart(2, '0')}.webp`
 }
+
 
