@@ -1,4 +1,4 @@
-﻿import { COMMANDER_VOICE_PLAYBACK_RATE, VOICE_PLAYBACK_RATE } from '../audio/voiceManifest'
+﻿import { COMMANDER_VOICE_PLAYBACK_RATE, DRONE_VOICE_PLAYBACK_RATE, VOICE_PLAYBACK_RATE } from '../audio/voiceManifest'
 
 interface AudioLibraryItem {
   id: string

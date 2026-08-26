@@ -3,7 +3,7 @@
  * 搴曞眰闊抽鎾斁鎹㈡垚 Phaser Sound Manager,浣嗗喎鍗?浼樺厛绾?杞崲閫夊彇閫昏緫淇濇寔涓€鑷淬€? */
 
 import Phaser from 'phaser'
-import { COMMANDER_VOICE_PLAYBACK_RATE, VOICE_CATALOG, VOICE_COOLDOWN_MS, VOICE_PLAYBACK_RATE, voiceClassId, type VoiceCategory } from './voiceManifest'
+import { COMMANDER_VOICE_PLAYBACK_RATE, DRONE_VOICE_PLAYBACK_RATE, VOICE_CATALOG, VOICE_COOLDOWN_MS, VOICE_PLAYBACK_RATE, voiceClassId, type VoiceCategory } from './voiceManifest'
 import { EventBus, GameEvents } from '../state/EventBus'
 
 const MUTE_KEY = 'neon-defense-voice-muted'
@@ -71,7 +71,11 @@ export class VoiceSystem {
     this.lastPlayedAt = now
     this.currentClassId = voiceClassId(category, event)
 
-    const playbackRate = category === 'lan' ? COMMANDER_VOICE_PLAYBACK_RATE : VOICE_PLAYBACK_RATE
+    const playbackRate = category === 'lan'
+      ? COMMANDER_VOICE_PLAYBACK_RATE
+      : category === 'drone-hive'
+        ? DRONE_VOICE_PLAYBACK_RATE
+        : VOICE_PLAYBACK_RATE
     const instance = this.sound.add(key, { volume: 0.82, rate: playbackRate })
     instance.once('complete', () => this.onCurrentEnded(instance))
     instance.once('stop', () => this.onCurrentEnded(instance))

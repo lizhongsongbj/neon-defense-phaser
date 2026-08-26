@@ -29,6 +29,7 @@ export const VOICE_COOLDOWN_MS = 20_000
 // Keep speech brisk but intelligible across gameplay and the audio workbench.
 export const VOICE_PLAYBACK_RATE = 1.12
 export const COMMANDER_VOICE_PLAYBACK_RATE = 1
+export const DRONE_VOICE_PLAYBACK_RATE = 1
 
 export const VOICE_CATALOG: Record<VoiceCategory, Record<string, string[]>> = {
   lan: {
