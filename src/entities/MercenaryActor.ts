@@ -25,6 +25,44 @@ export class MercenaryActor extends Phaser.GameObjects.Container {
     scene.add.existing(this)
   }
 
+  /** ?????????????????????????????? */
+  deployFrom(source: { x: number; y: number }, destination: { x: number; y: number }) {
+    if (this.deploying) return
+    this.deploying = true
+    this.setPosition(source.x, source.y)
+    const distance = Phaser.Math.Distance.Between(source.x, source.y, destination.x, destination.y)
+    const duration = Phaser.Math.Clamp(520 + distance * 1.15, 700, 1450)
+    this.walkTweens.splice(0).forEach((tween) => tween.stop())
+    this.units.forEach((unit, index) => {
+      unit.setAlpha(1).setRotation(0)
+      const phase = index % 2 === 0 ? 0 : Math.PI
+      const homeX = this.homeX[index]
+      const walkTween = this.scene.tweens.add({
+        targets: unit,
+        x: homeX + Math.sin(phase) * 1.5,
+        y: Math.sin(phase) * 1.2,
+        angle: Math.sin(phase) * 2,
+        duration: 230,
+        yoyo: true,
+        repeat: Math.ceil(duration / 460),
+        ease: 'Sine.easeInOut',
+      })
+      this.walkTweens.push(walkTween)
+    })
+    this.scene.tweens.add({
+      targets: this,
+      x: destination.x,
+      y: destination.y,
+      duration,
+      ease: 'Sine.easeInOut',
+      onComplete: () => {
+        this.deploying = false
+        this.walkTweens.splice(0).forEach((tween) => tween.stop())
+        this.units.forEach((unit, index) => unit.setPosition(this.homeX[index], 0).setAngle(0))
+      },
+    })
+  }
+
   sync(x: number, y: number, downFlags: boolean[], onDeath?: (at: { x: number; y: number }) => void) {
     this.setPosition(x, y)
     this.units.forEach((img, i) => {
