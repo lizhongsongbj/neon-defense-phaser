@@ -31,15 +31,23 @@ export const ENEMY_RUNTIME_ANIMATIONS: Record<string, EnemyRuntimeAnimationSet> 
   },
   aerostat: {
     move: { source: 'enemy-04-corporate-airship-fly.webp', frames: 12, frameRate: 15, repeat: -1 },
+    attack: { source: 'enemy-04-corporate-airship-attack-generated.webp', frames: 12, frameRate: 12, repeat: -1 },
+    death: { source: 'enemy-04-corporate-airship-death-generated.webp', frames: 12, frameRate: 9, repeat: 0 },
   },
   devourer: {
     move: { source: 'enemy-05-data-devourer-move.webp', frames: 12, frameRate: 15, repeat: -1 },
+    attack: { source: 'enemy-05-data-devourer-attack-generated.webp', frames: 12, frameRate: 12, repeat: -1 },
+    death: { source: 'enemy-05-data-devourer-death-generated.webp', frames: 12, frameRate: 9, repeat: 0 },
   },
   faraday: {
     move: { source: 'enemy-06-electromagnetic-riot-move.webp', frames: 8, frameRate: 8, repeat: -1 },
+    attack: { source: 'enemy-06-electromagnetic-riot-attack-generated.webp', frames: 8, frameRate: 10, repeat: -1 },
+    death: { source: 'enemy-06-electromagnetic-riot-death-generated.webp', frames: 8, frameRate: 8, repeat: 0 },
   },
   hijacker: {
     move: { source: 'enemy-07-hijack-hovercraft-fly.webp', frames: 12, frameRate: 15, repeat: -1 },
+    attack: { source: 'enemy-07-hijack-hovercraft-attack-generated.webp', frames: 12, frameRate: 12, repeat: -1 },
+    death: { source: 'enemy-07-hijack-hovercraft-death-generated.webp', frames: 12, frameRate: 9, repeat: 0 },
   },
   neurohound: {
     move: { source: 'enemy-08-neuro-hound-move.webp', frames: 8, frameRate: 13, repeat: -1 },
