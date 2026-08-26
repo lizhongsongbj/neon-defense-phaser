@@ -27,7 +27,8 @@
     "animations:adam:build": "node tools/build-adam-smasher-animations.mjs",
     "predev": "node tools/ensure-rollup-wasm.mjs",
     "prestart": "node tools/ensure-rollup-wasm.mjs",
-    "prebuild": "node tools/ensure-rollup-wasm.mjs"
+    "prebuild": "node tools/ensure-rollup-wasm.mjs",
+    "animations:adam:stages:build": "node tools/build-adam-smasher-stage-animations.mjs"
   },
   "devDependencies": {
     "@rollup/wasm-node": "^4.62.5",

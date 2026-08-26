@@ -26,6 +26,14 @@ export const ENEMY_RUNTIME_ANIMATIONS: Record<string, EnemyRuntimeAnimationSet> 
     attack: { source: 'boss-adam-smasher-attack.webp', frames: 8, frameRate: 8, repeat: -1 },
     death: { source: 'boss-adam-smasher-death.webp', frames: 8, frameRate: 7, repeat: 0 },
   },
+  'enforcer-stage-2': {
+    move: { source: 'boss-adam-smasher-stage-2-move.webp', frames: 8, frameRate: 10, repeat: -1 },
+    attack: { source: 'boss-adam-smasher-stage-2-attack.webp', frames: 8, frameRate: 8, repeat: -1 },
+  },
+  'enforcer-stage-3': {
+    move: { source: 'boss-adam-smasher-stage-3-move.webp', frames: 8, frameRate: 9, repeat: -1 },
+    attack: { source: 'boss-adam-smasher-stage-3-attack.webp', frames: 8, frameRate: 8, repeat: -1 },
+  },
   gang: {
     move: { source: 'enemy-01-gang-cyborg-side45-move-fixed-size.webp', frames: 8, frameRate: 10, repeat: -1 },
     death: { source: 'enemy-01-gang-cyborg-death-kneel-8f.webp', frames: 8, frameRate: 8, repeat: 0 },

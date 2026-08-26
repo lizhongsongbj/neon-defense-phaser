@@ -125,7 +125,7 @@ export class EnemyActor extends Phaser.GameObjects.Container {
 
   private syncBossStageVisual(): boolean {
     if (!this.enemy.isBoss) return false
-    if (ENEMY_RUNTIME_ANIMATIONS[`${this.enemy.typeId}-stage-${this.enemy.stage}`]) return false
+    if (ENEMY_RUNTIME_ANIMATIONS[this.animationTypeId()]?.move) return false
     const definition = BOSS_TYPES[this.enemy.typeId as keyof typeof BOSS_TYPES]
     if (!definition.stageImages?.[this.enemy.stage as BossStage]) return false
     const key = bossStageTextureKey(definition.id, this.enemy.stage)
