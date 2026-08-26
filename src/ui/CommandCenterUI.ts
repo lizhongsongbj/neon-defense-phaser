@@ -416,7 +416,7 @@ export class CommandCenterUI {
     this.titleEl.textContent = map.name
     this.metaEl.innerHTML = map.available
       ? `
-        <span class="map-access-note${unlocked ? '\u53ef\u90e8\u7f72\u6218\u533a' : '\u672a\u89e3\u9501 \u00b7 \u9700\u8981\u5148\u901a\u5173\u4e0a\u4e00\u5173'}">${unlocked ? '?????' : '??? ? ????????'}</span>
+        <span class=`"map-access-note`"></span>
         <span>威胁系数 <b>${CAMPAIGN_THREAT_LEVELS[this.selectedMapIndex].toFixed(2)}</b></span>
         <span>关卡波次 <b>${CAMPAIGN_WAVE_COUNTS[this.selectedMapIndex]}</b></span>
         <span>敌军种类 <b>${CAMPAIGN_ENEMY_COUNTS[this.selectedMapIndex]}</b></span>
