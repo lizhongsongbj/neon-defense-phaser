@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig'
 import { MAP_LEVELS, CAMPAIGN_WAVE_COUNTS, CAMPAIGN_STARTING_COINS, type MapLevel, type Point2 } from '../data/maps'
 import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
-import { ALL_TOWER_TYPE_BY_ID, type AllTowerId } from '../data/towerExpansion'
+import { ALL_TOWER_TYPE_BY_ID, TIER4_BRANCH_BY_ID, tier4BranchesForTower, type AllTowerId } from '../data/towerExpansion'
 import { scaleReward, towerGrowthBonuses, RANGE_PROJECTION_Y, MAX_HEALTH, type Difficulty } from '../data/balance'
 import { COUNTDOWN_SECONDS, earlyWaveReward } from '../data/waveEconomy'
 import { buildMapGeometry, findNearestRoutePoint, toBoardUnits, type MapGeometry } from '../systems/PathSystem'
@@ -554,7 +554,7 @@ export class BattleScene extends Phaser.Scene {
   private instantiateTower(
     slotIndex: number,
     typeId: AllTowerId,
-    opts: { level: 1 | 2 | 3; spent: number; rallyPoint: { x: number; y: number } | null },
+    opts: { level: 1 | 2 | 3 | 4; tier4BranchId?: string | null; spent: number; rallyPoint: { x: number; y: number } | null },
   ) {
     const slot = this.mapLevel.slots[slotIndex]
     const tower: TowerState = {
@@ -583,6 +583,7 @@ export class BattleScene extends Phaser.Scene {
     const baseSize = spriteSize(slot.scale) * battleScale
     const actor = new TowerActor(this, tower, baseSize).setDepth(20)
     actor.setPosition(screen.x, screen.y)
+    actor.setLevel(tower.level, tower.tier4BranchId)
     actor.onPointerDown(() => this.selectTower(tower.id))
     this.towerActors.set(tower.id, actor)
     if (tower.typeId === 'drone-hive') this.syncDroneActor(tower)
@@ -631,7 +632,7 @@ export class BattleScene extends Phaser.Scene {
     })
   }
 
-  private onUpgradeRequest(payload: { towerId: string }) {
+  private onUpgradeRequest(payload: { towerId: string; branchId?: string }) {
     const tower = this.battle.towers.find((t) => t.id === payload.towerId)
     if (!tower) {
       EventBus.emit(GameEvents.TowerActionFeedback, { message: '升级失败 · 未找到目标塔楼' })
@@ -657,7 +658,7 @@ export class BattleScene extends Phaser.Scene {
     this.persistProgress()
     this.emitHud()
     this.selectTower(tower.id)
-    EventBus.emit(GameEvents.TowerActionFeedback, { message: `${ALL_TOWER_TYPE_BY_ID[tower.typeId].name} 已升级至 LV.${tower.level}` })
+    EventBus.emit(GameEvents.TowerActionFeedback, { message: branch ? `${branch.name} 已部署 · LV.4-${branch.branch}` : `${ALL_TOWER_TYPE_BY_ID[tower.typeId].name} 已升级至 LV.${tower.level}` })
   }
 
   private onSellRequest(payload: { towerId: string }) {
@@ -1184,7 +1185,7 @@ export class BattleScene extends Phaser.Scene {
       enemyCount: this.battle.enemies.length,
       mapIndex: this.battle.mapIndex,
       difficulty: this.battle.difficulty,
-      towers: this.battle.towers.map((t) => ({ slotIndex: t.slotIndex, typeId: t.typeId, level: t.level })),
+      towers: this.battle.towers.map((t) => ({ slotIndex: t.slotIndex, typeId: t.typeId, level: t.level, tier4BranchId: t.tier4BranchId })),
       skills: PLAYER_SKILLS.map(({ id }) => {
         const level = this.campaign.playerSkillLevel(id)
         const cooldown = level > 0 ? playerSkillCooldown(id, level) : 0

@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import { ALL_TOWER_TYPES } from '../data/towerExpansion'
+import { ALL_TOWER_TYPES, TIER4_BRANCHES, TIER4_BRANCH_IMAGE_BY_ID } from '../data/towerExpansion'
 import { ENEMY_TYPES } from '../data/enemies'
 import { BOSS_TYPES, bossStageTextureKey } from '../data/bosses'
 import { MAP_LEVELS } from '../data/maps'
@@ -40,6 +40,10 @@ export class PreloadScene extends Phaser.Scene {
 
     for (const tower of ALL_TOWER_TYPES) {
       this.load.image(`tower-${tower.id}`, tower.image)
+    }
+    for (const branch of TIER4_BRANCHES) {
+      const image = TIER4_BRANCH_IMAGE_BY_ID[branch.id]
+      if (image) this.load.image(`tower-tier4-${branch.id}`, image)
     }
     for (const enemy of Object.values(ENEMY_TYPES)) {
       this.load.image(`enemy-${enemy.id}`, enemy.image)
