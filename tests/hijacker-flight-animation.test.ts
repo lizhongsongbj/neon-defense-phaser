@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
+import { enemyAnimationFramePath } from '../src/data/enemyRuntimeAnimations'
 
 const root = new URL('../public/assets/animations/enemies/', import.meta.url)
 const enemies = readFileSync(new URL('../src/data/enemies.ts', import.meta.url), 'utf8')
@@ -34,4 +35,16 @@ test('运行时所需的12张透明帧均存在', () => {
     assert.equal(existsSync(new URL(`enemy-07-hijack-hovercraft-fly-frames/frame-${suffix}.png`, root)), true)
   }
 })
-
+test('游戏运行时直接加载完整身体的 PNG 帧，避免 WebP 差分帧损坏主体', async () => {
+  for (const motion of ['move', 'attack'] as const) {
+    for (let frame = 1; frame <= 12; frame += 1) {
+      const relative = enemyAnimationFramePath('hijacker', motion, frame)
+      assert.match(relative, /enemy-07-hijack-hovercraft-fly-frames\/frame-\d{2}\.png$/)
+      const file = new URL(../public/, import.meta.url)
+      const { data } = await sharp(fileURLToPath(file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+      let visiblePixels = 0
+      for (let index = 3; index < data.length; index += 4) if (data[index] > 16) visiblePixels += 1
+      assert.ok(visiblePixels > 80_000, ${motion} frame  lost the vehicle body)
+    }
+  }
+})

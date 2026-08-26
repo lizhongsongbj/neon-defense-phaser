@@ -1,4 +1,4 @@
-﻿export type EnemyAnimationMotion = 'move' | 'attack' | 'death'
+export type EnemyAnimationMotion = 'move' | 'attack' | 'death'
 
 export interface EnemyRuntimeAnimationSpec {
   source: string
@@ -86,6 +86,11 @@ export function enemyAnimationKey(typeId: string, motion: EnemyAnimationMotion) 
 }
 
 export function enemyAnimationFramePath(typeId: string, motion: EnemyAnimationMotion, frame: number) {
+  // Hijacker's generated WebP frame extraction can retain invalid delta-frame data.
+  // Load the known-good full-body PNG sequence directly for both live motions.
+  if (typeId === 'hijacker' && (motion === 'move' || motion === 'attack')) {
+    return `assets/animations/enemies/enemy-07-hijack-hovercraft-fly-frames/frame-{String(frame).padStart(2, '0')}.png`
+  }
   const cleanDeath = motion === 'death' && ['aerostat', 'devourer', 'faraday', 'hijacker'].includes(typeId)
   const root = cleanDeath ? 'runtime-clean-v4' : 'runtime'
   return `assets/animations/enemies/${root}/${typeId}/${motion}/frame-${String(frame).padStart(2, '0')}.webp`
