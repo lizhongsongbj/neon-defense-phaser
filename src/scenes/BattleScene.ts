@@ -5,7 +5,7 @@ import { TOWER_COMBAT, TOWER_TYPE_BY_ID, type TowerId } from '../data/towers'
 import { ALL_TOWER_TYPE_BY_ID, type AllTowerId } from '../data/towerExpansion'
 import { scaleReward, towerGrowthBonuses, RANGE_PROJECTION_Y, MAX_HEALTH, type Difficulty } from '../data/balance'
 import { COUNTDOWN_SECONDS, earlyWaveReward } from '../data/waveEconomy'
-import { buildMapGeometry, toBoardUnits, type MapGeometry } from '../systems/PathSystem'
+import { buildMapGeometry, findNearestRoutePoint, toBoardUnits, type MapGeometry } from '../systems/PathSystem'
 import { buildWavePlan, scheduleWave } from '../systems/WaveSpawner'
 import { applyDamage, spawnEnemy, enemyPosition, isEnemyPhasedAt, tickEnemyTraits } from '../systems/CombatSystem'
 import { resolveTowerAttack, effectiveRange } from '../systems/towerBehaviors'
@@ -1024,13 +1024,18 @@ export class BattleScene extends Phaser.Scene {
 
   private syncDroneActor(tower: TowerState) {
     if (tower.typeId !== 'drone-hive') return
+    if (!tower.rallyPoint) {
+      const nearest = findNearestRoutePoint(this.geometry, tower.source)
+      tower.rallyPoint = { x: nearest.x, y: nearest.y }
+    }
     let actor = this.droneActors.get(tower.id)
     if (!actor) {
       actor = new DroneSquadActor(this, TOWER_COMBAT['drone-hive'].drones).setDepth(25)
       this.droneActors.set(tower.id, actor)
     }
-    const screen = boardToScreen(tower.source)
-    actor.sync(screen.x, screen.y, this.battle.now)
+    const home = boardToScreen(tower.source)
+    const station = boardToScreen(tower.rallyPoint)
+    actor.sync(home.x, home.y, station.x, station.y, this.battle.now)
   }
 
   private persistProgress() {
