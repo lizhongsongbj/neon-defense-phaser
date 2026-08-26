@@ -1,4 +1,4 @@
-﻿import { VOICE_PLAYBACK_RATE } from '../audio/voiceManifest'
+﻿import { COMMANDER_VOICE_PLAYBACK_RATE, VOICE_PLAYBACK_RATE } from '../audio/voiceManifest'
 
 interface AudioLibraryItem {
   id: string
@@ -144,7 +144,7 @@ export class AudioStudio {
     player.controls = true
     player.preload = 'none'
     player.src = item.url
-    player.playbackRate = item.category === 'voice' ? VOICE_PLAYBACK_RATE : 1
+    player.playbackRate = item.category === 'voice' ? (item.group === '??????' ? COMMANDER_VOICE_PLAYBACK_RATE : VOICE_PLAYBACK_RATE) : 1
     player.defaultPlaybackRate = player.playbackRate
     player.setAttribute('aria-label', `播放 ${item.name}`)
 
@@ -205,7 +205,7 @@ export class AudioStudio {
     player.controls = true
     player.preload = 'metadata'
     player.src = item.url
-    player.playbackRate = item.category === 'voice' ? VOICE_PLAYBACK_RATE : 1
+    player.playbackRate = item.category === 'voice' ? (item.group === '??????' ? COMMANDER_VOICE_PLAYBACK_RATE : VOICE_PLAYBACK_RATE) : 1
     player.defaultPlaybackRate = player.playbackRate
     player.setAttribute('aria-label', `播放最新生成音效 ${item.name}`)
     this.result.replaceChildren(title, name, player)
