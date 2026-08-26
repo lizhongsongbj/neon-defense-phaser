@@ -1,0 +1,2 @@
+﻿const sharp=require('sharp');
+(async()=>{for(const p of ['public/assets/enemies/new/enemy-06-faraday-suppressor.png','public/assets/enemies/new/enemy-07-hijack-hovercraft.png']){const {data,info}=await sharp(p).raw().toBuffer({resolveWithObject:true});let maxA=0,count=0;for(let y=0;y<info.height;y++)for(let x=Math.floor(info.width*.76);x<info.width;x++){let i=(y*info.width+x)*info.channels;if(data[i+3]>maxA)maxA=data[i+3];if(data[i+3]>10)count++}console.log(p,info.width,info.height,{maxA,count})}})()
