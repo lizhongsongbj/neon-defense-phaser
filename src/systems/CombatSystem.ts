@@ -6,7 +6,7 @@
  */
 
 import { ENEMY_TYPES, type EnemyId } from '../data/enemies'
-import { BOSS_TYPES, ENFORCER_COMPONENT_VOICE_EVENT, type BossId } from '../data/bosses'
+import { BOSS_TYPES, ENFORCER_COMPONENT_VOICE_EVENT, bossComponentHp, type BossId } from '../data/bosses'
 import { difficultyAttackMultiplier, difficultySpeedMultiplier, enemyStatMultiplier, mapSpeedBonus, type Difficulty } from '../data/balance'
 import type { MapGeometry } from './PathSystem'
 import { projectedDistance, routePointByIndex } from './PathSystem'
@@ -31,6 +31,7 @@ interface NormalizedDefinition {
   armor: number
   reward: number
   attack: number
+  baseDamage: number
   shield: number
   air: boolean
   mechanical: boolean
@@ -56,20 +57,21 @@ function normalizeDefinition(typeId: EnemyTypeId): NormalizedDefinition {
       armor: def.armor,
       reward: def.reward,
       attack: def.attack,
-      shield: 0,
+      baseDamage: def.baseDamage,
+      shield: def.shield ?? 0,
       air: false,
       mechanical: true,
       network: false,
       phase: false,
-      energyResistance: 0,
-      railVulnerability: 0,
+      energyResistance: def.energyResistance,
+      railVulnerability: def.railVulnerability,
       droneEvasion: 0,
       enrageThreshold: 0,
       enrageSpeedBonus: 0,
       healingAura: 0,
       healingRadius: 0,
       components: def.components ?? [],
-      componentHp: def.componentHp ?? 0,
+      componentHp: 0,
     }
   }
   const def = ENEMY_TYPES[typeId as EnemyId]
@@ -79,6 +81,7 @@ function normalizeDefinition(typeId: EnemyTypeId): NormalizedDefinition {
     armor: def.armor,
     reward: def.reward,
     attack: def.attack,
+    baseDamage: 1,
     shield: def.shield ?? 0,
     air: Boolean(def.air),
     mechanical: Boolean(def.mechanical),
@@ -119,6 +122,7 @@ export function spawnEnemy({ id, mapIndex, wave, difficulty, now, entry }: Spawn
     speed: movementSpeed,
     baseSpeed: movementSpeed,
     attack: (Number.isFinite(entry.attack) ? (entry.attack as number) : def.attack) * difficultyAttackMultiplier(difficulty),
+    baseDamage: def.baseDamage,
     reward: Number.isFinite(entry.reward) ? (entry.reward as number) : def.reward,
     elite: Boolean(entry.elite),
     air: def.air,
@@ -150,7 +154,12 @@ export function spawnEnemy({ id, mapIndex, wave, difficulty, now, entry }: Spawn
     dead: false,
     lastTeleport: now,
     stage: 1,
-    components: def.components.map((name) => ({ name, hp: def.componentHp * multiplier, maxHp: def.componentHp * multiplier })),
+    bossStageEnteredAt: now,
+    nextBossAbilityAt: now + 4000,
+    components: def.components.map((name) => {
+      const componentHp = isBossId(entry.type) ? bossComponentHp(BOSS_TYPES[entry.type], name) : def.componentHp
+      return { name, hp: componentHp * multiplier * power, maxHp: componentHp * multiplier * power }
+    }),
   }
 }
 
@@ -230,9 +239,10 @@ export function applyDamage(
   if (enemy.components.length && damage > 0) {
     const component = enemy.components.find((c) => c.hp > 0)
     if (component) {
-      const componentDamage = damage * 0.35
+      const componentShare = component.name === '盾牌' ? 0.5 : 0.35
+      const componentDamage = damage * componentShare
       component.hp = Math.max(0, component.hp - componentDamage)
-      damage *= 0.65
+      damage *= 1 - componentShare
       if (component.hp === 0) destroyedComponent = component.name
     }
   }
