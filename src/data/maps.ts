@@ -290,7 +290,7 @@ export const MAP_LEVELS: MapLevel[] = [
 
 export const CAMPAIGN_THREAT_LEVELS = [1, 1.08, 1.16, 1.24, 1.34, 1.44, 1.56, 1.7]
 export const CAMPAIGN_STARTING_COINS = [700, 725, 750, 825, 900, 1000, 1125, 1250]
-export const CAMPAIGN_WAVE_COUNTS = [8, 9, 10, 11, 12, 13, 14, 15]
+export const CAMPAIGN_WAVE_COUNTS = [8, 9, 10, 11, 12, 13, 10, 10]
 export const CAMPAIGN_ENEMY_COUNTS = [2, 4, 5, 6, 8, 9, 10, 10]
 export const MAP_SCENE_IDS = [
   'scene-01-megastructure-h4',
@@ -302,3 +302,4 @@ export const MAP_SCENE_IDS = [
   'scene-04-megatower-cloud-club',
   'scene-05-corporate-hotel-siege',
 ]
+
